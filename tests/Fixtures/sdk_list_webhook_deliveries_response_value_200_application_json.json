@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "event_id": "evt_test",
+      "event_type": "test_event_type",
+      "status": "pending",
+      "destination_origin": "https://example.com",
+      "attempts": 1,
+      "response_status": 1,
+      "response_body": "test_response_body"
+    }
+  ],
+  "links": {
+    "first": "https://sell.app/api/v1/blacklists?page=1",
+    "last": "https://sell.app/api/v1/blacklists?page=4",
+    "prev": "test_prev",
+    "next": "test_next"
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 4,
+    "links": [
+      {
+        "url": "https://example.com",
+        "label": "test_label",
+        "active": true
+      }
+    ],
+    "path": "https://sell.app/api/v1/blacklists",
+    "per_page": 15,
+    "to": 1,
+    "total": 57
+  }
+}

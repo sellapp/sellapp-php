@@ -1,0 +1,373 @@
+[
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createCharge",
+    "mountTarget": "Charges",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->charges()->create(\n    email: 'sofia.rivera@example.com',\n    returnUrl: 'https://example.com/launch-complete',\n    reference: 'One more thing launch',\n    currency: 'USD',\n    total: 10000,\n    paymentMethod: 'PAYPAL',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "default",
+    "summary": "default",
+    "mediaType": "application/json",
+    "request": {
+      "email": "sofia.rivera@example.com",
+      "return_url": "https://example.com/launch-complete",
+      "currency": "USD",
+      "total": 10000,
+      "payment_method": "PAYPAL",
+      "reference": "One more thing launch"
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createCharge",
+    "mountTarget": "Charges",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->charges()->create(\n    email: 'maya.chen@example.com',\n    returnUrl: 'https://example.com/payment-return',\n    currency: 'USD',\n    total: 1999,\n    paymentMethod: 'CUSTOM_PAYMENT_METHOD',\n    customPaymentMethodId: '01J00000000000000000000001',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "customPreselected",
+    "summary": "Preselect an enabled custom method in this store",
+    "mediaType": "application/json",
+    "request": {
+      "email": "maya.chen@example.com",
+      "return_url": "https://example.com/payment-return",
+      "currency": "USD",
+      "total": 1999,
+      "payment_method": "CUSTOM_PAYMENT_METHOD",
+      "custom_payment_method_id": "01J00000000000000000000001"
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createCharge",
+    "mountTarget": "Charges",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->charges()->create(\n    email: 'maya.chen@example.com',\n    returnUrl: 'https://example.com/payment-return',\n    currency: 'USD',\n    total: 1999,\n    paymentMethods: ['CUSTOM_PAYMENT_METHOD'],\n    customPaymentMethodIds: ['01J00000000000000000000001'],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "customChoices",
+    "summary": "Offer a specific custom method for customer selection",
+    "mediaType": "application/json",
+    "request": {
+      "email": "maya.chen@example.com",
+      "return_url": "https://example.com/payment-return",
+      "currency": "USD",
+      "total": 1999,
+      "payment_methods": [
+        "CUSTOM_PAYMENT_METHOD"
+      ],
+      "custom_payment_method_ids": [
+        "01J00000000000000000000001"
+      ]
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createGroup",
+    "mountTarget": "Groups",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->groups()->create(\n    title: 'Design kit',\n    unlisted: true,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "minimal",
+    "summary": "Minimal valid request",
+    "mediaType": "application/json",
+    "request": {
+      "title": "Design kit",
+      "unlisted": true
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createGroup",
+    "mountTarget": "Groups",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->groups()->create(\n    title: 'Design kit',\n    unlisted: true,\n    order: 1,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "realistic",
+    "summary": "With optional fields",
+    "mediaType": "application/json",
+    "request": {
+      "title": "Design kit",
+      "unlisted": true,
+      "order": 1
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "validateLicenseKey",
+    "mountTarget": "Licenses",
+    "methodName": "validate",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->licenses()->validate(licenseKey: '01965f1d-f038-7116-b57f-9e7ecb4e7b8f');\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "minimal",
+    "summary": "Minimal valid request",
+    "mediaType": "application/json",
+    "request": {
+      "license_key": "01965f1d-f038-7116-b57f-9e7ecb4e7b8f"
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "validateLicenseKey",
+    "mountTarget": "Licenses",
+    "methodName": "validate",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->licenses()->validate(\n    licenseKey: '01965f1d-f038-7116-b57f-9e7ecb4e7b8f',\n    instanceId: '9ebd3be0-de72-4da7-805e-bc99d1ac1186',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "realistic",
+    "summary": "With optional fields",
+    "mediaType": "application/json",
+    "request": {
+      "license_key": "01965f1d-f038-7116-b57f-9e7ecb4e7b8f",
+      "instance_id": "9ebd3be0-de72-4da7-805e-bc99d1ac1186"
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createProduct",
+    "mountTarget": "Products",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->create(\n    title: 'Design kit',\n    description: 'Templates for your next project.',\n    visibility: 'HIDDEN',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "minimal",
+    "summary": "Minimal hidden product",
+    "mediaType": "application/json",
+    "request": {
+      "title": "Design kit",
+      "description": "Templates for your next project.",
+      "visibility": "HIDDEN"
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createProduct",
+    "mountTarget": "Products",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->create(\n    title: 'Design kit',\n    description: 'Templates for your next project.',\n    visibility: 'HIDDEN',\n    slug: 'design-kit-launch',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "realistic",
+    "summary": "Product with a custom URL slug",
+    "mediaType": "application/json",
+    "request": {
+      "title": "Design kit",
+      "description": "Templates for your next project.",
+      "visibility": "HIDDEN",
+      "slug": "design-kit-launch"
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createProduct",
+    "mountTarget": "Products",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->create(\n    title: 'Design kit',\n    description: 'Reusable templates for your next launch',\n    visibility: 'PUBLIC',\n    variants: [\n        [\n            'title' => 'Standard',\n            'description' => 'The complete design kit',\n            'pricing' => ['price' => ['price' => 1999, 'currency' => 'USD'], 'humble' => false],\n            'deliverable' => [\n                'types' => ['MANUAL'],\n                'data' => ['comment' => 'Your kit will be delivered shortly.'],\n            ],\n            'minimum_purchase_quantity' => 1,\n            'maximum_purchase_quantity' => 10,\n            'payment_methods' => ['PAYPAL'],\n        ],\n    ],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "withVariants",
+    "summary": "Create a product and its first variant",
+    "mediaType": "application/json",
+    "request": {
+      "title": "Design kit",
+      "description": "Reusable templates for your next launch",
+      "visibility": "PUBLIC",
+      "variants": [
+        {
+          "title": "Standard",
+          "description": "The complete design kit",
+          "pricing": {
+            "price": {
+              "price": 1999,
+              "currency": "USD"
+            },
+            "humble": false
+          },
+          "deliverable": {
+            "types": [
+              "MANUAL"
+            ],
+            "data": {
+              "comment": "Your kit will be delivered shortly."
+            }
+          },
+          "minimum_purchase_quantity": 1,
+          "maximum_purchase_quantity": 10,
+          "payment_methods": [
+            "PAYPAL"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createProduct",
+    "mountTarget": "Products",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->create(\n    title: 'Launch bundle',\n    description: 'Two design kits in one purchase',\n    visibility: 'PUBLIC',\n    type: 'bundle',\n    variants: [\n        [\n            'title' => 'Standard',\n            'description' => 'The complete design kit',\n            'pricing' => ['price' => ['price' => 1999, 'currency' => 'USD'], 'humble' => false],\n            'deliverable' => ['types' => ['BUNDLE'], 'data' => []],\n            'minimum_purchase_quantity' => 1,\n            'maximum_purchase_quantity' => 10,\n            'payment_methods' => ['PAYPAL'],\n        ],\n    ],\n    bundleItems: [['product_variant_id' => 4321, 'quantity' => 2]],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "completeBundle",
+    "summary": "Create a complete bundle",
+    "mediaType": "application/json",
+    "request": {
+      "title": "Launch bundle",
+      "description": "Two design kits in one purchase",
+      "visibility": "PUBLIC",
+      "type": "bundle",
+      "variants": [
+        {
+          "title": "Standard",
+          "description": "The complete design kit",
+          "pricing": {
+            "price": {
+              "price": 1999,
+              "currency": "USD"
+            },
+            "humble": false
+          },
+          "deliverable": {
+            "types": [
+              "BUNDLE"
+            ],
+            "data": {}
+          },
+          "minimum_purchase_quantity": 1,
+          "maximum_purchase_quantity": 10,
+          "payment_methods": [
+            "PAYPAL"
+          ]
+        }
+      ],
+      "bundle_items": [
+        {
+          "product_variant_id": 4321,
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "cancelSubscriptionImmediately",
+    "mountTarget": "Subscriptions",
+    "methodName": "cancel_immediately",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->subscriptions()->cancelImmediately(\n    productSubscription: 55,\n    reason: 'Customer request',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "minimal",
+    "summary": "Cancel without requesting a refund",
+    "mediaType": "application/json",
+    "request": {
+      "reason": "Customer request"
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "cancelSubscriptionImmediately",
+    "mountTarget": "Subscriptions",
+    "methodName": "cancel_immediately",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->subscriptions()->cancelImmediately(\n    productSubscription: 55,\n    reason: 'Customer request',\n    refundLastPayment: true,\n    proRatedRefund: true,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "with_refund",
+    "summary": "Requests a real prorated refund; cancellation success does not prove refund success",
+    "mediaType": "application/json",
+    "request": {
+      "reason": "Customer request",
+      "refund_last_payment": true,
+      "pro_rated_refund": true
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createAddOnDraft",
+    "mountTarget": "AddOns",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->addOns()->create(\n    title: 'Customer support',\n    description: 'Priority support for launches scheduled suspiciously close to Friday.',\n    visibility: 'PUBLIC',\n    parentProductIds: [120, 121],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "draft",
+    "summary": "Create a draft add-on",
+    "mediaType": "application/json",
+    "request": {
+      "title": "Customer support",
+      "description": "Priority support for launches scheduled suspiciously close to Friday.",
+      "visibility": "PUBLIC",
+      "parent_product_ids": [
+        120,
+        121
+      ]
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createAddOnDraft",
+    "mountTarget": "AddOns",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->addOns()->create(\n    title: 'Priority support',\n    description: 'Personal help with your design kit',\n    visibility: 'PUBLIC',\n    isDraft: false,\n    parentProductIds: [120],\n    variant: [\n        'title' => 'Standard',\n        'description' => 'The complete design kit',\n        'pricing' => ['price' => ['price' => 1999, 'currency' => 'USD'], 'humble' => false],\n        'deliverable' => [\n            'types' => ['MANUAL'],\n            'data' => ['comment' => 'Your kit will be delivered shortly.'],\n        ],\n        'minimum_purchase_quantity' => 1,\n        'maximum_purchase_quantity' => 10,\n        'payment_methods' => ['PAYPAL'],\n    ],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "published",
+    "summary": "Create and publish an add-on with a variant",
+    "mediaType": "application/json",
+    "request": {
+      "title": "Priority support",
+      "description": "Personal help with your design kit",
+      "visibility": "PUBLIC",
+      "is_draft": false,
+      "parent_product_ids": [
+        120
+      ],
+      "variant": {
+        "title": "Standard",
+        "description": "The complete design kit",
+        "pricing": {
+          "price": {
+            "price": 1999,
+            "currency": "USD"
+          },
+          "humble": false
+        },
+        "deliverable": {
+          "types": [
+            "MANUAL"
+          ],
+          "data": {
+            "comment": "Your kit will be delivered shortly."
+          }
+        },
+        "minimum_purchase_quantity": 1,
+        "maximum_purchase_quantity": 10,
+        "payment_methods": [
+          "PAYPAL"
+        ]
+      }
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "exchangeOAuthToken",
+    "mountTarget": "Oauth",
+    "methodName": "exchange_oauth_token",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: \"\",\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: \"\",\n);\n\n$result = $client->oauth()->exchangeOAuthToken(\n    body: [\n        'client_id' => '01992a65-e064-71ba-b38f-902b7966a6be',\n        'grant_type' => 'authorization_code',\n        'code' => 'AUTHORIZATION_CODE',\n        'redirect_uri' => 'http://127.0.0.1:49152/callback',\n        'code_verifier' => 'dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk',\n    ],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "authorizationCode",
+    "summary": "authorizationCode",
+    "mediaType": "application/x-www-form-urlencoded",
+    "request": {
+      "client_id": "01992a65-e064-71ba-b38f-902b7966a6be",
+      "grant_type": "authorization_code",
+      "code": "AUTHORIZATION_CODE",
+      "redirect_uri": "http://127.0.0.1:49152/callback",
+      "code_verifier": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+    }
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "exchangeOAuthToken",
+    "mountTarget": "Oauth",
+    "methodName": "exchange_oauth_token",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: \"\",\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: \"\",\n);\n\n$result = $client->oauth()->exchangeOAuthToken(\n    body: [\n        'client_id' => '01992a65-e064-71ba-b38f-902b7966a6be',\n        'grant_type' => 'refresh_token',\n        'refresh_token' => 'REFRESH_TOKEN',\n    ],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n",
+    "exampleId": "refresh",
+    "summary": "refresh",
+    "mediaType": "application/x-www-form-urlencoded",
+    "request": {
+      "client_id": "01992a65-e064-71ba-b38f-902b7966a6be",
+      "grant_type": "refresh_token",
+      "refresh_token": "REFRESH_TOKEN"
+    }
+  }
+]

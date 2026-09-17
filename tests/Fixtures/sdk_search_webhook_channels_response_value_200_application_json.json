@@ -1,0 +1,59 @@
+{
+  "data": [
+    {
+      "id": "0f33d01f-f9f8-45e8-80c8-7734d057196d",
+      "name": "Test",
+      "url": "https://example.com/sellapp/webhooks",
+      "allowed_notifications": [
+        "booking.cancelled",
+        "booking.rescheduled",
+        "cash_app.payment_requires_attention",
+        "charge.completed",
+        "charge.created",
+        "charge.disputed",
+        "charge.partial_paid",
+        "charge.review",
+        "feedback.created",
+        "order.completed",
+        "order.created",
+        "order.disputed",
+        "order.manual_payment_completed",
+        "order.paid",
+        "order.partial_paid",
+        "product.created",
+        "product.trashed",
+        "product.updated",
+        "subscription.cancelled",
+        "subscription.created",
+        "subscription.renewed",
+        "ticket_message.created",
+        "variant.created",
+        "variant.sold_out",
+        "variant.updated"
+      ],
+      "signing_secret_configured": true
+    }
+  ],
+  "links": {
+    "first": "https://sell.app/api/v1/blacklists?page=1",
+    "last": "https://sell.app/api/v1/blacklists?page=4",
+    "prev": "test_prev",
+    "next": "test_next"
+  },
+  "meta": {
+    "current_page": 1,
+    "from": 1,
+    "last_page": 4,
+    "links": [
+      {
+        "url": "https://example.com",
+        "label": "test_label",
+        "active": true
+      }
+    ],
+    "path": "https://sell.app/api/v1/blacklists",
+    "per_page": 15,
+    "to": 1,
+    "total": 57
+  }
+}

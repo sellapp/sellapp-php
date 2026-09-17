@@ -1,0 +1,45 @@
+{
+  "name": "sellapp/sellapp",
+  "description": "SellApp PHP SDK",
+  "type": "library",
+  "license": "MIT",
+  "homepage": "https://sell.app/docs/api",
+  "support": {
+    "source": "https://github.com/sellapp/sellapp-php",
+    "issues": "https://github.com/sellapp/sellapp-php/issues"
+  },
+  "archive": {
+    "exclude": [
+      "/tests",
+      "/examples",
+      "/vendor",
+      "/.github",
+      "/phpunit.xml",
+      "/.oagen-manifest.json",
+      "/generation-manifest.json",
+      "/.validation-package",
+      "/.validation-release",
+      "/.sellapp-sdk-sync.json"
+    ]
+  },
+  "require": {
+    "php": "^8.2",
+    "guzzlehttp/guzzle": "^7.9"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "SellApp\\": "lib/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  }
+}
