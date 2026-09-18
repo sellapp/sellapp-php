@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "language": "php",
   "repository": "sellapp/sellapp-php",
-  "sourceSha": "8d8876b1921e931e18baf6f31ed48f79c5282f73",
+  "sourceSha": "e4051383c6618a31c201c050d55d7bdacd157f0c",
   "specSha256": "02043ebfc36589e78743f00a0f4a2f3ac9ac14914b9cf2910f04fc34ad2d0924",
   "runId": "0",
   "runAttempt": "1",
-  "treeDigest": "cfa0815379f4aa934b3ed5ce4dc73dd9f4d1a64c1bfda6775e057afa93a2f5e7",
-  "contentDigest": "58dc86c4e0eedfb96daad00b0866fb0ebe0cce926d2bb8927a5f35993546c746",
+  "treeDigest": "16b7203cbfa006153a492c55d60924c52a3296a2e2dc4c77e4ca7931828d88c1",
+  "contentDigest": "8f525e82a057f85ce4498a4155b53c72d07ad0bcfd43446abdfc6da84cd53dd2",
   "files": [
     {
       "path": ".github/scripts/native-ci.mjs",
@@ -52,7 +52,7 @@
     {
       "path": "README.md",
       "mode": "100644",
-      "sha256": "4b6cdb527d9437d760b56ca9290b583d6142d795f97cbb2111ab0c7e87b4ce0e"
+      "sha256": "ced52f2393f8f829d0452d317a1a76fa49e1da4f0778b8430a14bd75f8245106"
     },
     {
       "path": "composer.json",
@@ -492,7 +492,7 @@
     {
       "path": "generation-manifest.json",
       "mode": "100644",
-      "sha256": "93c26621c9bafcb36667dd6e34083332f6aa3e5a10b870a8c8c795d8baa0e9f7"
+      "sha256": "64d652ff1875700caf504310efa2c6210f2ad09e36485dd23c683ba7c9e366e8"
     },
     {
       "path": "lib/Client.php",
@@ -532,7 +532,7 @@
     {
       "path": "lib/HttpClient.php",
       "mode": "100644",
-      "sha256": "8cdc0c02f85ecc4b87eaec184bdf58ee0d6be191e1e613b24a50ffb29be6b2ad"
+      "sha256": "ea36494dfaa785a8587333a1b7de19bb637388f7d44c7531567db813dab616b6"
     },
     {
       "path": "lib/PaginatedResponse.php",
