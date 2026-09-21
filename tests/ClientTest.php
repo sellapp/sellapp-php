@@ -16,4 +16,20 @@ class ClientTest extends TestCase
         $client = new Client(apiKey: 'test-key', store: 'test-store');
         $this->assertNotNull($client);
     }
+
+    public function testEveryLibraryFileParses(): void
+    {
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . '/../lib'));
+        $count = 0;
+        foreach ($files as $file) {
+            if (!$file->isFile() || $file->getExtension() !== 'php') continue;
+            try {
+                token_get_all(file_get_contents($file->getPathname()), TOKEN_PARSE);
+            } catch (\ParseError $error) {
+                $this->fail($file->getPathname() . ': ' . $error->getMessage());
+            }
+            $count++;
+        }
+        $this->assertGreaterThan(0, $count);
+    }
 }

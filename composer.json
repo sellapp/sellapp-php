@@ -1,6 +1,12 @@
 {
   "name": "sellapp/sellapp",
-  "description": "SellApp PHP SDK",
+  "description": "Official PHP SDK for SellApp products, orders, customers, and subscriptions.",
+  "keywords": [
+    "sellapp",
+    "api",
+    "sdk",
+    "ecommerce"
+  ],
   "type": "library",
   "license": "MIT",
   "homepage": "https://sell.app/docs/api",

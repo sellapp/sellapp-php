@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "language": "php",
   "repository": "sellapp/sellapp-php",
-  "sourceSha": "e4051383c6618a31c201c050d55d7bdacd157f0c",
+  "sourceSha": "3ce155b67099f86f044f346aa04aada399689d76",
   "specSha256": "02043ebfc36589e78743f00a0f4a2f3ac9ac14914b9cf2910f04fc34ad2d0924",
   "runId": "0",
   "runAttempt": "1",
-  "treeDigest": "16b7203cbfa006153a492c55d60924c52a3296a2e2dc4c77e4ca7931828d88c1",
-  "contentDigest": "8f525e82a057f85ce4498a4155b53c72d07ad0bcfd43446abdfc6da84cd53dd2",
+  "treeDigest": "63cdbfe26c6fc57545916215766c10c442f7fde0f098bce29c9e0000bf439028",
+  "contentDigest": "c7f545683ed23e6bc22b6eea0dbadd4f6ca4aa05f298680a25e2a8e61351e2fa",
   "files": [
     {
       "path": ".github/scripts/native-ci.mjs",
@@ -52,12 +52,12 @@
     {
       "path": "README.md",
       "mode": "100644",
-      "sha256": "ced52f2393f8f829d0452d317a1a76fa49e1da4f0778b8430a14bd75f8245106"
+      "sha256": "400d30e15c3b7d621472f6dc1ff3991735b33e18324fc8c818595de8592b3212"
     },
     {
       "path": "composer.json",
       "mode": "100644",
-      "sha256": "1fa01a2006573174818c2f094c4b446e150355592eb9409155417daf3b18ebb8"
+      "sha256": "fdd033574a6273145daee92c9e2c419d1b0948b7595e3da7d2ee66569829bfb1"
     },
     {
       "path": "docs/methods.md",
@@ -492,7 +492,7 @@
     {
       "path": "generation-manifest.json",
       "mode": "100644",
-      "sha256": "64d652ff1875700caf504310efa2c6210f2ad09e36485dd23c683ba7c9e366e8"
+      "sha256": "60d6caa8546ce455d6bb1f2c17c40f73c65ef95e92c5ba7d3c31275409423a7a"
     },
     {
       "path": "lib/Client.php",
@@ -10722,7 +10722,7 @@
     {
       "path": "lib/Resource/SearchCustomersRequestApplicationJsonPropertyFiltersItemOperator.php",
       "mode": "100644",
-      "sha256": "4b2c6d3361765d983f51d8f7c1d8bcd7cca0375ff29dc80fea62cd26db78bcda"
+      "sha256": "df8e21fd58ef17b288c47bed455dd26fe004e3e49d1aa54c1e785dfa0c64fcf9"
     },
     {
       "path": "lib/Resource/SearchCustomersRequestApplicationJsonPropertyIncludesItem.php",
@@ -13907,7 +13907,7 @@
     {
       "path": "tests/ClientTest.php",
       "mode": "100644",
-      "sha256": "427cc5e57682bd4107b1f825168659481acccfdc50d0362bb529fca4d9548c21"
+      "sha256": "86c5553f8c01e97ddc4d6236f499d20352cf0505512ad578dd8feeb43151813b"
     },
     {
       "path": "tests/ConnectedWorkflowTest.php",

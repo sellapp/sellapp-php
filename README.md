@@ -9,32 +9,16 @@ your checkout can wait until the connection works.
 Already know the basics? Jump to [configuration](https://github.com/sellapp/sellapp-php/blob/main/docs/usage.md#client-configuration) or the
 [method index](https://github.com/sellapp/sellapp-php/blob/main/docs/methods.md).
 
-## Availability and installation
+## Install
 
-**Start from a checkout for now.** This is pre-release source for the planned
-**0.1.1** release; registry publication and namespace ownership are unconfirmed.
-You'll need access to the private
-[sellapp-php](https://github.com/sellapp/sellapp-php) repository.
+The package requires **PHP 8.2 or newer within PHP 8** and **Composer 2**.
+Composer installs Guzzle and checks the required PHP extensions.
 
-The package requires **PHP 8.2 or newer within PHP 8** and Composer. Native
-validation runs on PHP 8.3; the declared 8.2 minimum has not been separately tested.
-Composer installs Guzzle and checks its platform requirements.
-
-Open a terminal in your SDK checkout and install its dependencies:
+From your application's directory, install [sellapp/sellapp from Packagist](https://packagist.org/packages/sellapp/sellapp):
 
 ```sh
-composer install
+composer require 'sellapp/sellapp:^0.1.1'
 ```
-
-Already have a PHP application? Run these commands in that application's directory.
-They tell Composer where to find your local SDK; replace the placeholder path
-with your checkout's actual location:
-
-```sh
-composer config repositories.sellapp path /path/to/sellapp-php
-composer require 'sellapp/sellapp:@dev'
-```
-
 
 ## Your first request
 
@@ -47,25 +31,9 @@ You'll need two things:
 The [authentication guide](https://sell.app/docs/api/authentication) covers key setup
 and access rules. Keep the key on your server and out of Git.
 
-Run the following in a Bash-compatible terminal from the SDK checkout, replacing
-the key and store. The `export` lines set environment variables: values your
-program reads without putting secrets in its source code.
-
-```sh
-export SELLAPP_API_KEY='replace-with-your-key'
-export SELLAPP_STORE='launch-lab'
-export SELLAPP_API_BASE_URL='https://sell.app/api'
-php examples/first-request.php
-```
-
-The endpoint above reads your real store. `SELLAPP_API_BASE_URL` is an example
-variable passed explicitly to the client, not a built-in SDK setting. The SDK uses
-`SELLAPP_STORE` for the store slug, as in the API guides.
-
-Here's the complete [examples/first-request.php](https://github.com/sellapp/sellapp-php/blob/main/examples/first-request.php) file
-you just ran. It loads Composer's autoloader, creates the client, and asks for
-one product. If you copy it into your app, keep it in an `examples/` directory
-beside `vendor/` so the autoloader path still works.
+Create an `examples/` directory beside your application's `vendor/` directory.
+Save this complete program as `examples/first-request.php`. It loads Composer's
+autoloader, creates the client, and asks for one product:
 
 ```php
 <?php
@@ -90,6 +58,21 @@ if ($page->data === []) {
     echo 'No products yet. The request worked!' . PHP_EOL;
 }
 ```
+
+Then run these commands in a Bash-compatible terminal from your application's
+root directory, replacing the key and store. The `export` lines set environment
+variables: values your program reads without putting secrets in its source code.
+
+```sh
+export SELLAPP_API_KEY='replace-with-your-key'
+export SELLAPP_STORE='launch-lab'
+export SELLAPP_API_BASE_URL='https://sell.app/api'
+php examples/first-request.php
+```
+
+The endpoint above reads your real store. `SELLAPP_API_BASE_URL` is an example
+variable passed explicitly to the client, not a built-in SDK setting. The SDK uses
+`SELLAPP_STORE` for the store slug, as in the API guides.
 
 You'll see a product ID and title from your own store. No products yet? The
 success message means the connection worked; there's simply nothing to list.

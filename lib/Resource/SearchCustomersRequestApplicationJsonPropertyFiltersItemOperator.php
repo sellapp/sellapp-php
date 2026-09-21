@@ -8,13 +8,13 @@ namespace SellApp\Resource;
 
 enum SearchCustomersRequestApplicationJsonPropertyFiltersItemOperator: string
 {
-    case  = '=';
-    case 2 = '!=';
-    case 3 = '<>';
-    case 4 = '<';
-    case 5 = '<=';
-    case 6 = '>';
-    case 7 = '>=';
+    case Value = '=';
+    case Value2 = '!=';
+    case Value3 = '<>';
+    case Value4 = '<';
+    case Value5 = '<=';
+    case Value6 = '>';
+    case Value7 = '>=';
     case Like = 'like';
     case NotLike = 'not like';
 }
