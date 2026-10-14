@@ -10,11 +10,13 @@ readonly class SdkUpdateSubscriptionPaymentMethodRequestApplicationJson implemen
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkUpdateSubscriptionPaymentMethodRequestApplicationJson', 'required' => [], 'properties' => ['idempotency_key' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 128]]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkUpdateSubscriptionPaymentMethodRequestApplicationJson', 'required' => [], 'properties' => ['idempotency_key' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 128]], 'return_url' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri', 'maxLength' => 2000]]], 'additionalProperties' => true];
 
     public function __construct(
         /** Optional idempotency key. You may also send this as the Idempotency-Key header. */
         public ?string $idempotencyKey = null,
+        /** Where Stripe returns the customer once its hosted page finishes. Defaults to the store's customer portal page for this subscription. Razorpay subscriptions ignore it. */
+        public ?string $returnUrl = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -26,7 +28,8 @@ readonly class SdkUpdateSubscriptionPaymentMethodRequestApplicationJson implemen
         self::validate($data, 'response');
         return new self(
             idempotencyKey: $data['idempotency_key'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['idempotency_key']),
+            returnUrl: $data['return_url'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['idempotency_key', 'return_url']),
             presentFields: array_keys($data),
         );
     }
@@ -40,6 +43,7 @@ readonly class SdkUpdateSubscriptionPaymentMethodRequestApplicationJson implemen
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'idempotency_key' => $this->idempotencyKey,
+            'return_url' => $this->returnUrl,
         ], [], $this->presentFields));
     }
 }

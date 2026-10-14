@@ -28,6 +28,48 @@ class SubscriptionsTest extends TestCase
         $this->assertTrue($body['cancel_at_period_end']);
     }
 
+    public function testListSubscriptions(): void
+    {
+        $fixture = $this->loadFixture('list_sdk_list_subscriptions_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->subscriptions()->listSubscriptions(limit: 1, page: 1, pagination: true, status: []);
+        $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/subscriptions', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertArrayHasKey('page', $query);
+        $this->assertArrayHasKey('pagination', $query);
+    }
+
+    public function testSearchSubscriptions(): void
+    {
+        $fixture = $this->loadFixture('list_sdk_search_subscriptions_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->subscriptions()->searchSubscriptions(filters: [], sort: [], search: \SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('search_subscriptions_request_application_json_property_search')), includes: [], limit: 1, page: 1, pagination: true);
+        $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/subscriptions/search', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertArrayHasKey('page', $query);
+        $this->assertArrayHasKey('pagination', $query);
+    }
+
+    public function testGetSubscription(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_subscription_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->subscriptions()->getSubscription(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetSubscriptionResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/subscriptions/1', $request->getUri()->getPath());
+    }
+
     public function testGetCapabilities(): void
     {
         $fixture = $this->loadFixture('sdk_get_subscription_capabilities_response_value_200_application_json');
@@ -66,6 +108,19 @@ class SubscriptionsTest extends TestCase
         $this->assertStringEndsWith('v2/subscriptions/1/actions/cancel-immediately', $request->getUri()->getPath());
     }
 
+    public function testKeep(): void
+    {
+        $fixture = $this->loadFixture('sdk_keep_subscription_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->subscriptions()->keep(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkKeepSubscriptionResponseValue200ApplicationJson::class, $result);
+        $this->assertSame($fixture['message'], $result->message);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/subscriptions/1/actions/keep', $request->getUri()->getPath());
+    }
+
     public function testPause(): void
     {
         $fixture = $this->loadFixture('sdk_pause_subscription_response_value_200_application_json');
@@ -94,8 +149,12 @@ class SubscriptionsTest extends TestCase
 
     public function testUpdatePaymentMethod(): void
     {
-        $client = $this->createMockClient([['status' => 200, 'body' => []]]);
-        $client->subscriptions()->updatePaymentMethod(1);
+        $fixture = $this->loadFixture('sdk_update_subscription_payment_method_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->subscriptions()->updatePaymentMethod(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkUpdateSubscriptionPaymentMethodResponseValue200ApplicationJson::class, $result);
+        $this->assertSame($fixture['message'], $result->message);
+        $this->assertIsArray($result->toArray());
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/subscriptions/1/actions/update-payment-method', $request->getUri()->getPath());
@@ -103,20 +162,33 @@ class SubscriptionsTest extends TestCase
 
     public function testPreviewPlanChange(): void
     {
-        $client = $this->createMockClient([['status' => 200, 'body' => []]]);
-        $client->subscriptions()->previewPlanChange(1, targetVariantId: 1);
+        $fixture = $this->loadFixture('sdk_preview_subscription_plan_change_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->subscriptions()->previewPlanChange(1, targetVariantId: 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkPreviewSubscriptionPlanChangeResponseValue200ApplicationJson::class, $result);
+        $this->assertSame($fixture['message'], $result->message);
+        $this->assertIsArray($result->toArray());
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/subscriptions/1/actions/change-plan/preview', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame(1, $body['target_variant_id']);
     }
 
     public function testConfirmPlanChange(): void
     {
-        $client = $this->createMockClient([['status' => 200, 'body' => []]]);
-        $client->subscriptions()->confirmPlanChange(1, targetVariantId: 1, previewToken: 'test_value');
+        $fixture = $this->loadFixture('sdk_confirm_subscription_plan_change_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->subscriptions()->confirmPlanChange(1, targetVariantId: 1, previewToken: 'test_value');
+        $this->assertInstanceOf(\SellApp\Resource\SdkConfirmSubscriptionPlanChangeResponseValue200ApplicationJson::class, $result);
+        $this->assertSame($fixture['message'], $result->message);
+        $this->assertIsArray($result->toArray());
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/subscriptions/1/actions/change-plan/confirm', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame(1, $body['target_variant_id']);
+        $this->assertSame('test_value', $body['preview_token']);
     }
 
     public function testPreviewRenewalDate(): void
@@ -149,43 +221,9 @@ class SubscriptionsTest extends TestCase
         $this->assertSame('2023-01-01T00:00:00.000+00:00', $body['renewal_date']);
     }
 
-    public function testListSubscriptions(): void
-    {
-        $fixture = $this->loadFixture('list_list_subscriptions_response_value_200_application_json_property_data_item');
-        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->subscriptions()->listSubscriptions();
-        $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
-        $request = $this->getLastRequest();
-        $this->assertSame('GET', $request->getMethod());
-        $this->assertStringEndsWith('v2/subscriptions', $request->getUri()->getPath());
-    }
-
-    public function testSearchSubscriptions(): void
-    {
-        $fixture = $this->loadFixture('list_search_subscriptions_response_value_200_application_json_property_data_item');
-        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->subscriptions()->searchSubscriptions(search: 'test_value', status: 'test_value');
-        $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
-        $request = $this->getLastRequest();
-        $this->assertSame('POST', $request->getMethod());
-        $this->assertStringEndsWith('v2/subscriptions/search', $request->getUri()->getPath());
-    }
-
-    public function testGetSubscription(): void
-    {
-        $fixture = $this->loadFixture('sdk_get_subscription_response_value_200_application_json');
-        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->subscriptions()->getSubscription(1);
-        $this->assertInstanceOf(\SellApp\Resource\SdkGetSubscriptionResponseValue200ApplicationJson::class, $result);
-        $this->assertIsArray($result->toArray());
-        $request = $this->getLastRequest();
-        $this->assertSame('GET', $request->getMethod());
-        $this->assertStringEndsWith('v2/subscriptions/1', $request->getUri()->getPath());
-    }
-
     public function testPaginationBoundary(): void
     {
-        $fixture = $this->loadFixture('list_list_subscriptions_response_value_200_application_json_property_data_item');
+        $fixture = $this->loadFixture('list_sdk_list_subscriptions_response_value_200_application_json');
         // Ensure cursors are null (first/last page boundary)
         $fixture['list_metadata']['before'] = null;
         $fixture['list_metadata']['after'] = null;

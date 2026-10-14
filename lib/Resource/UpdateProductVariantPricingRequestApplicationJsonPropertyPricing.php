@@ -10,7 +10,7 @@ readonly class UpdateProductVariantPricingRequestApplicationJsonPropertyPricing 
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'UpdateProductVariantPricingRequestApplicationJsonPropertyPricing', 'required' => [], 'properties' => ['type' => ['kind' => 'enum', 'values' => ['SINGLE_PAYMENT', 'SUBSCRIPTION']], 'price' => ['kind' => 'model', 'class' => 'UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyPrice'], 'compare_at_price' => ['kind' => 'nullable', 'inner' => ['kind' => 'model', 'class' => 'UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyCompareAtPrice']], 'humble' => ['kind' => 'primitive', 'type' => 'boolean'], 'frequency' => ['kind' => 'model', 'class' => 'UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyFrequency']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'UpdateProductVariantPricingRequestApplicationJsonPropertyPricing', 'required' => [], 'properties' => ['type' => ['kind' => 'enum', 'values' => ['SINGLE_PAYMENT', 'SUBSCRIPTION']], 'price' => ['kind' => 'model', 'class' => 'UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyPrice'], 'compare_at_price' => ['kind' => 'nullable', 'inner' => ['kind' => 'model', 'class' => 'UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyCompareAtPrice']], 'humble' => ['kind' => 'primitive', 'type' => 'boolean'], 'frequency' => ['kind' => 'model', 'class' => 'UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyFrequency'], 'trial' => ['kind' => 'nullable', 'inner' => ['kind' => 'model', 'class' => 'UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyTrial']]], 'additionalProperties' => true];
 
     public function __construct(
         public UpdateProductVariantPricingRequestApplicationJsonPropertyPricingType|string|null $type = null,
@@ -18,6 +18,7 @@ readonly class UpdateProductVariantPricingRequestApplicationJsonPropertyPricing 
         public ?UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyCompareAtPrice $compareAtPrice = null,
         public ?bool $humble = null,
         public ?UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyFrequency $frequency = null,
+        public ?UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyTrial $trial = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -33,7 +34,8 @@ readonly class UpdateProductVariantPricingRequestApplicationJsonPropertyPricing 
             compareAtPrice: isset($data['compare_at_price']) ? UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyCompareAtPrice::fromArray($data['compare_at_price']) : null,
             humble: $data['humble'] ?? null,
             frequency: isset($data['frequency']) ? UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyFrequency::fromArray($data['frequency']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['type', 'price', 'compare_at_price', 'humble', 'frequency']),
+            trial: isset($data['trial']) ? UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyTrial::fromArray($data['trial']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['type', 'price', 'compare_at_price', 'humble', 'frequency', 'trial']),
             presentFields: array_keys($data),
         );
     }
@@ -51,6 +53,7 @@ readonly class UpdateProductVariantPricingRequestApplicationJsonPropertyPricing 
             'compare_at_price' => $this->compareAtPrice?->toArray(),
             'humble' => $this->humble,
             'frequency' => $this->frequency?->toArray(),
+            'trial' => $this->trial?->toArray(),
         ], [], $this->presentFields));
     }
 }

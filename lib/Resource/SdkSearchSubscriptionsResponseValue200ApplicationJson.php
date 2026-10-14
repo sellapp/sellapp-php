@@ -10,13 +10,9 @@ readonly class SdkSearchSubscriptionsResponseValue200ApplicationJson implements 
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkSearchSubscriptionsResponseValue200ApplicationJson', 'required' => ['data', 'links', 'meta'], 'properties' => ['data' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsResponseValue200ApplicationJsonPropertyDataItem']], 'links' => ['kind' => 'model', 'class' => 'PaginationLinks'], 'meta' => ['kind' => 'model', 'class' => 'PaginationMeta']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkSearchSubscriptionsResponseValue200ApplicationJson', 'required' => [], 'properties' => [], 'additionalProperties' => true];
 
     public function __construct(
-        /** @var array<\SellApp\Resource\SearchSubscriptionsResponseValue200ApplicationJsonPropertyDataItem> */
-        public array $data,
-        public PaginationLinks $links,
-        public PaginationMeta $meta,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -27,10 +23,7 @@ readonly class SdkSearchSubscriptionsResponseValue200ApplicationJson implements 
     {
         self::validate($data, 'response');
         return new self(
-            data: array_map(fn ($item) => SearchSubscriptionsResponseValue200ApplicationJsonPropertyDataItem::fromArray($item), $data['data']),
-            links: PaginationLinks::fromArray($data['links']),
-            meta: PaginationMeta::fromArray($data['meta']),
-            additionalProperties: SchemaValidator::unknownFields($data, ['data', 'links', 'meta']),
+            additionalProperties: SchemaValidator::unknownFields($data, []),
             presentFields: array_keys($data),
         );
     }
@@ -43,9 +36,6 @@ readonly class SdkSearchSubscriptionsResponseValue200ApplicationJson implements 
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'data' => array_map(fn ($item) => $item->toArray(), $this->data),
-            'links' => $this->links->toArray(),
-            'meta' => $this->meta->toArray(),
-        ], ['data', 'links', 'meta'], $this->presentFields));
+        ], [], $this->presentFields));
     }
 }

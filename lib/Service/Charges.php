@@ -71,7 +71,7 @@ class Charges
      * @param bool|null $useAllPaymentMethods
      * @param \SellApp\Resource\CreateChargeRequestApplicationJsonPropertyDeliverable|null $deliverable
      * @param \SellApp\Resource\CreateChargeRequestApplicationJsonPropertyMetadata|null $metadata
-     * @param string|null $couponCode
+     * @param string|null $couponCode Optional coupon code. A charge takes a store-wide coupon for one-time purchases only: a coupon whose `applies_to` is `subscriptions` returns `422` with `Coupon code {code} only applies to subscriptions.`
      * @return \SellApp\Resource\SdkCreateChargeResponseValue201ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */

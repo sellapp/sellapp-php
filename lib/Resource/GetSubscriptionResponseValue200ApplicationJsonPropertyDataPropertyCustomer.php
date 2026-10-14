@@ -10,7 +10,7 @@ readonly class GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropert
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer', 'required' => ['id', 'email', 'external_id', 'name', 'locale', 'metadata'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'email' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'email'], 'external_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'name' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'locale' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'pattern' => '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$']], 'metadata' => ['kind' => 'model', 'class' => 'GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomerPropertyMetadata']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer', 'required' => ['id', 'email', 'external_id', 'name', 'locale', 'metadata'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'email' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'email'], 'external_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'name' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'locale' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'pattern' => '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$']], 'metadata' => ['kind' => 'map', 'values' => ['kind' => 'model', 'class' => 'ScalarMetadataValue'], 'maxProperties' => 50]], 'additionalProperties' => true];
 
     public function __construct(
         public int $id,
@@ -18,7 +18,8 @@ readonly class GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropert
         public ?string $externalId,
         public ?string $name,
         public ?string $locale,
-        public GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomerPropertyMetadata $metadata,
+        /** @var array<string, \SellApp\Resource\ScalarMetadataValue> */
+        public array $metadata,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -34,7 +35,7 @@ readonly class GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropert
             externalId: $data['external_id'] ?? null,
             name: $data['name'] ?? null,
             locale: $data['locale'] ?? null,
-            metadata: GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomerPropertyMetadata::fromArray($data['metadata']),
+            metadata: $data['metadata'],
             additionalProperties: SchemaValidator::unknownFields($data, ['id', 'email', 'external_id', 'name', 'locale', 'metadata']),
             presentFields: array_keys($data),
         );
@@ -53,7 +54,7 @@ readonly class GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropert
             'external_id' => $this->externalId,
             'name' => $this->name,
             'locale' => $this->locale,
-            'metadata' => $this->metadata->toArray(),
+            'metadata' => $this->metadata,
         ], ['id', 'email', 'external_id', 'name', 'locale', 'metadata'], $this->presentFields));
     }
 }

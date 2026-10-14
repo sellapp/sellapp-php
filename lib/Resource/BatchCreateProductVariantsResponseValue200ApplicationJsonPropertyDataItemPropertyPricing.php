@@ -10,13 +10,14 @@ readonly class BatchCreateProductVariantsResponseValue200ApplicationJsonProperty
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricing', 'required' => ['humble', 'frequency', 'type', 'price'], 'properties' => ['humble' => ['kind' => 'primitive', 'type' => 'boolean'], 'frequency' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyFrequency'], 'type' => ['kind' => 'primitive', 'type' => 'string'], 'price' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyPrice']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricing', 'required' => ['humble', 'frequency', 'type', 'price'], 'properties' => ['humble' => ['kind' => 'primitive', 'type' => 'boolean'], 'frequency' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyFrequency'], 'type' => ['kind' => 'primitive', 'type' => 'string'], 'price' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyPrice'], 'trial' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyTrial']], 'additionalProperties' => true];
 
     public function __construct(
         public bool $humble,
         public BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyFrequency $frequency,
         public string $type,
         public BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyPrice $price,
+        public ?BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyTrial $trial = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -31,7 +32,8 @@ readonly class BatchCreateProductVariantsResponseValue200ApplicationJsonProperty
             frequency: BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyFrequency::fromArray($data['frequency']),
             type: $data['type'],
             price: BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyPrice::fromArray($data['price']),
-            additionalProperties: SchemaValidator::unknownFields($data, ['humble', 'frequency', 'type', 'price']),
+            trial: isset($data['trial']) ? BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyTrial::fromArray($data['trial']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['humble', 'frequency', 'type', 'price', 'trial']),
             presentFields: array_keys($data),
         );
     }
@@ -48,6 +50,7 @@ readonly class BatchCreateProductVariantsResponseValue200ApplicationJsonProperty
             'frequency' => $this->frequency->toArray(),
             'type' => $this->type,
             'price' => $this->price->toArray(),
+            'trial' => $this->trial?->toArray(),
         ], ['humble', 'frequency', 'type', 'price'], $this->presentFields));
     }
 }

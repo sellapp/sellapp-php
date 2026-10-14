@@ -2259,7 +2259,7 @@
     "operationId": "createProductVariant",
     "resource": "productVariants",
     "method": "create",
-    "nativeSignature": "public function create(\n        int $product,\n        string $title,\n        string $description,\n        \\SellApp\\Resource\\CreateProductVariantRequestApplicationJsonPropertyDeliverable $deliverable,\n        \\SellApp\\Resource\\CreateProductVariantRequestApplicationJsonPropertyPricing $pricing,\n        array $paymentMethods,\n        ?int $minimumPurchaseQuantity = null,\n        ?int $maximumPurchaseQuantity = null,\n        ?array $bulkDiscount = null,\n        ?\\SellApp\\Resource\\CreateProductVariantRequestApplicationJsonPropertyOtherSettings $otherSettings = null,\n        ?\\DateTimeImmutable $expectedUpdatedAt = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCreateProductVariantResponseValue201ApplicationJson",
+    "nativeSignature": "public function create(\n        int $product,\n        string $title,\n        string $description,\n        \\SellApp\\Resource\\CreateProductVariantRequestApplicationJsonPropertyDeliverable $deliverable,\n        \\SellApp\\Resource\\CreateProductVariantRequestApplicationJsonPropertyPricing $pricing,\n        array $paymentMethods,\n        ?int $minimumPurchaseQuantity = null,\n        ?int $maximumPurchaseQuantity = null,\n        ?array $bulkDiscount = null,\n        ?array $customPaymentMethodIds = null,\n        ?\\SellApp\\Resource\\CreateProductVariantRequestApplicationJsonPropertyOtherSettings $otherSettings = null,\n        ?\\DateTimeImmutable $expectedUpdatedAt = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCreateProductVariantResponseValue201ApplicationJson",
     "signatures": [
       {
         "name": "create",
@@ -2314,6 +2314,12 @@
           },
           {
             "name": "bulkDiscount",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "customPaymentMethodIds",
             "type": "?array",
             "optional": true,
             "passingStyle": "named"
@@ -2393,7 +2399,7 @@
     "operationId": "replaceProductVariantWithPut",
     "resource": "productVariants",
     "method": "replace",
-    "nativeSignature": "public function replace(\n        int $product,\n        int $variant,\n        ?string $title = null,\n        ?string $description = null,\n        ?\\SellApp\\Resource\\ReplaceProductVariantWithPutRequestApplicationJsonPropertyDeliverable $deliverable = null,\n        ?\\SellApp\\Resource\\ReplaceProductVariantWithPutRequestApplicationJsonPropertyPricing $pricing = null,\n        ?int $minimumPurchaseQuantity = null,\n        ?int $maximumPurchaseQuantity = null,\n        ?array $bulkDiscount = null,\n        ?array $paymentMethods = null,\n        ?\\SellApp\\Resource\\ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings $otherSettings = null,\n        ?\\DateTimeImmutable $expectedUpdatedAt = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkReplaceProductVariantWithPutResponseValue200ApplicationJson",
+    "nativeSignature": "public function replace(\n        int $product,\n        int $variant,\n        ?string $title = null,\n        ?string $description = null,\n        ?\\SellApp\\Resource\\ReplaceProductVariantWithPutRequestApplicationJsonPropertyDeliverable $deliverable = null,\n        ?\\SellApp\\Resource\\ReplaceProductVariantWithPutRequestApplicationJsonPropertyPricing $pricing = null,\n        ?int $minimumPurchaseQuantity = null,\n        ?int $maximumPurchaseQuantity = null,\n        ?array $bulkDiscount = null,\n        ?array $paymentMethods = null,\n        ?array $customPaymentMethodIds = null,\n        ?\\SellApp\\Resource\\ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings $otherSettings = null,\n        ?\\DateTimeImmutable $expectedUpdatedAt = null,\n        ?int $stock = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkReplaceProductVariantWithPutResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "replace",
@@ -2459,6 +2465,12 @@
             "passingStyle": "named"
           },
           {
+            "name": "customPaymentMethodIds",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
             "name": "otherSettings",
             "type": "?\\SellApp\\Resource\\ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings",
             "optional": true,
@@ -2467,6 +2479,12 @@
           {
             "name": "expectedUpdatedAt",
             "type": "?\\DateTimeImmutable",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "stock",
+            "type": "?int",
             "optional": true,
             "passingStyle": "named"
           },
@@ -2487,7 +2505,7 @@
     "operationId": "updateProductVariant",
     "resource": "productVariants",
     "method": "update",
-    "nativeSignature": "public function update(\n        int $product,\n        int $variant,\n        ?string $title = null,\n        ?string $description = null,\n        ?\\SellApp\\Resource\\UpdateProductVariantRequestApplicationJsonPropertyDeliverable $deliverable = null,\n        ?\\SellApp\\Resource\\UpdateProductVariantRequestApplicationJsonPropertyPricing $pricing = null,\n        ?int $minimumPurchaseQuantity = null,\n        ?int $maximumPurchaseQuantity = null,\n        ?array $bulkDiscount = null,\n        ?array $paymentMethods = null,\n        ?\\SellApp\\Resource\\UpdateProductVariantRequestApplicationJsonPropertyOtherSettings $otherSettings = null,\n        ?\\DateTimeImmutable $expectedUpdatedAt = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkUpdateProductVariantResponseValue200ApplicationJson",
+    "nativeSignature": "public function update(\n        int $product,\n        int $variant,\n        ?string $title = null,\n        ?string $description = null,\n        ?\\SellApp\\Resource\\UpdateProductVariantRequestApplicationJsonPropertyDeliverable $deliverable = null,\n        ?\\SellApp\\Resource\\UpdateProductVariantRequestApplicationJsonPropertyPricing $pricing = null,\n        ?int $minimumPurchaseQuantity = null,\n        ?int $maximumPurchaseQuantity = null,\n        ?array $bulkDiscount = null,\n        ?array $paymentMethods = null,\n        ?array $customPaymentMethodIds = null,\n        ?\\SellApp\\Resource\\UpdateProductVariantRequestApplicationJsonPropertyOtherSettings $otherSettings = null,\n        ?\\DateTimeImmutable $expectedUpdatedAt = null,\n        ?int $stock = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkUpdateProductVariantResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "update",
@@ -2553,6 +2571,12 @@
             "passingStyle": "named"
           },
           {
+            "name": "customPaymentMethodIds",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
             "name": "otherSettings",
             "type": "?\\SellApp\\Resource\\UpdateProductVariantRequestApplicationJsonPropertyOtherSettings",
             "optional": true,
@@ -2561,6 +2585,12 @@
           {
             "name": "expectedUpdatedAt",
             "type": "?\\DateTimeImmutable",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "stock",
+            "type": "?int",
             "optional": true,
             "passingStyle": "named"
           },
@@ -2581,7 +2611,7 @@
     "operationId": "deleteProductVariant",
     "resource": "productVariants",
     "method": "delete",
-    "nativeSignature": "public function delete(\n        int $product,\n        int $variant,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): void",
+    "nativeSignature": "public function delete(\n        int $product,\n        int $variant,\n        ?\\DateTimeImmutable $expectedUpdatedAt = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): void",
     "signatures": [
       {
         "name": "delete",
@@ -2596,6 +2626,12 @@
             "name": "variant",
             "type": "int",
             "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "expectedUpdatedAt",
+            "type": "?\\DateTimeImmutable",
+            "optional": true,
             "passingStyle": "named"
           },
           {
@@ -3096,6 +3132,144 @@
     "sourceFile": "lib/Service/Subscriptions.php"
   },
   {
+    "operationId": "listSubscriptions",
+    "resource": "subscriptions",
+    "method": "listSubscriptions",
+    "nativeSignature": "public function listSubscriptions(\n        ?int $limit = null,\n        ?int $page = null,\n        ?bool $pagination = null,\n        ?array $status = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\PaginatedResponse",
+    "signatures": [
+      {
+        "name": "listSubscriptions",
+        "params": [
+          {
+            "name": "limit",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "page",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "pagination",
+            "type": "?bool",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "status",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "options",
+            "type": "?\\SellApp\\RequestOptions",
+            "optional": true,
+            "passingStyle": "named"
+          }
+        ],
+        "returnType": "\\SellApp\\PaginatedResponse",
+        "async": false
+      }
+    ],
+    "sourceFile": "lib/Service/Subscriptions.php"
+  },
+  {
+    "operationId": "searchSubscriptions",
+    "resource": "subscriptions",
+    "method": "searchSubscriptions",
+    "nativeSignature": "public function searchSubscriptions(\n        ?array $filters = null,\n        ?array $sort = null,\n        ?\\SellApp\\Resource\\SearchSubscriptionsRequestApplicationJsonPropertySearch $search = null,\n        ?array $includes = null,\n        ?int $limit = null,\n        ?int $page = null,\n        ?bool $pagination = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\PaginatedResponse",
+    "signatures": [
+      {
+        "name": "searchSubscriptions",
+        "params": [
+          {
+            "name": "filters",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "sort",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "search",
+            "type": "?\\SellApp\\Resource\\SearchSubscriptionsRequestApplicationJsonPropertySearch",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "includes",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "limit",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "page",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "pagination",
+            "type": "?bool",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "options",
+            "type": "?\\SellApp\\RequestOptions",
+            "optional": true,
+            "passingStyle": "named"
+          }
+        ],
+        "returnType": "\\SellApp\\PaginatedResponse",
+        "async": false
+      }
+    ],
+    "sourceFile": "lib/Service/Subscriptions.php"
+  },
+  {
+    "operationId": "getSubscription",
+    "resource": "subscriptions",
+    "method": "getSubscription",
+    "nativeSignature": "public function getSubscription(\n        int $productSubscription,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkGetSubscriptionResponseValue200ApplicationJson",
+    "signatures": [
+      {
+        "name": "getSubscription",
+        "params": [
+          {
+            "name": "productSubscription",
+            "type": "int",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "options",
+            "type": "?\\SellApp\\RequestOptions",
+            "optional": true,
+            "passingStyle": "named"
+          }
+        ],
+        "returnType": "\\SellApp\\Resource\\SdkGetSubscriptionResponseValue200ApplicationJson",
+        "async": false
+      }
+    ],
+    "sourceFile": "lib/Service/Subscriptions.php"
+  },
+  {
     "operationId": "getSubscriptionCapabilities",
     "resource": "subscriptions",
     "method": "getCapabilities",
@@ -3216,6 +3390,40 @@
     "sourceFile": "lib/Service/Subscriptions.php"
   },
   {
+    "operationId": "keepSubscription",
+    "resource": "subscriptions",
+    "method": "keep",
+    "nativeSignature": "public function keep(\n        int $productSubscription,\n        ?string $idempotencyKey = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkKeepSubscriptionResponseValue200ApplicationJson",
+    "signatures": [
+      {
+        "name": "keep",
+        "params": [
+          {
+            "name": "productSubscription",
+            "type": "int",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "idempotencyKey",
+            "type": "?string",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "options",
+            "type": "?\\SellApp\\RequestOptions",
+            "optional": true,
+            "passingStyle": "named"
+          }
+        ],
+        "returnType": "\\SellApp\\Resource\\SdkKeepSubscriptionResponseValue200ApplicationJson",
+        "async": false
+      }
+    ],
+    "sourceFile": "lib/Service/Subscriptions.php"
+  },
+  {
     "operationId": "pauseSubscription",
     "resource": "subscriptions",
     "method": "pause",
@@ -3299,7 +3507,7 @@
     "operationId": "updateSubscriptionPaymentMethod",
     "resource": "subscriptions",
     "method": "updatePaymentMethod",
-    "nativeSignature": "public function updatePaymentMethod(\n        int $productSubscription,\n        ?string $idempotencyKey = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): mixed",
+    "nativeSignature": "public function updatePaymentMethod(\n        int $productSubscription,\n        ?string $idempotencyKey = null,\n        ?string $returnUrl = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkUpdateSubscriptionPaymentMethodResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "updatePaymentMethod",
@@ -3317,13 +3525,19 @@
             "passingStyle": "named"
           },
           {
+            "name": "returnUrl",
+            "type": "?string",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
             "name": "options",
             "type": "?\\SellApp\\RequestOptions",
             "optional": true,
             "passingStyle": "named"
           }
         ],
-        "returnType": "mixed",
+        "returnType": "\\SellApp\\Resource\\SdkUpdateSubscriptionPaymentMethodResponseValue200ApplicationJson",
         "async": false
       }
     ],
@@ -3333,7 +3547,7 @@
     "operationId": "previewSubscriptionPlanChange",
     "resource": "subscriptions",
     "method": "previewPlanChange",
-    "nativeSignature": "public function previewPlanChange(\n        int $productSubscription,\n        int $targetVariantId,\n        ?string $idempotencyKey = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,\n        ?\\SellApp\\Resource\\PreviewSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): mixed",
+    "nativeSignature": "public function previewPlanChange(\n        int $productSubscription,\n        int $targetVariantId,\n        ?string $idempotencyKey = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,\n        ?\\SellApp\\Resource\\PreviewSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "previewPlanChange",
@@ -3381,7 +3595,7 @@
             "passingStyle": "named"
           }
         ],
-        "returnType": "mixed",
+        "returnType": "\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeResponseValue200ApplicationJson",
         "async": false
       }
     ],
@@ -3391,7 +3605,7 @@
     "operationId": "confirmSubscriptionPlanChange",
     "resource": "subscriptions",
     "method": "confirmPlanChange",
-    "nativeSignature": "public function confirmPlanChange(\n        int $productSubscription,\n        int $targetVariantId,\n        string $previewToken,\n        ?string $idempotencyKey = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,\n        ?\\SellApp\\Resource\\ConfirmSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): mixed",
+    "nativeSignature": "public function confirmPlanChange(\n        int $productSubscription,\n        int $targetVariantId,\n        string $previewToken,\n        ?string $idempotencyKey = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,\n        ?\\SellApp\\Resource\\ConfirmSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkConfirmSubscriptionPlanChangeResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "confirmPlanChange",
@@ -3445,7 +3659,7 @@
             "passingStyle": "named"
           }
         ],
-        "returnType": "mixed",
+        "returnType": "\\SellApp\\Resource\\SdkConfirmSubscriptionPlanChangeResponseValue200ApplicationJson",
         "async": false
       }
     ],
@@ -3562,72 +3776,68 @@
     "sourceFile": "lib/Service/Subscriptions.php"
   },
   {
-    "operationId": "listSubscriptions",
-    "resource": "subscriptions",
-    "method": "listSubscriptions",
-    "nativeSignature": "public function listSubscriptions(\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\PaginatedResponse",
+    "operationId": "listSubscriptionActions",
+    "resource": "subscriptionsActions",
+    "method": "list",
+    "nativeSignature": "public function list(\n        int $productSubscription,\n        ?int $limit = null,\n        ?int $page = null,\n        ?bool $pagination = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\PaginatedResponse",
     "signatures": [
       {
-        "name": "listSubscriptions",
-        "params": [
-          {
-            "name": "options",
-            "type": "?\\SellApp\\RequestOptions",
-            "optional": true,
-            "passingStyle": "named"
-          }
-        ],
-        "returnType": "\\SellApp\\PaginatedResponse",
-        "async": false
-      }
-    ],
-    "sourceFile": "lib/Service/Subscriptions.php"
-  },
-  {
-    "operationId": "searchSubscriptions",
-    "resource": "subscriptions",
-    "method": "searchSubscriptions",
-    "nativeSignature": "public function searchSubscriptions(\n        ?string $search = null,\n        ?string $status = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\PaginatedResponse",
-    "signatures": [
-      {
-        "name": "searchSubscriptions",
-        "params": [
-          {
-            "name": "search",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "status",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "options",
-            "type": "?\\SellApp\\RequestOptions",
-            "optional": true,
-            "passingStyle": "named"
-          }
-        ],
-        "returnType": "\\SellApp\\PaginatedResponse",
-        "async": false
-      }
-    ],
-    "sourceFile": "lib/Service/Subscriptions.php"
-  },
-  {
-    "operationId": "getSubscription",
-    "resource": "subscriptions",
-    "method": "getSubscription",
-    "nativeSignature": "public function getSubscription(\n        int $productSubscription,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkGetSubscriptionResponseValue200ApplicationJson",
-    "signatures": [
-      {
-        "name": "getSubscription",
+        "name": "list",
         "params": [
           {
             "name": "productSubscription",
+            "type": "int",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "limit",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "page",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "pagination",
+            "type": "?bool",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "options",
+            "type": "?\\SellApp\\RequestOptions",
+            "optional": true,
+            "passingStyle": "named"
+          }
+        ],
+        "returnType": "\\SellApp\\PaginatedResponse",
+        "async": false
+      }
+    ],
+    "sourceFile": "lib/Service/SubscriptionsActions.php"
+  },
+  {
+    "operationId": "getSubscriptionAction",
+    "resource": "subscriptionsActions",
+    "method": "get",
+    "nativeSignature": "public function get(\n        int $productSubscription,\n        int $action,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkGetSubscriptionActionResponseValue200ApplicationJson",
+    "signatures": [
+      {
+        "name": "get",
+        "params": [
+          {
+            "name": "productSubscription",
+            "type": "int",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "action",
             "type": "int",
             "optional": false,
             "passingStyle": "named"
@@ -3639,11 +3849,57 @@
             "passingStyle": "named"
           }
         ],
-        "returnType": "\\SellApp\\Resource\\SdkGetSubscriptionResponseValue200ApplicationJson",
+        "returnType": "\\SellApp\\Resource\\SdkGetSubscriptionActionResponseValue200ApplicationJson",
         "async": false
       }
     ],
-    "sourceFile": "lib/Service/Subscriptions.php"
+    "sourceFile": "lib/Service/SubscriptionsActions.php"
+  },
+  {
+    "operationId": "dismissSubscriptionAction",
+    "resource": "subscriptionsActions",
+    "method": "dismiss",
+    "nativeSignature": "public function dismiss(\n        int $productSubscription,\n        int $action,\n        string $note,\n        ?string $idempotencyKey = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkDismissSubscriptionActionResponseValue200ApplicationJson",
+    "signatures": [
+      {
+        "name": "dismiss",
+        "params": [
+          {
+            "name": "productSubscription",
+            "type": "int",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "action",
+            "type": "int",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "note",
+            "type": "string",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "idempotencyKey",
+            "type": "?string",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "options",
+            "type": "?\\SellApp\\RequestOptions",
+            "optional": true,
+            "passingStyle": "named"
+          }
+        ],
+        "returnType": "\\SellApp\\Resource\\SdkDismissSubscriptionActionResponseValue200ApplicationJson",
+        "async": false
+      }
+    ],
+    "sourceFile": "lib/Service/SubscriptionsActions.php"
   },
   {
     "operationId": "listAppointments",
@@ -4447,7 +4703,7 @@
     "operationId": "createPromotion",
     "resource": "promotions",
     "method": "create",
-    "nativeSignature": "public function create(\n        string $name,\n        \\SellApp\\Resource\\SdkCreatePromotionRequestApplicationJsonStatus $status,\n        int $priority,\n        bool $isStackable,\n        array $phases,\n        ?\\DateTimeImmutable $startsAt = null,\n        ?\\DateTimeImmutable $endsAt = null,\n        ?int $maxRedemptions = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCreatePromotionResponseValue201ApplicationJson",
+    "nativeSignature": "public function create(\n        string $name,\n        \\SellApp\\Resource\\SdkCreatePromotionRequestApplicationJsonStatus $status,\n        int $priority,\n        bool $isStackable,\n        array $phases,\n        ?\\DateTimeImmutable $startsAt = null,\n        ?\\DateTimeImmutable $endsAt = null,\n        ?int $maxRedemptions = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCreatePromotionResponseValue201ApplicationJson",
     "signatures": [
       {
         "name": "create",
@@ -4497,6 +4753,36 @@
           {
             "name": "maxRedemptions",
             "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "storeWide",
+            "type": "?bool",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "products",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "productVariants",
+            "type": "?array",
             "optional": true,
             "passingStyle": "named"
           },
@@ -4609,7 +4895,7 @@
     "operationId": "replacePromotion",
     "resource": "promotions",
     "method": "replace",
-    "nativeSignature": "public function replace(\n        int $promotion,\n        ?string $name = null,\n        ?\\SellApp\\Resource\\SdkCreatePromotionRequestApplicationJsonStatus $status = null,\n        ?\\DateTimeImmutable $startsAt = null,\n        ?\\DateTimeImmutable $endsAt = null,\n        ?int $priority = null,\n        ?bool $isStackable = null,\n        ?int $maxRedemptions = null,\n        ?array $phases = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkReplacePromotionResponseValue200ApplicationJson",
+    "nativeSignature": "public function replace(\n        int $promotion,\n        ?string $name = null,\n        ?\\SellApp\\Resource\\SdkCreatePromotionRequestApplicationJsonStatus $status = null,\n        ?\\DateTimeImmutable $startsAt = null,\n        ?\\DateTimeImmutable $endsAt = null,\n        ?int $priority = null,\n        ?bool $isStackable = null,\n        ?int $maxRedemptions = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?array $phases = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkReplacePromotionResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "replace",
@@ -4663,6 +4949,36 @@
             "passingStyle": "named"
           },
           {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "storeWide",
+            "type": "?bool",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "products",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "productVariants",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
             "name": "phases",
             "type": "?array",
             "optional": true,
@@ -4685,7 +5001,7 @@
     "operationId": "updatePromotion",
     "resource": "promotions",
     "method": "update",
-    "nativeSignature": "public function update(\n        int $promotion,\n        ?string $name = null,\n        ?\\SellApp\\Resource\\SdkCreatePromotionRequestApplicationJsonStatus $status = null,\n        ?\\DateTimeImmutable $startsAt = null,\n        ?\\DateTimeImmutable $endsAt = null,\n        ?int $priority = null,\n        ?bool $isStackable = null,\n        ?int $maxRedemptions = null,\n        ?array $phases = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkUpdatePromotionResponseValue200ApplicationJson",
+    "nativeSignature": "public function update(\n        int $promotion,\n        ?string $name = null,\n        ?\\SellApp\\Resource\\SdkCreatePromotionRequestApplicationJsonStatus $status = null,\n        ?\\DateTimeImmutable $startsAt = null,\n        ?\\DateTimeImmutable $endsAt = null,\n        ?int $priority = null,\n        ?bool $isStackable = null,\n        ?int $maxRedemptions = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?array $phases = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkUpdatePromotionResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "update",
@@ -4735,6 +5051,36 @@
           {
             "name": "maxRedemptions",
             "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "storeWide",
+            "type": "?bool",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "products",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "productVariants",
+            "type": "?array",
             "optional": true,
             "passingStyle": "named"
           },
@@ -4789,7 +5135,7 @@
     "operationId": "restorePromotion",
     "resource": "promotions",
     "method": "restore",
-    "nativeSignature": "public function restore(\n        int $promotion,\n        string $name,\n        \\SellApp\\Resource\\SdkCreatePromotionRequestApplicationJsonStatus $status,\n        int $priority,\n        bool $isStackable,\n        array $phases,\n        ?\\DateTimeImmutable $startsAt = null,\n        ?\\DateTimeImmutable $endsAt = null,\n        ?int $maxRedemptions = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkRestorePromotionResponseValue200ApplicationJson",
+    "nativeSignature": "public function restore(\n        int $promotion,\n        string $name,\n        \\SellApp\\Resource\\SdkCreatePromotionRequestApplicationJsonStatus $status,\n        int $priority,\n        bool $isStackable,\n        array $phases,\n        ?\\DateTimeImmutable $startsAt = null,\n        ?\\DateTimeImmutable $endsAt = null,\n        ?int $maxRedemptions = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkRestorePromotionResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "restore",
@@ -4845,6 +5191,36 @@
           {
             "name": "maxRedemptions",
             "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "storeWide",
+            "type": "?bool",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "products",
+            "type": "?array",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "productVariants",
+            "type": "?array",
             "optional": true,
             "passingStyle": "named"
           },
@@ -14685,7 +15061,7 @@
     "operationId": "listCustomerPortalSubscriptions",
     "resource": "customerPortal",
     "method": "listCustomerPortalSubscriptions",
-    "nativeSignature": "public function listCustomerPortalSubscriptions(\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson",
+    "nativeSignature": "public function listCustomerPortalSubscriptions(\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\PaginatedResponse",
     "signatures": [
       {
         "name": "listCustomerPortalSubscriptions",
@@ -14697,7 +15073,7 @@
             "passingStyle": "named"
           }
         ],
-        "returnType": "\\SellApp\\Resource\\SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson",
+        "returnType": "\\SellApp\\PaginatedResponse",
         "async": false
       }
     ],
@@ -14785,7 +15161,7 @@
     "operationId": "cancelCustomerSubscriptionAtPeriodEnd",
     "resource": "customerPortal",
     "method": "cancelCustomerSubscriptionAtPeriodEnd",
-    "nativeSignature": "public function cancelCustomerSubscriptionAtPeriodEnd(\n        int $productSubscription,\n        ?string $previewId = null,\n        ?int $productVariantId = null,\n        ?string $renewalDate = null,\n        ?string $returnUrl = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCancelCustomerSubscriptionAtPeriodEndResponseValue200ApplicationJson",
+    "nativeSignature": "public function cancelCustomerSubscriptionAtPeriodEnd(\n        int $productSubscription,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCancelCustomerSubscriptionAtPeriodEndResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "cancelCustomerSubscriptionAtPeriodEnd",
@@ -14794,30 +15170,6 @@
             "name": "productSubscription",
             "type": "int",
             "optional": false,
-            "passingStyle": "named"
-          },
-          {
-            "name": "previewId",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "productVariantId",
-            "type": "?int",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "renewalDate",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "returnUrl",
-            "type": "?string",
-            "optional": true,
             "passingStyle": "named"
           },
           {
@@ -14843,7 +15195,7 @@
     "operationId": "cancelCustomerSubscriptionImmediately",
     "resource": "customerPortal",
     "method": "cancelCustomerSubscriptionImmediately",
-    "nativeSignature": "public function cancelCustomerSubscriptionImmediately(\n        int $productSubscription,\n        ?string $previewId = null,\n        ?int $productVariantId = null,\n        ?string $renewalDate = null,\n        ?string $returnUrl = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCancelCustomerSubscriptionImmediatelyResponseValue200ApplicationJson",
+    "nativeSignature": "public function cancelCustomerSubscriptionImmediately(\n        int $productSubscription,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCancelCustomerSubscriptionImmediatelyResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "cancelCustomerSubscriptionImmediately",
@@ -14852,30 +15204,6 @@
             "name": "productSubscription",
             "type": "int",
             "optional": false,
-            "passingStyle": "named"
-          },
-          {
-            "name": "previewId",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "productVariantId",
-            "type": "?int",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "renewalDate",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "returnUrl",
-            "type": "?string",
-            "optional": true,
             "passingStyle": "named"
           },
           {
@@ -14901,7 +15229,7 @@
     "operationId": "pauseCustomerSubscription",
     "resource": "customerPortal",
     "method": "pauseCustomerSubscription",
-    "nativeSignature": "public function pauseCustomerSubscription(\n        int $productSubscription,\n        ?string $previewId = null,\n        ?int $productVariantId = null,\n        ?string $renewalDate = null,\n        ?string $returnUrl = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkPauseCustomerSubscriptionResponseValue200ApplicationJson",
+    "nativeSignature": "public function pauseCustomerSubscription(\n        int $productSubscription,\n        ?\\DateTimeImmutable $resumeAt = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkPauseCustomerSubscriptionResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "pauseCustomerSubscription",
@@ -14913,26 +15241,8 @@
             "passingStyle": "named"
           },
           {
-            "name": "previewId",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "productVariantId",
-            "type": "?int",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "renewalDate",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "returnUrl",
-            "type": "?string",
+            "name": "resumeAt",
+            "type": "?\\DateTimeImmutable",
             "optional": true,
             "passingStyle": "named"
           },
@@ -14959,7 +15269,7 @@
     "operationId": "resumeCustomerSubscription",
     "resource": "customerPortal",
     "method": "resumeCustomerSubscription",
-    "nativeSignature": "public function resumeCustomerSubscription(\n        int $productSubscription,\n        ?string $previewId = null,\n        ?int $productVariantId = null,\n        ?string $renewalDate = null,\n        ?string $returnUrl = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkResumeCustomerSubscriptionResponseValue200ApplicationJson",
+    "nativeSignature": "public function resumeCustomerSubscription(\n        int $productSubscription,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkResumeCustomerSubscriptionResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "resumeCustomerSubscription",
@@ -14968,36 +15278,6 @@
             "name": "productSubscription",
             "type": "int",
             "optional": false,
-            "passingStyle": "named"
-          },
-          {
-            "name": "previewId",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "productVariantId",
-            "type": "?int",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "renewalDate",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "returnUrl",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "reason",
-            "type": "?string",
-            "optional": true,
             "passingStyle": "named"
           },
           {
@@ -15017,7 +15297,7 @@
     "operationId": "updateCustomerSubscriptionPaymentMethod",
     "resource": "customerPortal",
     "method": "updateCustomerSubscriptionPaymentMethod",
-    "nativeSignature": "public function updateCustomerSubscriptionPaymentMethod(\n        int $productSubscription,\n        ?string $previewId = null,\n        ?int $productVariantId = null,\n        ?string $renewalDate = null,\n        ?string $returnUrl = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkUpdateCustomerSubscriptionPaymentMethodResponseValue200ApplicationJson",
+    "nativeSignature": "public function updateCustomerSubscriptionPaymentMethod(\n        int $productSubscription,\n        ?string $returnUrl = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkUpdateCustomerSubscriptionPaymentMethodResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "updateCustomerSubscriptionPaymentMethod",
@@ -15029,31 +15309,7 @@
             "passingStyle": "named"
           },
           {
-            "name": "previewId",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "productVariantId",
-            "type": "?int",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "renewalDate",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
             "name": "returnUrl",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "reason",
             "type": "?string",
             "optional": true,
             "passingStyle": "named"
@@ -15075,7 +15331,7 @@
     "operationId": "previewCustomerSubscriptionPlanChange",
     "resource": "customerPortal",
     "method": "previewCustomerSubscriptionPlanChange",
-    "nativeSignature": "public function previewCustomerSubscriptionPlanChange(\n        int $productSubscription,\n        ?string $previewId = null,\n        ?int $productVariantId = null,\n        ?string $renewalDate = null,\n        ?string $returnUrl = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkPreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJson",
+    "nativeSignature": "public function previewCustomerSubscriptionPlanChange(\n        int $productSubscription,\n        int $targetVariantId,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,\n        ?\\SellApp\\Resource\\PreviewCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkPreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "previewCustomerSubscriptionPlanChange",
@@ -15087,32 +15343,26 @@
             "passingStyle": "named"
           },
           {
-            "name": "previewId",
-            "type": "?string",
+            "name": "targetVariantId",
+            "type": "int",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "effectiveTiming",
+            "type": "?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming",
             "optional": true,
             "passingStyle": "named"
           },
           {
-            "name": "productVariantId",
-            "type": "?int",
+            "name": "prorationBehavior",
+            "type": "?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior",
             "optional": true,
             "passingStyle": "named"
           },
           {
-            "name": "renewalDate",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "returnUrl",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "reason",
-            "type": "?string",
+            "name": "metadata",
+            "type": "?\\SellApp\\Resource\\PreviewCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata",
             "optional": true,
             "passingStyle": "named"
           },
@@ -15133,7 +15383,7 @@
     "operationId": "confirmCustomerSubscriptionPlanChange",
     "resource": "customerPortal",
     "method": "confirmCustomerSubscriptionPlanChange",
-    "nativeSignature": "public function confirmCustomerSubscriptionPlanChange(\n        int $productSubscription,\n        ?string $previewId = null,\n        ?int $productVariantId = null,\n        ?string $renewalDate = null,\n        ?string $returnUrl = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkConfirmCustomerSubscriptionPlanChangeResponseValue200ApplicationJson",
+    "nativeSignature": "public function confirmCustomerSubscriptionPlanChange(\n        int $productSubscription,\n        int $targetVariantId,\n        string $previewToken,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,\n        ?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,\n        ?\\SellApp\\Resource\\ConfirmCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkConfirmCustomerSubscriptionPlanChangeResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "confirmCustomerSubscriptionPlanChange",
@@ -15145,32 +15395,32 @@
             "passingStyle": "named"
           },
           {
-            "name": "previewId",
-            "type": "?string",
+            "name": "targetVariantId",
+            "type": "int",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "previewToken",
+            "type": "string",
+            "optional": false,
+            "passingStyle": "named"
+          },
+          {
+            "name": "effectiveTiming",
+            "type": "?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming",
             "optional": true,
             "passingStyle": "named"
           },
           {
-            "name": "productVariantId",
-            "type": "?int",
+            "name": "prorationBehavior",
+            "type": "?\\SellApp\\Resource\\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior",
             "optional": true,
             "passingStyle": "named"
           },
           {
-            "name": "renewalDate",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "returnUrl",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "reason",
-            "type": "?string",
+            "name": "metadata",
+            "type": "?\\SellApp\\Resource\\ConfirmCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata",
             "optional": true,
             "passingStyle": "named"
           },
@@ -15191,7 +15441,7 @@
     "operationId": "previewCustomerSubscriptionRenewalDateChange",
     "resource": "customerPortal",
     "method": "previewCustomerSubscriptionRenewalDateChange",
-    "nativeSignature": "public function previewCustomerSubscriptionRenewalDateChange(\n        int $productSubscription,\n        ?string $previewId = null,\n        ?int $productVariantId = null,\n        ?string $renewalDate = null,\n        ?string $returnUrl = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkPreviewCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson",
+    "nativeSignature": "public function previewCustomerSubscriptionRenewalDateChange(\n        int $productSubscription,\n        \\DateTimeImmutable $renewalDate,\n        ?string $reason = null,\n        ?\\SellApp\\Resource\\PreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata $metadata = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkPreviewCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "previewCustomerSubscriptionRenewalDateChange",
@@ -15203,32 +15453,20 @@
             "passingStyle": "named"
           },
           {
-            "name": "previewId",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "productVariantId",
-            "type": "?int",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
             "name": "renewalDate",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "returnUrl",
-            "type": "?string",
-            "optional": true,
+            "type": "\\DateTimeImmutable",
+            "optional": false,
             "passingStyle": "named"
           },
           {
             "name": "reason",
             "type": "?string",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "metadata",
+            "type": "?\\SellApp\\Resource\\PreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata",
             "optional": true,
             "passingStyle": "named"
           },
@@ -15249,7 +15487,7 @@
     "operationId": "confirmCustomerSubscriptionRenewalDateChange",
     "resource": "customerPortal",
     "method": "confirmCustomerSubscriptionRenewalDateChange",
-    "nativeSignature": "public function confirmCustomerSubscriptionRenewalDateChange(\n        int $productSubscription,\n        ?string $previewId = null,\n        ?int $productVariantId = null,\n        ?string $renewalDate = null,\n        ?string $returnUrl = null,\n        ?string $reason = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson",
+    "nativeSignature": "public function confirmCustomerSubscriptionRenewalDateChange(\n        int $productSubscription,\n        \\DateTimeImmutable $renewalDate,\n        ?string $previewToken = null,\n        ?string $reason = null,\n        ?\\SellApp\\Resource\\ConfirmCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata $metadata = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "confirmCustomerSubscriptionRenewalDateChange",
@@ -15261,25 +15499,13 @@
             "passingStyle": "named"
           },
           {
-            "name": "previewId",
-            "type": "?string",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
-            "name": "productVariantId",
-            "type": "?int",
-            "optional": true,
-            "passingStyle": "named"
-          },
-          {
             "name": "renewalDate",
-            "type": "?string",
-            "optional": true,
+            "type": "\\DateTimeImmutable",
+            "optional": false,
             "passingStyle": "named"
           },
           {
-            "name": "returnUrl",
+            "name": "previewToken",
             "type": "?string",
             "optional": true,
             "passingStyle": "named"
@@ -15287,6 +15513,12 @@
           {
             "name": "reason",
             "type": "?string",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "metadata",
+            "type": "?\\SellApp\\Resource\\ConfirmCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata",
             "optional": true,
             "passingStyle": "named"
           },
@@ -15899,7 +16131,7 @@
     "operationId": "createCoupon",
     "resource": "coupons",
     "method": "create",
-    "nativeSignature": "public function create(\n        string $code,\n        \\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type,\n        float|string $discount,\n        bool $storeWide,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCreateCouponResponseValue201ApplicationJson",
+    "nativeSignature": "public function create(\n        string $code,\n        \\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type,\n        float|string $discount,\n        bool $storeWide,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkCreateCouponResponseValue201ApplicationJson",
     "signatures": [
       {
         "name": "create",
@@ -15955,6 +16187,18 @@
           {
             "name": "minimumAmount",
             "type": "float|string|null",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
             "optional": true,
             "passingStyle": "named"
           },
@@ -16015,7 +16259,7 @@
     "operationId": "replaceCoupon",
     "resource": "coupons",
     "method": "replace",
-    "nativeSignature": "public function replace(\n        int $coupon,\n        ?string $code = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type = null,\n        float|string|null $discount = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?bool $withTrashed = null,\n        ?bool $onlyTrashed = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkReplaceCouponResponseValue200ApplicationJson",
+    "nativeSignature": "public function replace(\n        int $coupon,\n        ?string $code = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type = null,\n        float|string|null $discount = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?bool $withTrashed = null,\n        ?bool $onlyTrashed = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkReplaceCouponResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "replace",
@@ -16081,6 +16325,18 @@
             "passingStyle": "named"
           },
           {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
             "name": "withTrashed",
             "type": "?bool",
             "optional": true,
@@ -16109,7 +16365,7 @@
     "operationId": "updateCoupon",
     "resource": "coupons",
     "method": "update",
-    "nativeSignature": "public function update(\n        int $coupon,\n        ?string $code = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type = null,\n        float|string|null $discount = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?bool $withTrashed = null,\n        ?bool $onlyTrashed = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkUpdateCouponResponseValue200ApplicationJson",
+    "nativeSignature": "public function update(\n        int $coupon,\n        ?string $code = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type = null,\n        float|string|null $discount = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?bool $withTrashed = null,\n        ?bool $onlyTrashed = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkUpdateCouponResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "update",
@@ -16171,6 +16427,18 @@
           {
             "name": "minimumAmount",
             "type": "float|string|null",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
             "optional": true,
             "passingStyle": "named"
           },
@@ -17505,7 +17773,7 @@
     "operationId": "v2CreateCoupon",
     "resource": "coupons",
     "method": "v2CreateCoupon",
-    "nativeSignature": "public function v2CreateCoupon(\n        string $code,\n        \\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type,\n        float|string $discount,\n        bool $storeWide,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkV2CreateCouponResponseValue201ApplicationJson",
+    "nativeSignature": "public function v2CreateCoupon(\n        string $code,\n        \\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type,\n        float|string $discount,\n        bool $storeWide,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkV2CreateCouponResponseValue201ApplicationJson",
     "signatures": [
       {
         "name": "v2CreateCoupon",
@@ -17561,6 +17829,18 @@
           {
             "name": "minimumAmount",
             "type": "float|string|null",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
             "optional": true,
             "passingStyle": "named"
           },
@@ -17679,7 +17959,7 @@
     "operationId": "v2ReplaceCoupon",
     "resource": "coupons",
     "method": "v2ReplaceCoupon",
-    "nativeSignature": "public function v2ReplaceCoupon(\n        int $coupon,\n        ?string $code = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type = null,\n        float|string|null $discount = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?bool $withTrashed = null,\n        ?bool $onlyTrashed = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkV2ReplaceCouponResponseValue200ApplicationJson",
+    "nativeSignature": "public function v2ReplaceCoupon(\n        int $coupon,\n        ?string $code = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type = null,\n        float|string|null $discount = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?bool $withTrashed = null,\n        ?bool $onlyTrashed = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkV2ReplaceCouponResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "v2ReplaceCoupon",
@@ -17745,6 +18025,18 @@
             "passingStyle": "named"
           },
           {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
             "name": "withTrashed",
             "type": "?bool",
             "optional": true,
@@ -17773,7 +18065,7 @@
     "operationId": "v2UpdateCoupon",
     "resource": "coupons",
     "method": "v2UpdateCoupon",
-    "nativeSignature": "public function v2UpdateCoupon(\n        int $coupon,\n        ?string $code = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type = null,\n        float|string|null $discount = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?bool $withTrashed = null,\n        ?bool $onlyTrashed = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkV2UpdateCouponResponseValue200ApplicationJson",
+    "nativeSignature": "public function v2UpdateCoupon(\n        int $coupon,\n        ?string $code = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonType $type = null,\n        float|string|null $discount = null,\n        ?bool $storeWide = null,\n        ?array $products = null,\n        ?array $productVariants = null,\n        ?int $limit = null,\n        ?\\DateTimeImmutable $expiresAt = null,\n        float|string|null $minimumAmount = null,\n        ?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,\n        ?int $subscriptionPayments = null,\n        ?bool $withTrashed = null,\n        ?bool $onlyTrashed = null,\n        ?\\SellApp\\RequestOptions $options = null,\n    ): \\SellApp\\Resource\\SdkV2UpdateCouponResponseValue200ApplicationJson",
     "signatures": [
       {
         "name": "v2UpdateCoupon",
@@ -17835,6 +18127,18 @@
           {
             "name": "minimumAmount",
             "type": "float|string|null",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "appliesTo",
+            "type": "?\\SellApp\\Resource\\SdkCreateCouponRequestApplicationJsonAppliesTo",
+            "optional": true,
+            "passingStyle": "named"
+          },
+          {
+            "name": "subscriptionPayments",
+            "type": "?int",
             "optional": true,
             "passingStyle": "named"
           },

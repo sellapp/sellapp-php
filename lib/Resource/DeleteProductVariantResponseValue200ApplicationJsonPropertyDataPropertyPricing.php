@@ -10,13 +10,14 @@ readonly class DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPr
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricing', 'required' => ['humble', 'frequency', 'type', 'price'], 'properties' => ['humble' => ['kind' => 'primitive', 'type' => 'boolean'], 'frequency' => ['kind' => 'model', 'class' => 'DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyFrequency'], 'type' => ['kind' => 'primitive', 'type' => 'string'], 'price' => ['kind' => 'model', 'class' => 'DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyPrice']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricing', 'required' => ['humble', 'frequency', 'type', 'price'], 'properties' => ['humble' => ['kind' => 'primitive', 'type' => 'boolean'], 'frequency' => ['kind' => 'model', 'class' => 'DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyFrequency'], 'type' => ['kind' => 'primitive', 'type' => 'string'], 'price' => ['kind' => 'model', 'class' => 'DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyPrice'], 'trial' => ['kind' => 'model', 'class' => 'DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyTrial']], 'additionalProperties' => true];
 
     public function __construct(
         public bool $humble,
         public DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyFrequency $frequency,
         public string $type,
         public DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyPrice $price,
+        public ?DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyTrial $trial = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -31,7 +32,8 @@ readonly class DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPr
             frequency: DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyFrequency::fromArray($data['frequency']),
             type: $data['type'],
             price: DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyPrice::fromArray($data['price']),
-            additionalProperties: SchemaValidator::unknownFields($data, ['humble', 'frequency', 'type', 'price']),
+            trial: isset($data['trial']) ? DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPropertyPricingPropertyTrial::fromArray($data['trial']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['humble', 'frequency', 'type', 'price', 'trial']),
             presentFields: array_keys($data),
         );
     }
@@ -48,6 +50,7 @@ readonly class DeleteProductVariantResponseValue200ApplicationJsonPropertyDataPr
             'frequency' => $this->frequency->toArray(),
             'type' => $this->type,
             'price' => $this->price->toArray(),
+            'trial' => $this->trial?->toArray(),
         ], ['humble', 'frequency', 'type', 'price'], $this->presentFields));
     }
 }

@@ -10,15 +10,21 @@ readonly class ResumeSubscriptionResponseValue200ApplicationJsonPropertyData imp
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'ResumeSubscriptionResponseValue200ApplicationJsonPropertyData', 'required' => [], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'product_subscription_id' => ['kind' => 'primitive', 'type' => 'integer'], 'subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'action' => ['kind' => 'enum', 'values' => ['pause', 'resume', 'cancel_at_period_end', 'cancel_immediately', 'update_payment_method', 'change_plan', 'shift_billing_date']], 'status' => ['kind' => 'enum', 'values' => ['pending', 'confirmed', 'failed', 'expired', 'dismissed', 'force_resolved']], 'provider' => ['kind' => 'primitive', 'type' => 'string'], 'customer_message' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'confirmed_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'failed_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'ResumeSubscriptionResponseValue200ApplicationJsonPropertyData', 'required' => [], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'product_subscription_id' => ['kind' => 'primitive', 'type' => 'integer'], 'subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'action' => ['kind' => 'enum', 'values' => ['pause', 'resume', 'cancel_at_period_end', 'cancel_immediately', 'keep_subscription', 'update_payment_method', 'change_plan', 'shift_billing_date', 'set_auto_renew']], 'status' => ['kind' => 'enum', 'values' => ['pending', 'confirmed', 'failed', 'expired', 'dismissed', 'force_resolved']], 'provider' => ['kind' => 'primitive', 'type' => 'string'], 'proration_order_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'error' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'customer_message' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'confirmed_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'failed_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'additionalProperties' => true];
 
     public function __construct(
         public ?int $id = null,
         public ?int $productSubscriptionId = null,
         public ?string $subscriptionId = null,
-        public PauseSubscriptionResponseValue200ApplicationJsonPropertyDataAction|string|null $action = null,
-        public PauseSubscriptionResponseValue200ApplicationJsonPropertyDataStatus|string|null $status = null,
+        public KeepSubscriptionResponseValue200ApplicationJsonPropertyDataAction|string|null $action = null,
+        /** `pending` while the provider or the customer still has to respond, then `confirmed`, `failed`, `expired`, `dismissed`, or `force_resolved`. */
+        public KeepSubscriptionResponseValue200ApplicationJsonPropertyDataStatus|string|null $status = null,
         public ?string $provider = null,
+        /** The order a plan change's proration was billed on. Only a subscription the store bills in house bills a proration as an order of its own, so this is null for every other provider, including one that prorated the change itself. */
+        public ?int $prorationOrderId = null,
+        /** The seller-facing failure message, truncated to 255 characters. A dismissed action carries its dismissal note here instead. */
+        public ?string $error = null,
+        /** The sentence SellApp shows the customer about this action, such as why it failed or that the seller dismissed it. SellApp writes it; the customer never types it. `null` when there is nothing to tell them. */
         public ?string $customerMessage = null,
         public ?\DateTimeImmutable $confirmedAt = null,
         public ?\DateTimeImmutable $failedAt = null,
@@ -37,15 +43,17 @@ readonly class ResumeSubscriptionResponseValue200ApplicationJsonPropertyData imp
             id: $data['id'] ?? null,
             productSubscriptionId: $data['product_subscription_id'] ?? null,
             subscriptionId: $data['subscription_id'] ?? null,
-            action: isset($data['action']) ? PauseSubscriptionResponseValue200ApplicationJsonPropertyDataAction::tryFrom($data['action']) ?? $data['action'] : null,
-            status: isset($data['status']) ? PauseSubscriptionResponseValue200ApplicationJsonPropertyDataStatus::tryFrom($data['status']) ?? $data['status'] : null,
+            action: isset($data['action']) ? KeepSubscriptionResponseValue200ApplicationJsonPropertyDataAction::tryFrom($data['action']) ?? $data['action'] : null,
+            status: isset($data['status']) ? KeepSubscriptionResponseValue200ApplicationJsonPropertyDataStatus::tryFrom($data['status']) ?? $data['status'] : null,
             provider: $data['provider'] ?? null,
+            prorationOrderId: $data['proration_order_id'] ?? null,
+            error: $data['error'] ?? null,
             customerMessage: $data['customer_message'] ?? null,
             confirmedAt: isset($data['confirmed_at']) ? new \DateTimeImmutable($data['confirmed_at']) : null,
             failedAt: isset($data['failed_at']) ? new \DateTimeImmutable($data['failed_at']) : null,
             createdAt: isset($data['created_at']) ? new \DateTimeImmutable($data['created_at']) : null,
             updatedAt: isset($data['updated_at']) ? new \DateTimeImmutable($data['updated_at']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'product_subscription_id', 'subscription_id', 'action', 'status', 'provider', 'customer_message', 'confirmed_at', 'failed_at', 'created_at', 'updated_at']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'product_subscription_id', 'subscription_id', 'action', 'status', 'provider', 'proration_order_id', 'error', 'customer_message', 'confirmed_at', 'failed_at', 'created_at', 'updated_at']),
             presentFields: array_keys($data),
         );
     }
@@ -64,6 +72,8 @@ readonly class ResumeSubscriptionResponseValue200ApplicationJsonPropertyData imp
             'action' => $this->action instanceof \BackedEnum ? $this->action->value : $this->action,
             'status' => $this->status instanceof \BackedEnum ? $this->status->value : $this->status,
             'provider' => $this->provider,
+            'proration_order_id' => $this->prorationOrderId,
+            'error' => $this->error,
             'customer_message' => $this->customerMessage,
             'confirmed_at' => $this->confirmedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'failed_at' => $this->failedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),

@@ -15,7 +15,7 @@ readonly class SdkPauseSubscriptionRequestApplicationJson implements \JsonSerial
     public function __construct(
         /** Optional idempotency key. You may also send this as the Idempotency-Key header. */
         public ?string $idempotencyKey = null,
-        /** Use a future date-time at execution time. Automatic resume dates are supported only for Stripe; the shown date is illustrative. */
+        /** Use a future date-time at execution time. Automatic resume dates are supported by Stripe and by subscriptions the store bills in house; the shown date is illustrative. */
         public ?\DateTimeImmutable $resumeAt = null,
         public ?string $reason = null,
         /** @var array<string, mixed> */

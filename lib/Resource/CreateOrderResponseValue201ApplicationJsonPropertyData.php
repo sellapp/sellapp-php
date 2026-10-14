@@ -20,6 +20,7 @@ readonly class CreateOrderResponseValue201ApplicationJsonPropertyData implements
         public CreateOrderResponseValue201ApplicationJsonPropertyDataPropertyCustomer $customer,
         public CreateOrderResponseValue201ApplicationJsonPropertyDataPropertyPayment $payment,
         public CreateOrderResponseValue201ApplicationJsonPropertyDataPropertyTotals $totals,
+        /** The coupon this order was sold with, or null. A subscription's renewal and plan-change orders carry null, even while the subscription still bills a discounted price, so a coupon's `limit` counts a subscription once, at signup. */
         public ?int $couponId,
         /** @var array<\SellApp\Resource\CreateOrderResponseValue201ApplicationJsonPropertyDataPropertyLineItemsItem> */
         public array $lineItems,

@@ -10,11 +10,12 @@ readonly class ListInvoicesResponseValue200ApplicationJsonPropertyDataItemProper
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'ListInvoicesResponseValue200ApplicationJsonPropertyDataItemPropertyPaymentPropertyGateway', 'required' => ['data', 'type'], 'properties' => ['data' => ['kind' => 'model', 'class' => 'ListInvoicesResponseValue200ApplicationJsonPropertyDataItemPropertyPaymentPropertyGatewayPropertyData'], 'type' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'ListInvoicesResponseValue200ApplicationJsonPropertyDataItemPropertyPaymentPropertyGateway', 'required' => ['data', 'type'], 'properties' => ['data' => ['kind' => 'model', 'class' => 'ListInvoicesResponseValue200ApplicationJsonPropertyDataItemPropertyPaymentPropertyGatewayPropertyData'], 'type' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']]], 'additionalProperties' => true];
 
     public function __construct(
         public ListInvoicesResponseValue200ApplicationJsonPropertyDataItemPropertyPaymentPropertyGatewayPropertyData $data,
-        public string $type,
+        /** The payment method, or `null` for an invoice that costs nothing. A free trial sold through Stripe, PayPal, or Razorpay keeps its payment method, because that provider bills the plan once the trial ends. */
+        public ?string $type,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -26,7 +27,7 @@ readonly class ListInvoicesResponseValue200ApplicationJsonPropertyDataItemProper
         self::validate($data, 'response');
         return new self(
             data: ListInvoicesResponseValue200ApplicationJsonPropertyDataItemPropertyPaymentPropertyGatewayPropertyData::fromArray($data['data']),
-            type: $data['type'],
+            type: $data['type'] ?? null,
             additionalProperties: SchemaValidator::unknownFields($data, ['data', 'type']),
             presentFields: array_keys($data),
         );

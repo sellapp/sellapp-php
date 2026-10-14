@@ -10,14 +10,13 @@ readonly class SdkPreviewCustomerSubscriptionPlanChangeRequestApplicationJson im
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkPreviewCustomerSubscriptionPlanChangeRequestApplicationJson', 'required' => [], 'properties' => ['preview_id' => ['kind' => 'primitive', 'type' => 'string'], 'product_variant_id' => ['kind' => 'primitive', 'type' => 'integer'], 'renewal_date' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date'], 'return_url' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri'], 'reason' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkPreviewCustomerSubscriptionPlanChangeRequestApplicationJson', 'required' => ['target_variant_id'], 'properties' => ['target_variant_id' => ['kind' => 'primitive', 'type' => 'integer'], 'effective_timing' => ['kind' => 'enum', 'values' => ['immediate', 'next_renewal']], 'proration_behavior' => ['kind' => 'enum', 'values' => ['invoice_now', 'credit_next_invoice', 'none', 'provider_default']], 'metadata' => ['kind' => 'model', 'class' => 'PreviewCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata']], 'additionalProperties' => true];
 
     public function __construct(
-        public ?string $previewId = null,
-        public ?int $productVariantId = null,
-        public ?string $renewalDate = null,
-        public ?string $returnUrl = null,
-        public ?string $reason = null,
+        public int $targetVariantId,
+        public SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming|string|null $effectiveTiming = null,
+        public SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior|string|null $prorationBehavior = null,
+        public ?PreviewCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -28,12 +27,11 @@ readonly class SdkPreviewCustomerSubscriptionPlanChangeRequestApplicationJson im
     {
         self::validate($data, 'response');
         return new self(
-            previewId: $data['preview_id'] ?? null,
-            productVariantId: $data['product_variant_id'] ?? null,
-            renewalDate: $data['renewal_date'] ?? null,
-            returnUrl: $data['return_url'] ?? null,
-            reason: $data['reason'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['preview_id', 'product_variant_id', 'renewal_date', 'return_url', 'reason']),
+            targetVariantId: $data['target_variant_id'],
+            effectiveTiming: isset($data['effective_timing']) ? SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming::tryFrom($data['effective_timing']) ?? $data['effective_timing'] : null,
+            prorationBehavior: isset($data['proration_behavior']) ? SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior::tryFrom($data['proration_behavior']) ?? $data['proration_behavior'] : null,
+            metadata: isset($data['metadata']) ? PreviewCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata::fromArray($data['metadata']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['target_variant_id', 'effective_timing', 'proration_behavior', 'metadata']),
             presentFields: array_keys($data),
         );
     }
@@ -46,11 +44,10 @@ readonly class SdkPreviewCustomerSubscriptionPlanChangeRequestApplicationJson im
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'preview_id' => $this->previewId,
-            'product_variant_id' => $this->productVariantId,
-            'renewal_date' => $this->renewalDate,
-            'return_url' => $this->returnUrl,
-            'reason' => $this->reason,
-        ], [], $this->presentFields));
+            'target_variant_id' => $this->targetVariantId,
+            'effective_timing' => $this->effectiveTiming instanceof \BackedEnum ? $this->effectiveTiming->value : $this->effectiveTiming,
+            'proration_behavior' => $this->prorationBehavior instanceof \BackedEnum ? $this->prorationBehavior->value : $this->prorationBehavior,
+            'metadata' => $this->metadata?->toArray(),
+        ], ['target_variant_id'], $this->presentFields));
     }
 }

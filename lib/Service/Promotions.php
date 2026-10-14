@@ -60,7 +60,7 @@ class Promotions
     /**
      * Create a promotion
      *
-     * Create a promotion and its initial ordered phase set. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Create a promotion and its initial ordered phase set. `applies_to` chooses whether it discounts one-time purchases or the first `subscription_payments` payments of a subscription plan, and a subscription promotion can be limited to picked products and plans with `store_wide`, `products`, and `product_variants`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param string $name
      * @param \SellApp\Resource\SdkCreatePromotionRequestApplicationJsonStatus $status
      * @param \DateTimeImmutable|null $startsAt
@@ -68,6 +68,11 @@ class Promotions
      * @param int $priority
      * @param bool $isStackable
      * @param int|null $maxRedemptions
+     * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo|null $appliesTo What the promotion discounts: `one_time` for one-time purchases, or `subscriptions` for the first payments of a subscription plan. A new promotion defaults to `one_time`, and an update that leaves this out keeps the current kind. The promotion only discounts order lines of its kind.
+     * @param int|null $subscriptionPayments How many payments a `subscriptions` promotion discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` promotion needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` promotion, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` promotion always stores null here.
+     * @param bool|null $storeWide Send `false` with `products` to limit a `subscriptions` promotion to picked products and plans. Required whenever the request sends `products` or `product_variants`. A new promotion defaults to `true`, an update that leaves it out keeps the current scope, and switching a promotion to `one_time` makes it store-wide again. A `one_time` promotion with `false` returns `422` on `store_wide` with `A promotion for one-time purchases applies to the whole store.`
+     * @param array<int>|null $products Product IDs a narrowed subscription promotion reaches. Each one must sell a subscription, or the request returns `422` on `products` with `Pick only products that sell a subscription.` A narrowed promotion left with no products returns `422` with `Pick at least one subscription product for this promotion.` An update replaces the picks with this list, or keeps them when it is left out.
+     * @param array<int>|null $productVariants Subscription plan IDs to limit the picked products to. Each one must be a subscription plan of a product in `products`, or the request returns `422` on `product_variants` with `Pick only subscription plans of the picked products.` A picked product with none of its plans listed takes every plan, including plans added later. An update that leaves this out keeps the listed plans of products that stay picked.
      * @param array<\SellApp\Resource\CreatePromotionRequestApplicationJsonPropertyPhasesItem> $phases The complete ordered phase set. Array order becomes phase position.
      * @return \SellApp\Resource\SdkCreatePromotionResponseValue201ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -81,6 +86,11 @@ class Promotions
         ?\DateTimeImmutable $startsAt = null,
         ?\DateTimeImmutable $endsAt = null,
         ?int $maxRedemptions = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
+        ?bool $storeWide = null,
+        ?array $products = null,
+        ?array $productVariants = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCreatePromotionResponseValue201ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'createPromotion', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
@@ -92,6 +102,11 @@ class Promotions
             'priority' => $priority,
             'is_stackable' => $isStackable,
             'max_redemptions' => $maxRedemptions,
+            'applies_to' => $appliesTo?->value,
+            'subscription_payments' => $subscriptionPayments,
+            'store_wide' => $storeWide,
+            'products' => $products,
+            'product_variants' => $productVariants,
             'phases' => $phases,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkCreatePromotionRequestApplicationJson::validate($body, 'request');
@@ -176,6 +191,11 @@ class Promotions
      * @param int|null $priority
      * @param bool|null $isStackable
      * @param int|null $maxRedemptions
+     * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo|null $appliesTo What the promotion discounts: `one_time` for one-time purchases, or `subscriptions` for the first payments of a subscription plan. A new promotion defaults to `one_time`, and an update that leaves this out keeps the current kind. The promotion only discounts order lines of its kind.
+     * @param int|null $subscriptionPayments How many payments a `subscriptions` promotion discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` promotion needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` promotion, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` promotion always stores null here.
+     * @param bool|null $storeWide Send `false` with `products` to limit a `subscriptions` promotion to picked products and plans. Required whenever the request sends `products` or `product_variants`. A new promotion defaults to `true`, an update that leaves it out keeps the current scope, and switching a promotion to `one_time` makes it store-wide again. A `one_time` promotion with `false` returns `422` on `store_wide` with `A promotion for one-time purchases applies to the whole store.`
+     * @param array<int>|null $products Product IDs a narrowed subscription promotion reaches. Each one must sell a subscription, or the request returns `422` on `products` with `Pick only products that sell a subscription.` A narrowed promotion left with no products returns `422` with `Pick at least one subscription product for this promotion.` An update replaces the picks with this list, or keeps them when it is left out.
+     * @param array<int>|null $productVariants Subscription plan IDs to limit the picked products to. Each one must be a subscription plan of a product in `products`, or the request returns `422` on `product_variants` with `Pick only subscription plans of the picked products.` A picked product with none of its plans listed takes every plan, including plans added later. An update that leaves this out keeps the listed plans of products that stay picked.
      * @param array<\SellApp\Resource\ReplacePromotionRequestApplicationJsonPropertyPhasesItem>|null $phases The complete ordered phase set. Array order becomes phase position.
      * @return \SellApp\Resource\SdkReplacePromotionResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -189,6 +209,11 @@ class Promotions
         ?int $priority = null,
         ?bool $isStackable = null,
         ?int $maxRedemptions = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
+        ?bool $storeWide = null,
+        ?array $products = null,
+        ?array $productVariants = null,
         ?array $phases = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkReplacePromotionResponseValue200ApplicationJson {
@@ -201,6 +226,11 @@ class Promotions
             'priority' => $priority,
             'is_stackable' => $isStackable,
             'max_redemptions' => $maxRedemptions,
+            'applies_to' => $appliesTo?->value,
+            'subscription_payments' => $subscriptionPayments,
+            'store_wide' => $storeWide,
+            'products' => $products,
+            'product_variants' => $productVariants,
             'phases' => $phases,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkReplacePromotionRequestApplicationJson::validate($body, 'request');
@@ -225,6 +255,11 @@ class Promotions
      * @param int|null $priority
      * @param bool|null $isStackable
      * @param int|null $maxRedemptions
+     * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo|null $appliesTo What the promotion discounts: `one_time` for one-time purchases, or `subscriptions` for the first payments of a subscription plan. A new promotion defaults to `one_time`, and an update that leaves this out keeps the current kind. The promotion only discounts order lines of its kind.
+     * @param int|null $subscriptionPayments How many payments a `subscriptions` promotion discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` promotion needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` promotion, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` promotion always stores null here.
+     * @param bool|null $storeWide Send `false` with `products` to limit a `subscriptions` promotion to picked products and plans. Required whenever the request sends `products` or `product_variants`. A new promotion defaults to `true`, an update that leaves it out keeps the current scope, and switching a promotion to `one_time` makes it store-wide again. A `one_time` promotion with `false` returns `422` on `store_wide` with `A promotion for one-time purchases applies to the whole store.`
+     * @param array<int>|null $products Product IDs a narrowed subscription promotion reaches. Each one must sell a subscription, or the request returns `422` on `products` with `Pick only products that sell a subscription.` A narrowed promotion left with no products returns `422` with `Pick at least one subscription product for this promotion.` An update replaces the picks with this list, or keeps them when it is left out.
+     * @param array<int>|null $productVariants Subscription plan IDs to limit the picked products to. Each one must be a subscription plan of a product in `products`, or the request returns `422` on `product_variants` with `Pick only subscription plans of the picked products.` A picked product with none of its plans listed takes every plan, including plans added later. An update that leaves this out keeps the listed plans of products that stay picked.
      * @param array<\SellApp\Resource\UpdatePromotionRequestApplicationJsonPropertyPhasesItem>|null $phases The complete ordered phase set. Array order becomes phase position.
      * @return \SellApp\Resource\SdkUpdatePromotionResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -238,6 +273,11 @@ class Promotions
         ?int $priority = null,
         ?bool $isStackable = null,
         ?int $maxRedemptions = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
+        ?bool $storeWide = null,
+        ?array $products = null,
+        ?array $productVariants = null,
         ?array $phases = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdatePromotionResponseValue200ApplicationJson {
@@ -250,6 +290,11 @@ class Promotions
             'priority' => $priority,
             'is_stackable' => $isStackable,
             'max_redemptions' => $maxRedemptions,
+            'applies_to' => $appliesTo?->value,
+            'subscription_payments' => $subscriptionPayments,
+            'store_wide' => $storeWide,
+            'products' => $products,
+            'product_variants' => $productVariants,
             'phases' => $phases,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkUpdatePromotionRequestApplicationJson::validate($body, 'request');
@@ -294,6 +339,11 @@ class Promotions
      * @param int $priority
      * @param bool $isStackable
      * @param int|null $maxRedemptions
+     * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo|null $appliesTo What the promotion discounts: `one_time` for one-time purchases, or `subscriptions` for the first payments of a subscription plan. A new promotion defaults to `one_time`, and an update that leaves this out keeps the current kind. The promotion only discounts order lines of its kind.
+     * @param int|null $subscriptionPayments How many payments a `subscriptions` promotion discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` promotion needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` promotion, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` promotion always stores null here.
+     * @param bool|null $storeWide Send `false` with `products` to limit a `subscriptions` promotion to picked products and plans. Required whenever the request sends `products` or `product_variants`. A new promotion defaults to `true`, an update that leaves it out keeps the current scope, and switching a promotion to `one_time` makes it store-wide again. A `one_time` promotion with `false` returns `422` on `store_wide` with `A promotion for one-time purchases applies to the whole store.`
+     * @param array<int>|null $products Product IDs a narrowed subscription promotion reaches. Each one must sell a subscription, or the request returns `422` on `products` with `Pick only products that sell a subscription.` A narrowed promotion left with no products returns `422` with `Pick at least one subscription product for this promotion.` An update replaces the picks with this list, or keeps them when it is left out.
+     * @param array<int>|null $productVariants Subscription plan IDs to limit the picked products to. Each one must be a subscription plan of a product in `products`, or the request returns `422` on `product_variants` with `Pick only subscription plans of the picked products.` A picked product with none of its plans listed takes every plan, including plans added later. An update that leaves this out keeps the listed plans of products that stay picked.
      * @param array<\SellApp\Resource\RestorePromotionRequestApplicationJsonPropertyPhasesItem> $phases The complete ordered phase set. Array order becomes phase position.
      * @return \SellApp\Resource\SdkRestorePromotionResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -308,6 +358,11 @@ class Promotions
         ?\DateTimeImmutable $startsAt = null,
         ?\DateTimeImmutable $endsAt = null,
         ?int $maxRedemptions = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
+        ?bool $storeWide = null,
+        ?array $products = null,
+        ?array $productVariants = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkRestorePromotionResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'restorePromotion', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
@@ -319,6 +374,11 @@ class Promotions
             'priority' => $priority,
             'is_stackable' => $isStackable,
             'max_redemptions' => $maxRedemptions,
+            'applies_to' => $appliesTo?->value,
+            'subscription_payments' => $subscriptionPayments,
+            'store_wide' => $storeWide,
+            'products' => $products,
+            'product_variants' => $productVariants,
             'phases' => $phases,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkRestorePromotionRequestApplicationJson::validate($body, 'request');

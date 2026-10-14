@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace SellApp\Resource;
 
+/** The request the preview was taken for. The confirmation has to describe the same change, or it is rejected. */
 readonly class PreviewSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyDataPropertyRequestPayload implements \JsonSerializable
 {
     use JsonSerializableTrait;

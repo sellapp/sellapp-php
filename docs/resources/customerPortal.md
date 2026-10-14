@@ -221,14 +221,14 @@ List customer subscriptions
 ```php
 public function listCustomerPortalSubscriptions(
         ?\SellApp\RequestOptions $options = null,
-    ): \SellApp\Resource\SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson
+    ): \SellApp\PaginatedResponse
 ```
 
 | Argument | Native type | Required |
 | --- | --- | --- |
 | options | `?\SellApp\RequestOptions` | No |
 
-Returns: `\SellApp\Resource\SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson`.
+Returns: `\SellApp\PaginatedResponse`.
 
 ```php
 <?php
@@ -425,10 +425,6 @@ Cancel at period end
 ```php
 public function cancelCustomerSubscriptionAtPeriodEnd(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
         ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCancelCustomerSubscriptionAtPeriodEndResponseValue200ApplicationJson
@@ -437,10 +433,6 @@ public function cancelCustomerSubscriptionAtPeriodEnd(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | productSubscription | `int` | Yes |
-| previewId | `?string` | No |
-| productVariantId | `?int` | No |
-| renewalDate | `?string` | No |
-| returnUrl | `?string` | No |
 | reason | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
@@ -460,8 +452,7 @@ $client = new Client(
 
 $result = $client->customerPortal()->cancelCustomerSubscriptionAtPeriodEnd(
     productSubscription: 42,
-    reason: 'Customer requested this change',
-    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
+    reason: 'Taking a break over the summer.',
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
@@ -491,10 +482,6 @@ Cancel immediately
 ```php
 public function cancelCustomerSubscriptionImmediately(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
         ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCancelCustomerSubscriptionImmediatelyResponseValue200ApplicationJson
@@ -503,10 +490,6 @@ public function cancelCustomerSubscriptionImmediately(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | productSubscription | `int` | Yes |
-| previewId | `?string` | No |
-| productVariantId | `?int` | No |
-| renewalDate | `?string` | No |
-| returnUrl | `?string` | No |
 | reason | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
@@ -526,8 +509,7 @@ $client = new Client(
 
 $result = $client->customerPortal()->cancelCustomerSubscriptionImmediately(
     productSubscription: 42,
-    reason: 'Customer requested this change',
-    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
+    reason: 'No longer needed.',
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
@@ -557,10 +539,7 @@ Pause a subscription
 ```php
 public function pauseCustomerSubscription(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
+        ?\DateTimeImmutable $resumeAt = null,
         ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkPauseCustomerSubscriptionResponseValue200ApplicationJson
@@ -569,10 +548,7 @@ public function pauseCustomerSubscription(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | productSubscription | `int` | Yes |
-| previewId | `?string` | No |
-| productVariantId | `?int` | No |
-| renewalDate | `?string` | No |
-| returnUrl | `?string` | No |
+| resumeAt | `?\DateTimeImmutable` | No |
 | reason | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
@@ -592,8 +568,7 @@ $client = new Client(
 
 $result = $client->customerPortal()->pauseCustomerSubscription(
     productSubscription: 42,
-    reason: 'Customer requested this change',
-    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
+    resumeAt: '2026-11-01T00:00:00Z',
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
@@ -623,11 +598,6 @@ Resume a subscription
 ```php
 public function resumeCustomerSubscription(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
-        ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkResumeCustomerSubscriptionResponseValue200ApplicationJson
 ```
@@ -635,11 +605,6 @@ public function resumeCustomerSubscription(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | productSubscription | `int` | Yes |
-| previewId | `?string` | No |
-| productVariantId | `?int` | No |
-| renewalDate | `?string` | No |
-| returnUrl | `?string` | No |
-| reason | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkResumeCustomerSubscriptionResponseValue200ApplicationJson`.
@@ -656,11 +621,7 @@ $client = new Client(
     store: "",
 );
 
-$result = $client->customerPortal()->resumeCustomerSubscription(
-    productSubscription: 42,
-    reason: 'Customer requested this change',
-    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
-);
+$result = $client->customerPortal()->resumeCustomerSubscription(productSubscription: 42);
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
 
@@ -689,11 +650,7 @@ Update payment method
 ```php
 public function updateCustomerSubscriptionPaymentMethod(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
         ?string $returnUrl = null,
-        ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateCustomerSubscriptionPaymentMethodResponseValue200ApplicationJson
 ```
@@ -701,11 +658,7 @@ public function updateCustomerSubscriptionPaymentMethod(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | productSubscription | `int` | Yes |
-| previewId | `?string` | No |
-| productVariantId | `?int` | No |
-| renewalDate | `?string` | No |
 | returnUrl | `?string` | No |
-| reason | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkUpdateCustomerSubscriptionPaymentMethodResponseValue200ApplicationJson`.
@@ -724,8 +677,7 @@ $client = new Client(
 
 $result = $client->customerPortal()->updateCustomerSubscriptionPaymentMethod(
     productSubscription: 42,
-    reason: 'Customer requested this change',
-    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
+    returnUrl: 'https://acme.sell.app/customer-portal/subscriptions/991',
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
@@ -755,11 +707,10 @@ Preview a plan change
 ```php
 public function previewCustomerSubscriptionPlanChange(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
-        ?string $reason = null,
+        int $targetVariantId,
+        ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,
+        ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,
+        ?\SellApp\Resource\PreviewCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkPreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJson
 ```
@@ -767,11 +718,10 @@ public function previewCustomerSubscriptionPlanChange(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | productSubscription | `int` | Yes |
-| previewId | `?string` | No |
-| productVariantId | `?int` | No |
-| renewalDate | `?string` | No |
-| returnUrl | `?string` | No |
-| reason | `?string` | No |
+| targetVariantId | `int` | Yes |
+| effectiveTiming | `?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming` | No |
+| prorationBehavior | `?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior` | No |
+| metadata | `?\SellApp\Resource\PreviewCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkPreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJson`.
@@ -790,8 +740,7 @@ $client = new Client(
 
 $result = $client->customerPortal()->previewCustomerSubscriptionPlanChange(
     productSubscription: 42,
-    productVariantId: 84,
-    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
+    targetVariantId: 97,
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
@@ -821,11 +770,11 @@ Confirm a plan change
 ```php
 public function confirmCustomerSubscriptionPlanChange(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
-        ?string $reason = null,
+        int $targetVariantId,
+        string $previewToken,
+        ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,
+        ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,
+        ?\SellApp\Resource\ConfirmCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkConfirmCustomerSubscriptionPlanChangeResponseValue200ApplicationJson
 ```
@@ -833,11 +782,11 @@ public function confirmCustomerSubscriptionPlanChange(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | productSubscription | `int` | Yes |
-| previewId | `?string` | No |
-| productVariantId | `?int` | No |
-| renewalDate | `?string` | No |
-| returnUrl | `?string` | No |
-| reason | `?string` | No |
+| targetVariantId | `int` | Yes |
+| previewToken | `string` | Yes |
+| effectiveTiming | `?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming` | No |
+| prorationBehavior | `?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior` | No |
+| metadata | `?\SellApp\Resource\ConfirmCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkConfirmCustomerSubscriptionPlanChangeResponseValue200ApplicationJson`.
@@ -856,8 +805,8 @@ $client = new Client(
 
 $result = $client->customerPortal()->confirmCustomerSubscriptionPlanChange(
     productSubscription: 42,
-    previewId: 'preview_01K4',
-    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
+    targetVariantId: 97,
+    previewToken: 'subprev_portal_991',
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
@@ -887,11 +836,9 @@ Preview a renewal-date change
 ```php
 public function previewCustomerSubscriptionRenewalDateChange(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
+        \DateTimeImmutable $renewalDate,
         ?string $reason = null,
+        ?\SellApp\Resource\PreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkPreviewCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson
 ```
@@ -899,11 +846,9 @@ public function previewCustomerSubscriptionRenewalDateChange(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | productSubscription | `int` | Yes |
-| previewId | `?string` | No |
-| productVariantId | `?int` | No |
-| renewalDate | `?string` | No |
-| returnUrl | `?string` | No |
+| renewalDate | `\DateTimeImmutable` | Yes |
 | reason | `?string` | No |
+| metadata | `?\SellApp\Resource\PreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkPreviewCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson`.
@@ -922,8 +867,7 @@ $client = new Client(
 
 $result = $client->customerPortal()->previewCustomerSubscriptionRenewalDateChange(
     productSubscription: 42,
-    renewalDate: '2026-10-15',
-    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
+    renewalDate: '2026-10-15T00:00:00Z',
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
@@ -953,11 +897,10 @@ Confirm a renewal-date change
 ```php
 public function confirmCustomerSubscriptionRenewalDateChange(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
+        \DateTimeImmutable $renewalDate,
+        ?string $previewToken = null,
         ?string $reason = null,
+        ?\SellApp\Resource\ConfirmCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson
 ```
@@ -965,11 +908,10 @@ public function confirmCustomerSubscriptionRenewalDateChange(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | productSubscription | `int` | Yes |
-| previewId | `?string` | No |
-| productVariantId | `?int` | No |
-| renewalDate | `?string` | No |
-| returnUrl | `?string` | No |
+| renewalDate | `\DateTimeImmutable` | Yes |
+| previewToken | `?string` | No |
 | reason | `?string` | No |
+| metadata | `?\SellApp\Resource\ConfirmCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson`.
@@ -988,8 +930,8 @@ $client = new Client(
 
 $result = $client->customerPortal()->confirmCustomerSubscriptionRenewalDateChange(
     productSubscription: 42,
-    previewId: 'preview_01K4',
-    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
+    renewalDate: '2026-10-15T00:00:00Z',
+    previewToken: 'subprev_portal_renewal_991',
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```

@@ -10,29 +10,33 @@ readonly class SdkCreateCouponRequestApplicationJson implements \JsonSerializabl
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkCreateCouponRequestApplicationJson', 'required' => ['code', 'type', 'discount', 'store_wide'], 'properties' => ['code' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'type' => ['kind' => 'enum', 'values' => ['PERCENTAGE', 'AMOUNT']], 'discount' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'number', 'minimum' => 1, 'maxLength' => 255], ['kind' => 'primitive', 'type' => 'string', 'minimum' => 1, 'maxLength' => 255]]], 'store_wide' => ['kind' => 'primitive', 'type' => 'boolean'], 'products' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer'], 'minItems' => 1], 'product_variants' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'limit' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'expires_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'minimum_amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'number', 'minimum' => 1, 'maxLength' => 255], ['kind' => 'primitive', 'type' => 'string', 'minimum' => 1, 'maxLength' => 255]]]]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkCreateCouponRequestApplicationJson', 'required' => ['code', 'type', 'discount', 'store_wide'], 'properties' => ['code' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'type' => ['kind' => 'enum', 'values' => ['PERCENTAGE', 'AMOUNT']], 'discount' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'number', 'minimum' => 1, 'maxLength' => 255], ['kind' => 'primitive', 'type' => 'string', 'minimum' => 1, 'maxLength' => 255]]], 'store_wide' => ['kind' => 'primitive', 'type' => 'boolean'], 'products' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer'], 'minItems' => 1], 'product_variants' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'limit' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'expires_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'minimum_amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'number', 'minimum' => 1, 'maxLength' => 255], ['kind' => 'primitive', 'type' => 'string', 'minimum' => 1, 'maxLength' => 255]]]], 'applies_to' => ['kind' => 'enum', 'values' => ['one_time', 'subscriptions']], 'subscription_payments' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1, 'maximum' => 36]]], 'additionalProperties' => true];
 
     public function __construct(
         public string $code,
         public SdkCreateCouponRequestApplicationJsonType|string $type,
-        /** A decimal discount value of at least 1. Percentage discounts cannot exceed 100; amount discounts use the store currency's major unit. */
+        /** A decimal discount value of at least 1. Percentage discounts cannot exceed 100; amount discounts use the store currency's major unit. A `subscriptions` coupon cannot take 100% off: that returns `422` on `discount`, so offer a free trial instead. */
         public float|string $discount,
         public bool $storeWide,
         /**
-         * Product IDs the coupon applies to when store_wide is false.
+         * Product IDs the coupon applies to when store_wide is false. Each product you add must sell a variant of the coupon's kind: a subscription plan for a `subscriptions` coupon, or a one-time variant for a `one_time` one. Another product returns `422` on `products`.
          * @var array<int>|null
          */
         public ?array $products = null,
         /**
-         * Optional variant restrictions. Every variant must belong to a selected product. Products without listed variants remain eligible on all variants.
+         * Optional variant restrictions. Every variant must belong to a selected product. Products without listed variants remain eligible on all variants. Each variant you add must be of the coupon's kind, a subscription plan or a one-time variant; another returns `422` on `product_variants`.
          * @var array<int>|null
          */
         public ?array $productVariants = null,
         public ?int $limit = null,
         /** A future date and time, or null for no expiry. */
         public ?\DateTimeImmutable $expiresAt = null,
-        /** A decimal minimum order amount in the store currency's major unit, or null for no minimum. */
+        /** A decimal minimum amount in the store currency's major unit that the order lines of the coupon's kind must reach, or null for no minimum. */
         public float|string|null $minimumAmount = null,
+        /** What the coupon discounts: `one_time` for one-time purchases, or `subscriptions` for the first payments of a subscription plan. A new coupon defaults to `one_time`, and an update that leaves this out keeps the current kind. The coupon only discounts order lines of its kind. */
+        public SdkCreateCouponRequestApplicationJsonAppliesTo|string|null $appliesTo = null,
+        /** How many payments a `subscriptions` coupon discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` coupon needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` coupon, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` coupon always stores null here. */
+        public ?int $subscriptionPayments = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -52,7 +56,9 @@ readonly class SdkCreateCouponRequestApplicationJson implements \JsonSerializabl
             limit: $data['limit'] ?? null,
             expiresAt: isset($data['expires_at']) ? new \DateTimeImmutable($data['expires_at']) : null,
             minimumAmount: $data['minimum_amount'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['code', 'type', 'discount', 'store_wide', 'products', 'product_variants', 'limit', 'expires_at', 'minimum_amount']),
+            appliesTo: isset($data['applies_to']) ? SdkCreateCouponRequestApplicationJsonAppliesTo::tryFrom($data['applies_to']) ?? $data['applies_to'] : null,
+            subscriptionPayments: $data['subscription_payments'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['code', 'type', 'discount', 'store_wide', 'products', 'product_variants', 'limit', 'expires_at', 'minimum_amount', 'applies_to', 'subscription_payments']),
             presentFields: array_keys($data),
         );
     }
@@ -74,6 +80,8 @@ readonly class SdkCreateCouponRequestApplicationJson implements \JsonSerializabl
             'limit' => $this->limit,
             'expires_at' => $this->expiresAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'minimum_amount' => $this->minimumAmount,
+            'applies_to' => $this->appliesTo instanceof \BackedEnum ? $this->appliesTo->value : $this->appliesTo,
+            'subscription_payments' => $this->subscriptionPayments,
         ], ['code', 'type', 'discount', 'store_wide'], $this->presentFields));
     }
 }

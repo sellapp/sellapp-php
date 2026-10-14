@@ -10,10 +10,10 @@ readonly class SdkGetCustomerPortalSubscriptionResponseValue200ApplicationJson i
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkGetCustomerPortalSubscriptionResponseValue200ApplicationJson', 'required' => ['data'], 'properties' => ['data' => ['kind' => 'model', 'class' => 'GetCustomerPortalSubscriptionResponseValue200ApplicationJsonPropertyData']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkGetCustomerPortalSubscriptionResponseValue200ApplicationJson', 'required' => ['data'], 'properties' => ['data' => ['kind' => 'model', 'class' => 'CustomerPortalSubscription']], 'additionalProperties' => true];
 
     public function __construct(
-        public GetCustomerPortalSubscriptionResponseValue200ApplicationJsonPropertyData $data,
+        public CustomerPortalSubscription $data,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -24,7 +24,7 @@ readonly class SdkGetCustomerPortalSubscriptionResponseValue200ApplicationJson i
     {
         self::validate($data, 'response');
         return new self(
-            data: GetCustomerPortalSubscriptionResponseValue200ApplicationJsonPropertyData::fromArray($data['data']),
+            data: CustomerPortalSubscription::fromArray($data['data']),
             additionalProperties: SchemaValidator::unknownFields($data, ['data']),
             presentFields: array_keys($data),
         );

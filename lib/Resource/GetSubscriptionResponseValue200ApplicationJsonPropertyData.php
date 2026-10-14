@@ -10,19 +10,55 @@ readonly class GetSubscriptionResponseValue200ApplicationJsonPropertyData implem
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'GetSubscriptionResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'status', 'provider_subscription_id', 'provider_customer_id', 'customer'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'status' => ['kind' => 'primitive', 'type' => 'string'], 'provider_subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'provider_customer_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'customer' => ['kind' => 'model', 'class' => 'GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer'], 'subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'customer_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'product_variant_id' => ['kind' => 'primitive', 'type' => 'integer']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'GetSubscriptionResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'invoice_id', 'provider', 'subscription_id', 'customer_id', 'provider_subscription_id', 'provider_customer_id', 'customer', 'customer_email', 'status', 'current_period_start', 'current_period_end', 'cancel_at_period_end', 'cancellation_in_progress', 'store_id', 'product_variant_id', 'created_at', 'updated_at'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'invoice_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'provider' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'customer_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'provider_subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'provider_customer_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'customer' => ['kind' => 'nullable', 'inner' => ['kind' => 'model', 'class' => 'GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer']], 'customer_email' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'status' => ['kind' => 'enum', 'values' => ['ACTIVE', 'PAST_DUE', 'UNPAID', 'CANCELED', 'INCOMPLETE', 'INCOMPLETE_EXPIRED', 'TRIALING']], 'current_period_start' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'current_period_end' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'cancel_at_period_end' => ['kind' => 'primitive', 'type' => 'boolean'], 'cancellation_in_progress' => ['kind' => 'primitive', 'type' => 'boolean'], 'store_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'product_variant_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'trial_ends_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'current_plan_variant_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'auto_renew' => ['kind' => 'primitive', 'type' => 'boolean'], 'paused_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'pause_resumes_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'canceled_immediately_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'payment_method_updated_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'last_customer_action_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']]], 'additionalProperties' => true];
 
     public function __construct(
         public int $id,
-        public string $status,
+        /** The original order linked to this subscription, resolved from its first invoice line. */
+        public ?int $invoiceId,
+        /** The billing provider, such as `stripe`, `paypal`, `razorpay`, or `internal` for a subscription the store bills in house. */
+        public ?string $provider,
+        /**
+         * Deprecated alias of provider_subscription_id.
+         * @deprecated
+         */
+        public ?string $subscriptionId,
+        /**
+         * Deprecated alias of provider_customer_id.
+         * @deprecated
+         */
+        public ?string $customerId,
+        /** The provider subscription identifier, or null for a subscription the store bills in house. */
         public ?string $providerSubscriptionId,
+        /** The provider customer identifier, or null for a subscription the store bills in house. */
         public ?string $providerCustomerId,
-        public GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer $customer,
-        /** @deprecated */
-        public ?string $subscriptionId = null,
-        /** @deprecated */
-        public ?string $customerId = null,
-        public ?int $productVariantId = null,
+        public ?GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer $customer,
+        public ?string $customerEmail,
+        public SubscriptionsStatus|string $status,
+        public ?\DateTimeImmutable $currentPeriodStart,
+        public ?\DateTimeImmutable $currentPeriodEnd,
+        public bool $cancelAtPeriodEnd,
+        public bool $cancellationInProgress,
+        public ?int $storeId,
+        public ?int $productVariantId,
+        public \DateTimeImmutable $createdAt,
+        public \DateTimeImmutable $updatedAt,
+        /** When the trial the subscription started with ends, or `null` when it started without one. It keeps its value after the trial is over. */
+        public ?\DateTimeImmutable $trialEndsAt = null,
+        /** The variant the current period bills on. Falls back to product_variant_id while the subscription still bills its original plan. */
+        public ?int $currentPlanVariantId = null,
+        /** Whether a subscription the store bills in house renews itself from the customer wallet. */
+        public ?bool $autoRenew = null,
+        /** When the subscription was paused, or `null` when it is not paused. */
+        public ?\DateTimeImmutable $pausedAt = null,
+        /** When a paused subscription resumes automatically, or `null` when no resume date was set. */
+        public ?\DateTimeImmutable $pauseResumesAt = null,
+        /** When the subscription was cancelled immediately, or `null` when it was not. */
+        public ?\DateTimeImmutable $canceledImmediatelyAt = null,
+        /** When the customer last updated the payment method behind the subscription. */
+        public ?\DateTimeImmutable $paymentMethodUpdatedAt = null,
+        /** When the customer last started a lifecycle action, from the customer portal or through a store integration acting for them on a plan change or payment method update. Seller and SellApp actions don't change it. */
+        public ?\DateTimeImmutable $lastCustomerActionAt = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -34,14 +70,32 @@ readonly class GetSubscriptionResponseValue200ApplicationJsonPropertyData implem
         self::validate($data, 'response');
         return new self(
             id: $data['id'],
-            status: $data['status'],
-            providerSubscriptionId: $data['provider_subscription_id'] ?? null,
-            providerCustomerId: $data['provider_customer_id'] ?? null,
-            customer: GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer::fromArray($data['customer']),
+            invoiceId: $data['invoice_id'] ?? null,
+            provider: $data['provider'] ?? null,
             subscriptionId: $data['subscription_id'] ?? null,
             customerId: $data['customer_id'] ?? null,
+            providerSubscriptionId: $data['provider_subscription_id'] ?? null,
+            providerCustomerId: $data['provider_customer_id'] ?? null,
+            customer: isset($data['customer']) ? GetSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer::fromArray($data['customer']) : null,
+            customerEmail: $data['customer_email'] ?? null,
+            status: SubscriptionsStatus::tryFrom($data['status']) ?? $data['status'],
+            currentPeriodStart: isset($data['current_period_start']) ? new \DateTimeImmutable($data['current_period_start']) : null,
+            currentPeriodEnd: isset($data['current_period_end']) ? new \DateTimeImmutable($data['current_period_end']) : null,
+            cancelAtPeriodEnd: $data['cancel_at_period_end'],
+            cancellationInProgress: $data['cancellation_in_progress'],
+            storeId: $data['store_id'] ?? null,
             productVariantId: $data['product_variant_id'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'status', 'provider_subscription_id', 'provider_customer_id', 'customer', 'subscription_id', 'customer_id', 'product_variant_id']),
+            createdAt: new \DateTimeImmutable($data['created_at']),
+            updatedAt: new \DateTimeImmutable($data['updated_at']),
+            trialEndsAt: isset($data['trial_ends_at']) ? new \DateTimeImmutable($data['trial_ends_at']) : null,
+            currentPlanVariantId: $data['current_plan_variant_id'] ?? null,
+            autoRenew: $data['auto_renew'] ?? null,
+            pausedAt: isset($data['paused_at']) ? new \DateTimeImmutable($data['paused_at']) : null,
+            pauseResumesAt: isset($data['pause_resumes_at']) ? new \DateTimeImmutable($data['pause_resumes_at']) : null,
+            canceledImmediatelyAt: isset($data['canceled_immediately_at']) ? new \DateTimeImmutable($data['canceled_immediately_at']) : null,
+            paymentMethodUpdatedAt: isset($data['payment_method_updated_at']) ? new \DateTimeImmutable($data['payment_method_updated_at']) : null,
+            lastCustomerActionAt: isset($data['last_customer_action_at']) ? new \DateTimeImmutable($data['last_customer_action_at']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'invoice_id', 'provider', 'subscription_id', 'customer_id', 'provider_subscription_id', 'provider_customer_id', 'customer', 'customer_email', 'status', 'current_period_start', 'current_period_end', 'cancel_at_period_end', 'cancellation_in_progress', 'store_id', 'product_variant_id', 'created_at', 'updated_at', 'trial_ends_at', 'current_plan_variant_id', 'auto_renew', 'paused_at', 'pause_resumes_at', 'canceled_immediately_at', 'payment_method_updated_at', 'last_customer_action_at']),
             presentFields: array_keys($data),
         );
     }
@@ -55,13 +109,31 @@ readonly class GetSubscriptionResponseValue200ApplicationJsonPropertyData implem
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'id' => $this->id,
-            'status' => $this->status,
-            'provider_subscription_id' => $this->providerSubscriptionId,
-            'provider_customer_id' => $this->providerCustomerId,
-            'customer' => $this->customer->toArray(),
+            'invoice_id' => $this->invoiceId,
+            'provider' => $this->provider,
             'subscription_id' => $this->subscriptionId,
             'customer_id' => $this->customerId,
+            'provider_subscription_id' => $this->providerSubscriptionId,
+            'provider_customer_id' => $this->providerCustomerId,
+            'customer' => $this->customer?->toArray(),
+            'customer_email' => $this->customerEmail,
+            'status' => $this->status instanceof \BackedEnum ? $this->status->value : $this->status,
+            'current_period_start' => $this->currentPeriodStart?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'current_period_end' => $this->currentPeriodEnd?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'cancel_at_period_end' => $this->cancelAtPeriodEnd,
+            'cancellation_in_progress' => $this->cancellationInProgress,
+            'store_id' => $this->storeId,
             'product_variant_id' => $this->productVariantId,
-        ], ['id', 'status', 'provider_subscription_id', 'provider_customer_id', 'customer'], $this->presentFields));
+            'created_at' => $this->createdAt->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'updated_at' => $this->updatedAt->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'trial_ends_at' => $this->trialEndsAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'current_plan_variant_id' => $this->currentPlanVariantId,
+            'auto_renew' => $this->autoRenew,
+            'paused_at' => $this->pausedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'pause_resumes_at' => $this->pauseResumesAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'canceled_immediately_at' => $this->canceledImmediatelyAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'payment_method_updated_at' => $this->paymentMethodUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'last_customer_action_at' => $this->lastCustomerActionAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+        ], ['id', 'invoice_id', 'provider', 'subscription_id', 'customer_id', 'provider_subscription_id', 'provider_customer_id', 'customer', 'customer_email', 'status', 'current_period_start', 'current_period_end', 'cancel_at_period_end', 'cancellation_in_progress', 'store_id', 'product_variant_id', 'created_at', 'updated_at'], $this->presentFields));
     }
 }

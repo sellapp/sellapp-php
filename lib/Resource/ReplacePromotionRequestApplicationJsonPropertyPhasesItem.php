@@ -14,7 +14,7 @@ readonly class ReplacePromotionRequestApplicationJsonPropertyPhasesItem implemen
 
     public function __construct(
         public CreatePromotionRequestApplicationJsonPropertyPhasesItemDiscountType|string $discountType,
-        /** Percentage from 1 through 100, or a fixed decimal amount of at least 1. */
+        /** Percentage from 1 through 100, or a fixed decimal amount of at least 1. A `subscriptions` promotion cannot take 100% off: such a phase returns `422` on `phases.{index}.discount_value`, or on `subscription_payments` when an update switches the promotion to `subscriptions` without sending `phases`. Offer a free trial instead. */
         public float|string $discountValue,
         /** A future date and time, or null for no time limit. */
         public ?\DateTimeImmutable $endsAt = null,

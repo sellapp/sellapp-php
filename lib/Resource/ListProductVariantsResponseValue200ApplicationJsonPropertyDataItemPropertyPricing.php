@@ -10,13 +10,14 @@ readonly class ListProductVariantsResponseValue200ApplicationJsonPropertyDataIte
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricing', 'required' => ['humble', 'frequency', 'type', 'price'], 'properties' => ['humble' => ['kind' => 'primitive', 'type' => 'boolean'], 'frequency' => ['kind' => 'model', 'class' => 'ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyFrequency'], 'type' => ['kind' => 'primitive', 'type' => 'string'], 'price' => ['kind' => 'model', 'class' => 'ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyPrice']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricing', 'required' => ['humble', 'frequency', 'type', 'price'], 'properties' => ['humble' => ['kind' => 'primitive', 'type' => 'boolean'], 'frequency' => ['kind' => 'model', 'class' => 'ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyFrequency'], 'type' => ['kind' => 'primitive', 'type' => 'string'], 'price' => ['kind' => 'model', 'class' => 'ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyPrice'], 'trial' => ['kind' => 'model', 'class' => 'ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyTrial']], 'additionalProperties' => true];
 
     public function __construct(
         public bool $humble,
         public ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyFrequency $frequency,
         public string $type,
         public ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyPrice $price,
+        public ?ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyTrial $trial = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -31,7 +32,8 @@ readonly class ListProductVariantsResponseValue200ApplicationJsonPropertyDataIte
             frequency: ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyFrequency::fromArray($data['frequency']),
             type: $data['type'],
             price: ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyPrice::fromArray($data['price']),
-            additionalProperties: SchemaValidator::unknownFields($data, ['humble', 'frequency', 'type', 'price']),
+            trial: isset($data['trial']) ? ListProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricingPropertyTrial::fromArray($data['trial']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['humble', 'frequency', 'type', 'price', 'trial']),
             presentFields: array_keys($data),
         );
     }
@@ -48,6 +50,7 @@ readonly class ListProductVariantsResponseValue200ApplicationJsonPropertyDataIte
             'frequency' => $this->frequency->toArray(),
             'type' => $this->type,
             'price' => $this->price->toArray(),
+            'trial' => $this->trial?->toArray(),
         ], ['humble', 'frequency', 'type', 'price'], $this->presentFields));
     }
 }

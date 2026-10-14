@@ -10,7 +10,7 @@ readonly class SearchCouponsResponseValue200ApplicationJsonPropertyDataItem impl
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SearchCouponsResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['id', 'code', 'type', 'discount', 'limit', 'store_wide', 'minimum_amount', 'expires_at', 'created_at', 'updated_at', 'store_id', 'deleted_at', 'maximum_discount_amount', 'products', 'product_variants'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'code' => ['kind' => 'primitive', 'type' => 'string'], 'type' => ['kind' => 'enum', 'values' => ['PERCENTAGE', 'AMOUNT']], 'discount' => ['kind' => 'primitive', 'type' => 'string'], 'limit' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'store_wide' => ['kind' => 'primitive', 'type' => 'boolean'], 'minimum_amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'expires_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'store_id' => ['kind' => 'primitive', 'type' => 'integer'], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'maximum_discount_amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'products' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'product_variants' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SearchCouponsResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['id', 'code', 'type', 'discount', 'limit', 'store_wide', 'minimum_amount', 'expires_at', 'created_at', 'updated_at', 'store_id', 'deleted_at', 'maximum_discount_amount', 'applies_to', 'subscription_payments', 'products', 'product_variants'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'code' => ['kind' => 'primitive', 'type' => 'string'], 'type' => ['kind' => 'enum', 'values' => ['PERCENTAGE', 'AMOUNT']], 'discount' => ['kind' => 'primitive', 'type' => 'string'], 'limit' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'store_wide' => ['kind' => 'primitive', 'type' => 'boolean'], 'minimum_amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'expires_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'store_id' => ['kind' => 'primitive', 'type' => 'integer'], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'maximum_discount_amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'applies_to' => ['kind' => 'enum', 'values' => ['one_time', 'subscriptions']], 'subscription_payments' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'products' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'product_variants' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']]], 'additionalProperties' => true];
 
     public function __construct(
         public int $id,
@@ -19,7 +19,7 @@ readonly class SearchCouponsResponseValue200ApplicationJsonPropertyDataItem impl
         public string $discount,
         public ?int $limit,
         public bool $storeWide,
-        /** The decimal minimum order amount in the store currency's major unit, or null when no minimum applies. */
+        /** The decimal minimum amount in the store currency's major unit that the order lines of the coupon's kind must reach, or null when no minimum applies. */
         public ?string $minimumAmount,
         /** When the coupon stops applying, as a `Y-m-d H:i:s` timestamp in the store timezone, or null when it never expires. Unlike the other timestamps in this API, this is not an ISO 8601 instant. */
         public ?string $expiresAt,
@@ -29,6 +29,10 @@ readonly class SearchCouponsResponseValue200ApplicationJsonPropertyDataItem impl
         public ?\DateTimeImmutable $deletedAt,
         /** The maximum decimal discount in the store currency's major unit for percentage coupons. This field is managed from the dashboard and is read-only in the v1 Coupons API. */
         public ?string $maximumDiscountAmount,
+        /** `one_time` when the coupon discounts one-time purchases, or `subscriptions` when it discounts the first payments of a subscription plan. */
+        public SdkCreateCouponRequestApplicationJsonAppliesTo|string $appliesTo,
+        /** How many payments a `subscriptions` coupon discounts, counting the signup payment as the first. Null on a `one_time` coupon. */
+        public ?int $subscriptionPayments,
         /**
          * Product IDs this coupon applies to. Store-wide coupons return an empty array.
          * @var array<int>
@@ -62,9 +66,11 @@ readonly class SearchCouponsResponseValue200ApplicationJsonPropertyDataItem impl
             storeId: $data['store_id'],
             deletedAt: isset($data['deleted_at']) ? new \DateTimeImmutable($data['deleted_at']) : null,
             maximumDiscountAmount: $data['maximum_discount_amount'] ?? null,
+            appliesTo: SdkCreateCouponRequestApplicationJsonAppliesTo::tryFrom($data['applies_to']) ?? $data['applies_to'],
+            subscriptionPayments: $data['subscription_payments'] ?? null,
             products: $data['products'],
             productVariants: $data['product_variants'],
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'code', 'type', 'discount', 'limit', 'store_wide', 'minimum_amount', 'expires_at', 'created_at', 'updated_at', 'store_id', 'deleted_at', 'maximum_discount_amount', 'products', 'product_variants']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'code', 'type', 'discount', 'limit', 'store_wide', 'minimum_amount', 'expires_at', 'created_at', 'updated_at', 'store_id', 'deleted_at', 'maximum_discount_amount', 'applies_to', 'subscription_payments', 'products', 'product_variants']),
             presentFields: array_keys($data),
         );
     }
@@ -90,8 +96,10 @@ readonly class SearchCouponsResponseValue200ApplicationJsonPropertyDataItem impl
             'store_id' => $this->storeId,
             'deleted_at' => $this->deletedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'maximum_discount_amount' => $this->maximumDiscountAmount,
+            'applies_to' => $this->appliesTo instanceof \BackedEnum ? $this->appliesTo->value : $this->appliesTo,
+            'subscription_payments' => $this->subscriptionPayments,
             'products' => $this->products,
             'product_variants' => $this->productVariants,
-        ], ['id', 'code', 'type', 'discount', 'limit', 'store_wide', 'minimum_amount', 'expires_at', 'created_at', 'updated_at', 'store_id', 'deleted_at', 'maximum_discount_amount', 'products', 'product_variants'], $this->presentFields));
+        ], ['id', 'code', 'type', 'discount', 'limit', 'store_wide', 'minimum_amount', 'expires_at', 'created_at', 'updated_at', 'store_id', 'deleted_at', 'maximum_discount_amount', 'applies_to', 'subscription_payments', 'products', 'product_variants'], $this->presentFields));
     }
 }

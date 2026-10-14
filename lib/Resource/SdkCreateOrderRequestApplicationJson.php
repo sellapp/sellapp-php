@@ -16,6 +16,7 @@ readonly class SdkCreateOrderRequestApplicationJson implements \JsonSerializable
         public string $customerEmail,
         public PaymentMethod|string $paymentMethod,
         public CreateOrderRequestApplicationJsonPropertyProductVariants $productVariants,
+        /** The IP address the customer is buying from. Send it when you sell a plan with a trial: a trial of the same product taken from this address in the last 30 days counts as the customer's. Without it, only `customer_email` is checked, so a customer could take another trial with a new email address. */
         public ?string $customerIp = null,
         public ?string $coupon = null,
         public ?string $vatId = null,

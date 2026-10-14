@@ -10,11 +10,16 @@ readonly class SdkSearchSubscriptionsRequestApplicationJson implements \JsonSeri
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkSearchSubscriptionsRequestApplicationJson', 'required' => [], 'properties' => ['search' => ['kind' => 'primitive', 'type' => 'string'], 'status' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkSearchSubscriptionsRequestApplicationJson', 'required' => [], 'properties' => ['filters' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertyFiltersItem']], 'sort' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertySortItem']], 'search' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertySearch'], 'includes' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertyIncludesItem']]], 'additionalProperties' => true];
 
     public function __construct(
-        public ?string $search = null,
-        public ?string $status = null,
+        /** @var array<\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertyFiltersItem>|null */
+        public ?array $filters = null,
+        /** @var array<\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertySortItem>|null */
+        public ?array $sort = null,
+        public ?SearchSubscriptionsRequestApplicationJsonPropertySearch $search = null,
+        /** @var array<\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertyIncludesItem>|null */
+        public ?array $includes = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -25,9 +30,11 @@ readonly class SdkSearchSubscriptionsRequestApplicationJson implements \JsonSeri
     {
         self::validate($data, 'response');
         return new self(
-            search: $data['search'] ?? null,
-            status: $data['status'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['search', 'status']),
+            filters: isset($data['filters']) ? array_map(fn ($item) => SearchSubscriptionsRequestApplicationJsonPropertyFiltersItem::fromArray($item), $data['filters']) : null,
+            sort: isset($data['sort']) ? array_map(fn ($item) => SearchSubscriptionsRequestApplicationJsonPropertySortItem::fromArray($item), $data['sort']) : null,
+            search: isset($data['search']) ? SearchSubscriptionsRequestApplicationJsonPropertySearch::fromArray($data['search']) : null,
+            includes: isset($data['includes']) ? array_map(fn ($item) => SearchSubscriptionsRequestApplicationJsonPropertyIncludesItem::fromArray($item), $data['includes']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['filters', 'sort', 'search', 'includes']),
             presentFields: array_keys($data),
         );
     }
@@ -40,8 +47,10 @@ readonly class SdkSearchSubscriptionsRequestApplicationJson implements \JsonSeri
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'search' => $this->search,
-            'status' => $this->status,
+            'filters' => $this->filters !== null ? array_map(fn ($item) => $item->toArray(), $this->filters) : null,
+            'sort' => $this->sort !== null ? array_map(fn ($item) => $item->toArray(), $this->sort) : null,
+            'search' => $this->search?->toArray(),
+            'includes' => $this->includes !== null ? array_map(fn ($item) => $item->toArray(), $this->includes) : null,
         ], [], $this->presentFields));
     }
 }

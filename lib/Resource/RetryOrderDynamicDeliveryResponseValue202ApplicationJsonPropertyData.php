@@ -20,6 +20,7 @@ readonly class RetryOrderDynamicDeliveryResponseValue202ApplicationJsonPropertyD
         public RetryOrderDynamicDeliveryResponseValue202ApplicationJsonPropertyDataPropertyCustomer $customer,
         public RetryOrderDynamicDeliveryResponseValue202ApplicationJsonPropertyDataPropertyPayment $payment,
         public RetryOrderDynamicDeliveryResponseValue202ApplicationJsonPropertyDataPropertyTotals $totals,
+        /** The coupon this order was sold with, or null. A subscription's renewal and plan-change orders carry null, even while the subscription still bills a discounted price, so a coupon's `limit` counts a subscription once, at signup. */
         public ?int $couponId,
         /** @var array<\SellApp\Resource\RetryOrderDynamicDeliveryResponseValue202ApplicationJsonPropertyDataPropertyLineItemsItem> */
         public array $lineItems,

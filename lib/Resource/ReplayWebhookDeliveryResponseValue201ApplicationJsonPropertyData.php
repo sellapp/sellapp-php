@@ -10,12 +10,13 @@ readonly class ReplayWebhookDeliveryResponseValue201ApplicationJsonPropertyData 
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'ReplayWebhookDeliveryResponseValue201ApplicationJsonPropertyData', 'required' => ['id', 'event_id', 'event_type', 'status', 'destination_origin', 'attempts'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uuid'], 'event_id' => ['kind' => 'primitive', 'type' => 'string', 'pattern' => '^evt_'], 'event_type' => ['kind' => 'primitive', 'type' => 'string'], 'status' => ['kind' => 'enum', 'values' => ['pending', 'delivering', 'succeeded', 'failed']], 'destination_origin' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri'], 'attempts' => ['kind' => 'primitive', 'type' => 'integer'], 'response_status' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'response_body' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 2048]]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'ReplayWebhookDeliveryResponseValue201ApplicationJsonPropertyData', 'required' => ['id', 'event_id', 'event_type', 'status', 'destination_origin', 'attempts'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uuid'], 'event_id' => ['kind' => 'primitive', 'type' => 'string', 'pattern' => '^evt_'], 'event_type' => ['kind' => 'primitive', 'type' => 'string'], 'status' => ['kind' => 'enum', 'values' => ['pending', 'delivering', 'retrying', 'succeeded', 'failed', 'disabled']], 'destination_origin' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri'], 'attempts' => ['kind' => 'primitive', 'type' => 'integer'], 'response_status' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'response_body' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 2048]]], 'additionalProperties' => true];
 
     public function __construct(
         public string $id,
         public string $eventId,
         public string $eventType,
+        /** A disabled channel retains new deliveries with zero attempts. Fix the endpoint and save the channel to re-enable automatic delivery. Retained deliveries require an explicit replay; saving does not send the backlog. */
         public GetWebhookDeliveryResponseValue200ApplicationJsonPropertyDataStatus|string $status,
         public string $destinationOrigin,
         public int $attempts,

@@ -10,10 +10,11 @@ readonly class GetCustomerPortalSubscriptionCapabilitiesResponseValue200Applicat
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'GetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyData', 'required' => ['subscription_id', 'capabilities'], 'properties' => ['subscription_id' => ['kind' => 'primitive', 'type' => 'integer'], 'capabilities' => ['kind' => 'model', 'class' => 'GetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyDataPropertyCapabilities']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'GetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'capabilities'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'capabilities' => ['kind' => 'model', 'class' => 'GetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyDataPropertyCapabilities']], 'additionalProperties' => true];
 
     public function __construct(
-        public int $subscriptionId,
+        /** The SellApp subscription ID. */
+        public int $id,
         public GetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyDataPropertyCapabilities $capabilities,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
@@ -25,9 +26,9 @@ readonly class GetCustomerPortalSubscriptionCapabilitiesResponseValue200Applicat
     {
         self::validate($data, 'response');
         return new self(
-            subscriptionId: $data['subscription_id'],
+            id: $data['id'],
             capabilities: GetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyDataPropertyCapabilities::fromArray($data['capabilities']),
-            additionalProperties: SchemaValidator::unknownFields($data, ['subscription_id', 'capabilities']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'capabilities']),
             presentFields: array_keys($data),
         );
     }
@@ -40,8 +41,8 @@ readonly class GetCustomerPortalSubscriptionCapabilitiesResponseValue200Applicat
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'subscription_id' => $this->subscriptionId,
+            'id' => $this->id,
             'capabilities' => $this->capabilities->toArray(),
-        ], ['subscription_id', 'capabilities'], $this->presentFields));
+        ], ['id', 'capabilities'], $this->presentFields));
     }
 }

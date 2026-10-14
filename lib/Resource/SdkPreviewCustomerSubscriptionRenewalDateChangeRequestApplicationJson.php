@@ -10,14 +10,12 @@ readonly class SdkPreviewCustomerSubscriptionRenewalDateChangeRequestApplication
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkPreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJson', 'required' => [], 'properties' => ['preview_id' => ['kind' => 'primitive', 'type' => 'string'], 'product_variant_id' => ['kind' => 'primitive', 'type' => 'integer'], 'renewal_date' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date'], 'return_url' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri'], 'reason' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkPreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJson', 'required' => ['renewal_date'], 'properties' => ['renewal_date' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'reason' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 500]], 'metadata' => ['kind' => 'model', 'class' => 'PreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata']], 'additionalProperties' => true];
 
     public function __construct(
-        public ?string $previewId = null,
-        public ?int $productVariantId = null,
-        public ?string $renewalDate = null,
-        public ?string $returnUrl = null,
+        public \DateTimeImmutable $renewalDate,
         public ?string $reason = null,
+        public ?PreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -28,12 +26,10 @@ readonly class SdkPreviewCustomerSubscriptionRenewalDateChangeRequestApplication
     {
         self::validate($data, 'response');
         return new self(
-            previewId: $data['preview_id'] ?? null,
-            productVariantId: $data['product_variant_id'] ?? null,
-            renewalDate: $data['renewal_date'] ?? null,
-            returnUrl: $data['return_url'] ?? null,
+            renewalDate: new \DateTimeImmutable($data['renewal_date']),
             reason: $data['reason'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['preview_id', 'product_variant_id', 'renewal_date', 'return_url', 'reason']),
+            metadata: isset($data['metadata']) ? PreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata::fromArray($data['metadata']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['renewal_date', 'reason', 'metadata']),
             presentFields: array_keys($data),
         );
     }
@@ -46,11 +42,9 @@ readonly class SdkPreviewCustomerSubscriptionRenewalDateChangeRequestApplication
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'preview_id' => $this->previewId,
-            'product_variant_id' => $this->productVariantId,
-            'renewal_date' => $this->renewalDate,
-            'return_url' => $this->returnUrl,
+            'renewal_date' => $this->renewalDate->format(\DateTimeInterface::RFC3339_EXTENDED),
             'reason' => $this->reason,
-        ], [], $this->presentFields));
+            'metadata' => $this->metadata?->toArray(),
+        ], ['renewal_date'], $this->presentFields));
     }
 }

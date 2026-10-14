@@ -10,10 +10,10 @@ readonly class CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoi
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoicePropertyStatus', 'required' => ['history', 'status'], 'properties' => ['history' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string']], 'status' => ['kind' => 'model', 'class' => 'CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoicePropertyStatusPropertyStatus']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoicePropertyStatus', 'required' => ['history', 'status'], 'properties' => ['history' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoicePropertyStatusPropertyHistoryItem']], 'status' => ['kind' => 'model', 'class' => 'CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoicePropertyStatusPropertyStatus']], 'additionalProperties' => true];
 
     public function __construct(
-        /** @var array<string> */
+        /** @var array<\SellApp\Resource\CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoicePropertyStatusPropertyHistoryItem> */
         public array $history,
         public CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoicePropertyStatusPropertyStatus $status,
         /** @var array<string, mixed> */
@@ -26,7 +26,7 @@ readonly class CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoi
     {
         self::validate($data, 'response');
         return new self(
-            history: $data['history'],
+            history: array_map(fn ($item) => CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoicePropertyStatusPropertyHistoryItem::fromArray($item), $data['history']),
             status: CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoicePropertyStatusPropertyStatus::fromArray($data['status']),
             additionalProperties: SchemaValidator::unknownFields($data, ['history', 'status']),
             presentFields: array_keys($data),
@@ -41,7 +41,7 @@ readonly class CreateCheckoutSessionResponseValue201ApplicationJsonPropertyInvoi
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'history' => $this->history,
+            'history' => array_map(fn ($item) => $item->toArray(), $this->history),
             'status' => $this->status->toArray(),
         ], ['history', 'status'], $this->presentFields));
     }

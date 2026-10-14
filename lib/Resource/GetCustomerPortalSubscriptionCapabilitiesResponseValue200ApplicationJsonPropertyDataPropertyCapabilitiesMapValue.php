@@ -10,11 +10,12 @@ readonly class GetCustomerPortalSubscriptionCapabilitiesResponseValue200Applicat
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'GetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyDataPropertyCapabilitiesMapValue', 'required' => ['available'], 'properties' => ['available' => ['kind' => 'primitive', 'type' => 'boolean'], 'reason' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'GetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyDataPropertyCapabilitiesMapValue', 'required' => ['status', 'customer_reason', 'seller_reason'], 'properties' => ['status' => ['kind' => 'enum', 'values' => ['available', 'requires_redirect', 'seller_only', 'customer_only', 'manual_proration', 'unsupported']], 'customer_reason' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'seller_reason' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']]], 'additionalProperties' => true];
 
     public function __construct(
-        public bool $available,
-        public ?string $reason = null,
+        public GetSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyDataPropertyCapabilitiesMapValueStatus|string $status,
+        public ?string $customerReason,
+        public ?string $sellerReason,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -25,9 +26,10 @@ readonly class GetCustomerPortalSubscriptionCapabilitiesResponseValue200Applicat
     {
         self::validate($data, 'response');
         return new self(
-            available: $data['available'],
-            reason: $data['reason'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['available', 'reason']),
+            status: GetSubscriptionCapabilitiesResponseValue200ApplicationJsonPropertyDataPropertyCapabilitiesMapValueStatus::tryFrom($data['status']) ?? $data['status'],
+            customerReason: $data['customer_reason'] ?? null,
+            sellerReason: $data['seller_reason'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['status', 'customer_reason', 'seller_reason']),
             presentFields: array_keys($data),
         );
     }
@@ -40,8 +42,9 @@ readonly class GetCustomerPortalSubscriptionCapabilitiesResponseValue200Applicat
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'available' => $this->available,
-            'reason' => $this->reason,
-        ], ['available'], $this->presentFields));
+            'status' => $this->status instanceof \BackedEnum ? $this->status->value : $this->status,
+            'customer_reason' => $this->customerReason,
+            'seller_reason' => $this->sellerReason,
+        ], ['status', 'customer_reason', 'seller_reason'], $this->presentFields));
     }
 }

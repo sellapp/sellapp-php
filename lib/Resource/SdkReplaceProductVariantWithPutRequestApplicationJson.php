@@ -10,7 +10,7 @@ readonly class SdkReplaceProductVariantWithPutRequestApplicationJson implements 
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkReplaceProductVariantWithPutRequestApplicationJson', 'required' => [], 'properties' => ['title' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'deliverable' => ['kind' => 'model', 'class' => 'ReplaceProductVariantWithPutRequestApplicationJsonPropertyDeliverable'], 'pricing' => ['kind' => 'model', 'class' => 'ReplaceProductVariantWithPutRequestApplicationJsonPropertyPricing'], 'minimum_purchase_quantity' => ['kind' => 'primitive', 'type' => 'integer'], 'maximum_purchase_quantity' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'bulk_discount' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'ReplaceProductVariantWithPutRequestApplicationJsonPropertyBulkDiscountItem']], 'payment_methods' => ['kind' => 'array', 'items' => ['kind' => 'enum', 'values' => ['AUTHNET', 'BTCPAY', 'CASHAPP', 'COINBASE', 'PADDLE', 'PAYDASH', 'PAYPAL', 'PAYSTACK', 'SQUARE', 'STRIPE', 'VENMO', 'NMI', 'MERCADO_PAGO', 'MOLLIE', 'RAZORPAY', 'CUSTOM_PAYMENT_METHOD', 'LIFI', 'BTC', 'LTC', 'ETH', 'XMR', 'SOL', 'ADA', 'BNB', 'TRX', 'MATIC', 'ETH_USDT', 'ETH_USDC', 'ETH_UNI', 'ETH_SHIB', 'ETH_DAI', 'BNB_USDT', 'BNB_USDC', 'TRX_USDT', 'TRX_USDC', 'SOL_USDT', 'SOL_USDC']], 'minItems' => 1], 'other_settings' => ['kind' => 'model', 'class' => 'ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings'], 'expected_updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkReplaceProductVariantWithPutRequestApplicationJson', 'required' => [], 'properties' => ['title' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'deliverable' => ['kind' => 'model', 'class' => 'ReplaceProductVariantWithPutRequestApplicationJsonPropertyDeliverable'], 'pricing' => ['kind' => 'model', 'class' => 'ReplaceProductVariantWithPutRequestApplicationJsonPropertyPricing'], 'minimum_purchase_quantity' => ['kind' => 'primitive', 'type' => 'integer'], 'maximum_purchase_quantity' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'bulk_discount' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'ReplaceProductVariantWithPutRequestApplicationJsonPropertyBulkDiscountItem']], 'payment_methods' => ['kind' => 'array', 'items' => ['kind' => 'enum', 'values' => ['AUTHNET', 'BTCPAY', 'CASHAPP', 'COINBASE', 'PADDLE', 'PAYDASH', 'PAYPAL', 'PAYSTACK', 'SQUARE', 'STRIPE', 'VENMO', 'NMI', 'MERCADO_PAGO', 'MOLLIE', 'RAZORPAY', 'CUSTOM_PAYMENT_METHOD', 'LIFI', 'BTC', 'LTC', 'ETH', 'XMR', 'SOL', 'ADA', 'BNB', 'TRX', 'MATIC', 'ETH_USDT', 'ETH_USDC', 'ETH_UNI', 'ETH_SHIB', 'ETH_DAI', 'BNB_USDT', 'BNB_USDC', 'TRX_USDT', 'TRX_USDC', 'SOL_USDT', 'SOL_USDC']], 'minItems' => 1], 'custom_payment_method_ids' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string', 'pattern' => '^[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26}$']], 'other_settings' => ['kind' => 'model', 'class' => 'ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings'], 'expected_updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'stock' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0, 'maximum' => 2147483647]]], 'additionalProperties' => true];
 
     public function __construct(
         public ?string $title = null,
@@ -21,11 +21,21 @@ readonly class SdkReplaceProductVariantWithPutRequestApplicationJson implements 
         public ?int $maximumPurchaseQuantity = null,
         /** @var array<\SellApp\Resource\ReplaceProductVariantWithPutRequestApplicationJsonPropertyBulkDiscountItem>|null */
         public ?array $bulkDiscount = null,
-        /** @var array<\SellApp\Resource\PaymentMethod>|null */
+        /**
+         * Complete gateway selection for this variant. Selecting CUSTOM_PAYMENT_METHOD also requires at least one custom_payment_method_ids entry.
+         * @var array<\SellApp\Resource\PaymentMethod>|null
+         */
         public ?array $paymentMethods = null,
+        /**
+         * Enabled, usable custom payment method ULIDs belonging to the selected store. Supply at least one when payment_methods includes CUSTOM_PAYMENT_METHOD. Include CUSTOM_PAYMENT_METHOD in payment_methods whenever sending nonempty IDs. On updates, omitting both selections preserves the current methods. Nonempty IDs are rejected when custom payments are not selected.
+         * @var array<string>|null
+         */
+        public ?array $customPaymentMethodIds = null,
         public ?ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings $otherSettings = null,
         /** Optional optimistic-concurrency snapshot for updates. Use the variant's latest updated_at value; stale snapshots receive a 422 validation response. */
         public ?\DateTimeImmutable $expectedUpdatedAt = null,
+        /** Set an existing variant's stock count while preserving delivery instructions and uploaded files. Send 0 for out of stock or null for unlimited stock. Omit deliverable for a stock-only change. TEXT variants manage stock through their serial inventory and reject this field. */
+        public ?int $stock = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -44,9 +54,11 @@ readonly class SdkReplaceProductVariantWithPutRequestApplicationJson implements 
             maximumPurchaseQuantity: $data['maximum_purchase_quantity'] ?? null,
             bulkDiscount: isset($data['bulk_discount']) ? array_map(fn ($item) => ReplaceProductVariantWithPutRequestApplicationJsonPropertyBulkDiscountItem::fromArray($item), $data['bulk_discount']) : null,
             paymentMethods: isset($data['payment_methods']) ? array_map(fn ($item) => PaymentMethod::tryFrom($item) ?? $item, $data['payment_methods']) : null,
+            customPaymentMethodIds: $data['custom_payment_method_ids'] ?? null,
             otherSettings: isset($data['other_settings']) ? ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings::fromArray($data['other_settings']) : null,
             expectedUpdatedAt: isset($data['expected_updated_at']) ? new \DateTimeImmutable($data['expected_updated_at']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['title', 'description', 'deliverable', 'pricing', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'payment_methods', 'other_settings', 'expected_updated_at']),
+            stock: $data['stock'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['title', 'description', 'deliverable', 'pricing', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'payment_methods', 'custom_payment_method_ids', 'other_settings', 'expected_updated_at', 'stock']),
             presentFields: array_keys($data),
         );
     }
@@ -67,8 +79,10 @@ readonly class SdkReplaceProductVariantWithPutRequestApplicationJson implements 
             'maximum_purchase_quantity' => $this->maximumPurchaseQuantity,
             'bulk_discount' => $this->bulkDiscount !== null ? array_map(fn ($item) => $item->toArray(), $this->bulkDiscount) : null,
             'payment_methods' => $this->paymentMethods !== null ? array_map(fn ($item) => $item instanceof \BackedEnum ? $item->value : $item, $this->paymentMethods) : null,
+            'custom_payment_method_ids' => $this->customPaymentMethodIds,
             'other_settings' => $this->otherSettings?->toArray(),
             'expected_updated_at' => $this->expectedUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'stock' => $this->stock,
         ], [], $this->presentFields));
     }
 }

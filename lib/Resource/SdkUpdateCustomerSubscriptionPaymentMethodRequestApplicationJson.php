@@ -10,14 +10,10 @@ readonly class SdkUpdateCustomerSubscriptionPaymentMethodRequestApplicationJson 
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkUpdateCustomerSubscriptionPaymentMethodRequestApplicationJson', 'required' => [], 'properties' => ['preview_id' => ['kind' => 'primitive', 'type' => 'string'], 'product_variant_id' => ['kind' => 'primitive', 'type' => 'integer'], 'renewal_date' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date'], 'return_url' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri'], 'reason' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkUpdateCustomerSubscriptionPaymentMethodRequestApplicationJson', 'required' => [], 'properties' => ['return_url' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri', 'maxLength' => 2000]]], 'additionalProperties' => true];
 
     public function __construct(
-        public ?string $previewId = null,
-        public ?int $productVariantId = null,
-        public ?string $renewalDate = null,
         public ?string $returnUrl = null,
-        public ?string $reason = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -28,12 +24,8 @@ readonly class SdkUpdateCustomerSubscriptionPaymentMethodRequestApplicationJson 
     {
         self::validate($data, 'response');
         return new self(
-            previewId: $data['preview_id'] ?? null,
-            productVariantId: $data['product_variant_id'] ?? null,
-            renewalDate: $data['renewal_date'] ?? null,
             returnUrl: $data['return_url'] ?? null,
-            reason: $data['reason'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['preview_id', 'product_variant_id', 'renewal_date', 'return_url', 'reason']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['return_url']),
             presentFields: array_keys($data),
         );
     }
@@ -46,11 +38,7 @@ readonly class SdkUpdateCustomerSubscriptionPaymentMethodRequestApplicationJson 
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'preview_id' => $this->previewId,
-            'product_variant_id' => $this->productVariantId,
-            'renewal_date' => $this->renewalDate,
             'return_url' => $this->returnUrl,
-            'reason' => $this->reason,
         ], [], $this->presentFields));
     }
 }

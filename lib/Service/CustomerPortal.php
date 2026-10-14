@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace SellApp\Service;
 
 use SellApp\Resource\CustomerPortalOrder;
+use SellApp\Resource\CustomerPortalSubscription;
 use SellApp\Resource\SdkCancelCustomerSubscriptionAtPeriodEndResponseValue200ApplicationJson;
 use SellApp\Resource\SdkCancelCustomerSubscriptionImmediatelyResponseValue200ApplicationJson;
 use SellApp\Resource\SdkConfirmCustomerSubscriptionPlanChangeResponseValue200ApplicationJson;
@@ -16,7 +17,6 @@ use SellApp\Resource\SdkGetCustomerPortalProfileResponseValue200ApplicationJson;
 use SellApp\Resource\SdkGetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJson;
 use SellApp\Resource\SdkGetCustomerPortalSubscriptionResponseValue200ApplicationJson;
 use SellApp\Resource\SdkListCustomerPortalEntitlementsResponseValue200ApplicationJson;
-use SellApp\Resource\SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkPauseCustomerSubscriptionResponseValue200ApplicationJson;
 use SellApp\Resource\SdkPreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJson;
 use SellApp\Resource\SdkPreviewCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson;
@@ -133,20 +133,20 @@ class CustomerPortal
     /**
      * List customer subscriptions
      *
-     * List subscriptions belonging to the customer session.
-     * @return \SellApp\Resource\SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson
+     * List subscriptions belonging to the customer session, newest first, 15 per page. `trial_ends_at` is only set while a subscription is `TRIALING`.
+     * @return \SellApp\PaginatedResponse<\SellApp\Resource\CustomerPortalSubscription>
      * @throws \SellApp\Exception\SDKException
      */
     public function listCustomerPortalSubscriptions(
         ?\SellApp\RequestOptions $options = null,
-    ): \SellApp\Resource\SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson {
+    ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listCustomerPortalSubscriptions', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
-        $response = $this->client->request(
+        return $this->client->requestPage(
             method: 'GET',
             path: 'v2/customer-portal/subscriptions',
+            modelClass: CustomerPortalSubscription::class,
             options: $options,
         );
-        return SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson::fromArray($response);
     }
 
     /**
@@ -173,7 +173,7 @@ class CustomerPortal
     /**
      * Retrieve subscription capabilities
      *
-     * Read immediately before displaying lifecycle controls.
+     * Read immediately before displaying lifecycle controls. Each of the nine actions (`pause`, `resume`, `cancel_at_period_end`, `cancel_immediately`, `keep_subscription`, `update_payment_method`, `change_plan`, `shift_billing_date`, and `set_auto_renew`) reports a status and the reason to show the customer when it is not available. While a Stripe, PayPal, or Razorpay subscription has a payment still owed, every action except `cancel_immediately` and, on Razorpay, `update_payment_method`, is `unsupported`. `resume` is `unsupported` on a subscription on hold for an unpaid renewal, which the customer pays and resumes on the store's customer portal page. The example is abbreviated to three of the actions.
      * @param int $subscription The subscription identifier.
      * @return \SellApp\Resource\SdkGetCustomerPortalSubscriptionCapabilitiesResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -213,31 +213,19 @@ class CustomerPortal
     /**
      * Cancel at period end
      *
-     * Cancel at period end. Read capabilities first; state conflicts return 409.
+     * Schedule the subscription to end when the current period ends. The customer keeps access until then. Read capabilities first. A refusal returns 422 with the sentence to show the customer under `errors.subscription`.
      * @param int $productSubscription The productSubscription identifier.
-     * @param string|null $previewId
-     * @param int|null $productVariantId
-     * @param string|null $renewalDate
-     * @param string|null $returnUrl
      * @param string|null $reason
      * @return \SellApp\Resource\SdkCancelCustomerSubscriptionAtPeriodEndResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function cancelCustomerSubscriptionAtPeriodEnd(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
         ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCancelCustomerSubscriptionAtPeriodEndResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'cancelCustomerSubscriptionAtPeriodEnd', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
-            'preview_id' => $previewId,
-            'product_variant_id' => $productVariantId,
-            'renewal_date' => $renewalDate,
-            'return_url' => $returnUrl,
             'reason' => $reason,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkCancelCustomerSubscriptionAtPeriodEndRequestApplicationJson::validate($body, 'request');
@@ -253,31 +241,19 @@ class CustomerPortal
     /**
      * Cancel immediately
      *
-     * Cancel immediately. Read capabilities first; state conflicts return 409.
+     * End the subscription now. A customer session cannot request a refund. It is the one action left on a Stripe or PayPal subscription with a payment still owed, and one of two left on a Razorpay one alongside a payment method update. Read capabilities first. A refusal returns 422 with the sentence to show the customer under `errors.subscription`.
      * @param int $productSubscription The productSubscription identifier.
-     * @param string|null $previewId
-     * @param int|null $productVariantId
-     * @param string|null $renewalDate
-     * @param string|null $returnUrl
      * @param string|null $reason
      * @return \SellApp\Resource\SdkCancelCustomerSubscriptionImmediatelyResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function cancelCustomerSubscriptionImmediately(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
         ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCancelCustomerSubscriptionImmediatelyResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'cancelCustomerSubscriptionImmediately', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
-            'preview_id' => $previewId,
-            'product_variant_id' => $productVariantId,
-            'renewal_date' => $renewalDate,
-            'return_url' => $returnUrl,
             'reason' => $reason,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkCancelCustomerSubscriptionImmediatelyRequestApplicationJson::validate($body, 'request');
@@ -293,31 +269,22 @@ class CustomerPortal
     /**
      * Pause a subscription
      *
-     * Pause a subscription. Read capabilities first; state conflicts return 409.
+     * Pause billing, optionally until `resume_at`. Read capabilities first. A refusal returns 422 with the sentence to show the customer under `errors.subscription`.
      * @param int $productSubscription The productSubscription identifier.
-     * @param string|null $previewId
-     * @param int|null $productVariantId
-     * @param string|null $renewalDate
-     * @param string|null $returnUrl
+     * @param \DateTimeImmutable|null $resumeAt
      * @param string|null $reason
      * @return \SellApp\Resource\SdkPauseCustomerSubscriptionResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function pauseCustomerSubscription(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
+        ?\DateTimeImmutable $resumeAt = null,
         ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkPauseCustomerSubscriptionResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'pauseCustomerSubscription', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
-            'preview_id' => $previewId,
-            'product_variant_id' => $productVariantId,
-            'renewal_date' => $renewalDate,
-            'return_url' => $returnUrl,
+            'resume_at' => $resumeAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'reason' => $reason,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkPauseCustomerSubscriptionRequestApplicationJson::validate($body, 'request');
@@ -333,38 +300,19 @@ class CustomerPortal
     /**
      * Resume a subscription
      *
-     * Resume a subscription. Read capabilities first; state conflicts return 409.
+     * Resume a paused subscription. A subscription the store bills in house that is on hold for an unpaid renewal comes back only when the customer pays that renewal on the store's customer portal page, so it is refused. Read capabilities first. A refusal returns 422 with the sentence to show the customer under `errors.subscription`.
      * @param int $productSubscription The productSubscription identifier.
-     * @param string|null $previewId
-     * @param int|null $productVariantId
-     * @param string|null $renewalDate
-     * @param string|null $returnUrl
-     * @param string|null $reason
      * @return \SellApp\Resource\SdkResumeCustomerSubscriptionResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function resumeCustomerSubscription(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
-        ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkResumeCustomerSubscriptionResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'resumeCustomerSubscription', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
-        $body = array_filter([
-            'preview_id' => $previewId,
-            'product_variant_id' => $productVariantId,
-            'renewal_date' => $renewalDate,
-            'return_url' => $returnUrl,
-            'reason' => $reason,
-        ], fn ($v) => $v !== null);
-        \SellApp\Resource\SdkResumeCustomerSubscriptionRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
             method: 'POST',
             path: 'v2/customer-portal/subscriptions/' . rawurlencode((string) $productSubscription) . '/actions/resume',
-            body: $body,
             options: $options,
         );
         return SdkResumeCustomerSubscriptionResponseValue200ApplicationJson::fromArray($response);
@@ -373,32 +321,20 @@ class CustomerPortal
     /**
      * Update payment method
      *
-     * Update payment method. Read capabilities first; state conflicts return 409.
+     * Start a payment method update. Send the customer to `redirect_url` to finish it with the provider. Read capabilities first. A refusal returns 422 with the sentence to show the customer under `errors.subscription`.
      * @param int $productSubscription The productSubscription identifier.
-     * @param string|null $previewId
-     * @param int|null $productVariantId
-     * @param string|null $renewalDate
      * @param string|null $returnUrl
-     * @param string|null $reason
      * @return \SellApp\Resource\SdkUpdateCustomerSubscriptionPaymentMethodResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function updateCustomerSubscriptionPaymentMethod(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
         ?string $returnUrl = null,
-        ?string $reason = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateCustomerSubscriptionPaymentMethodResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'updateCustomerSubscriptionPaymentMethod', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
-            'preview_id' => $previewId,
-            'product_variant_id' => $productVariantId,
-            'renewal_date' => $renewalDate,
             'return_url' => $returnUrl,
-            'reason' => $reason,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkUpdateCustomerSubscriptionPaymentMethodRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -413,32 +349,29 @@ class CustomerPortal
     /**
      * Preview a plan change
      *
-     * Preview a plan change. Read capabilities first; state conflicts return 409.
+     * Preview a plan change before confirming it. On Stripe and in-house subscriptions, `preview.payment_required` says whether confirming charges `amount_due` today or leaves any amount to the next invoice, and `preview.renewal_date` says when the subscription renews next. A plan change during a trial never charges today. Read capabilities first. A refusal returns 422 with the sentence to show the customer under `errors.subscription`.
      * @param int $productSubscription The productSubscription identifier.
-     * @param string|null $previewId
-     * @param int|null $productVariantId
-     * @param string|null $renewalDate
-     * @param string|null $returnUrl
-     * @param string|null $reason
+     * @param int $targetVariantId
+     * @param \SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming|null $effectiveTiming
+     * @param \SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior|null $prorationBehavior
+     * @param \SellApp\Resource\PreviewCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata|null $metadata
      * @return \SellApp\Resource\SdkPreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function previewCustomerSubscriptionPlanChange(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
-        ?string $reason = null,
+        int $targetVariantId,
+        ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,
+        ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,
+        ?\SellApp\Resource\PreviewCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkPreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJson {
-        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'previewCustomerSubscriptionPlanChange', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'previewCustomerSubscriptionPlanChange', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
-            'preview_id' => $previewId,
-            'product_variant_id' => $productVariantId,
-            'renewal_date' => $renewalDate,
-            'return_url' => $returnUrl,
-            'reason' => $reason,
+            'target_variant_id' => $targetVariantId,
+            'effective_timing' => $effectiveTiming?->value,
+            'proration_behavior' => $prorationBehavior?->value,
+            'metadata' => $metadata,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkPreviewCustomerSubscriptionPlanChangeRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -453,32 +386,32 @@ class CustomerPortal
     /**
      * Confirm a plan change
      *
-     * Confirm a plan change. Read capabilities first; state conflicts return 409.
+     * Confirm a previewed plan change, sending back its `preview_token`. When the change still needs the customer to approve it with the provider or pay for it, the action is `pending` and `redirect_url` says where. Read capabilities first. A refusal returns 422 with the sentence to show the customer under `errors.subscription`.
      * @param int $productSubscription The productSubscription identifier.
-     * @param string|null $previewId
-     * @param int|null $productVariantId
-     * @param string|null $renewalDate
-     * @param string|null $returnUrl
-     * @param string|null $reason
+     * @param int $targetVariantId
+     * @param string $previewToken
+     * @param \SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming|null $effectiveTiming
+     * @param \SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior|null $prorationBehavior
+     * @param \SellApp\Resource\ConfirmCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata|null $metadata
      * @return \SellApp\Resource\SdkConfirmCustomerSubscriptionPlanChangeResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function confirmCustomerSubscriptionPlanChange(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
-        ?string $reason = null,
+        int $targetVariantId,
+        string $previewToken,
+        ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming $effectiveTiming = null,
+        ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,
+        ?\SellApp\Resource\ConfirmCustomerSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkConfirmCustomerSubscriptionPlanChangeResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'confirmCustomerSubscriptionPlanChange', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
-            'preview_id' => $previewId,
-            'product_variant_id' => $productVariantId,
-            'renewal_date' => $renewalDate,
-            'return_url' => $returnUrl,
-            'reason' => $reason,
+            'target_variant_id' => $targetVariantId,
+            'preview_token' => $previewToken,
+            'effective_timing' => $effectiveTiming?->value,
+            'proration_behavior' => $prorationBehavior?->value,
+            'metadata' => $metadata,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkConfirmCustomerSubscriptionPlanChangeRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -493,32 +426,26 @@ class CustomerPortal
     /**
      * Preview a renewal-date change
      *
-     * Preview a renewal-date change. Read capabilities first; state conflicts return 409.
+     * Preview moving the next renewal to `renewal_date`. `preview` is the provider's own preview, so its keys differ per provider. Read capabilities first. A refusal returns 422 with the sentence to show the customer under `errors.subscription`.
      * @param int $productSubscription The productSubscription identifier.
-     * @param string|null $previewId
-     * @param int|null $productVariantId
-     * @param string|null $renewalDate
-     * @param string|null $returnUrl
+     * @param \DateTimeImmutable $renewalDate
      * @param string|null $reason
+     * @param \SellApp\Resource\PreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata|null $metadata
      * @return \SellApp\Resource\SdkPreviewCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function previewCustomerSubscriptionRenewalDateChange(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
+        \DateTimeImmutable $renewalDate,
         ?string $reason = null,
+        ?\SellApp\Resource\PreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkPreviewCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson {
-        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'previewCustomerSubscriptionRenewalDateChange', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'previewCustomerSubscriptionRenewalDateChange', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
-            'preview_id' => $previewId,
-            'product_variant_id' => $productVariantId,
-            'renewal_date' => $renewalDate,
-            'return_url' => $returnUrl,
+            'renewal_date' => $renewalDate->format(\DateTimeInterface::RFC3339_EXTENDED),
             'reason' => $reason,
+            'metadata' => $metadata,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkPreviewCustomerSubscriptionRenewalDateChangeRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -533,32 +460,29 @@ class CustomerPortal
     /**
      * Confirm a renewal-date change
      *
-     * Confirm a renewal-date change. Read capabilities first; state conflicts return 409.
+     * Confirm a renewal-date change, sending the `preview_token` when the plan requires a preview. Read capabilities first. A refusal returns 422 with the sentence to show the customer under `errors.subscription`.
      * @param int $productSubscription The productSubscription identifier.
-     * @param string|null $previewId
-     * @param int|null $productVariantId
-     * @param string|null $renewalDate
-     * @param string|null $returnUrl
+     * @param \DateTimeImmutable $renewalDate
+     * @param string|null $previewToken
      * @param string|null $reason
+     * @param \SellApp\Resource\ConfirmCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata|null $metadata
      * @return \SellApp\Resource\SdkConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function confirmCustomerSubscriptionRenewalDateChange(
         int $productSubscription,
-        ?string $previewId = null,
-        ?int $productVariantId = null,
-        ?string $renewalDate = null,
-        ?string $returnUrl = null,
+        \DateTimeImmutable $renewalDate,
+        ?string $previewToken = null,
         ?string $reason = null,
+        ?\SellApp\Resource\ConfirmCustomerSubscriptionRenewalDateChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'confirmCustomerSubscriptionRenewalDateChange', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"customerSession","scopes":[]}]],"anonymous":false,"apiKey":false,"accessToken":false,"customerSession":true,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":false},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
-            'preview_id' => $previewId,
-            'product_variant_id' => $productVariantId,
-            'renewal_date' => $renewalDate,
-            'return_url' => $returnUrl,
+            'renewal_date' => $renewalDate->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'preview_token' => $previewToken,
             'reason' => $reason,
+            'metadata' => $metadata,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkConfirmCustomerSubscriptionRenewalDateChangeRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(

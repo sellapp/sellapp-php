@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace SellApp\Resource;
 
+/** The provider's own preview of the change, so its keys differ per provider. */
 readonly class PreviewSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyDataPropertyPreviewPayload implements \JsonSerializable
 {
     use JsonSerializableTrait;

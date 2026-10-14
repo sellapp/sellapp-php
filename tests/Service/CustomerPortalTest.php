@@ -62,11 +62,10 @@ class CustomerPortalTest extends TestCase
 
     public function testListCustomerPortalSubscriptions(): void
     {
-        $fixture = $this->loadFixture('sdk_list_customer_portal_subscriptions_response_value_200_application_json');
+        $fixture = $this->loadFixture('list_customer_portal_subscription');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
         $result = $client->customerPortal()->listCustomerPortalSubscriptions();
-        $this->assertInstanceOf(\SellApp\Resource\SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson::class, $result);
-        $this->assertIsArray($result->toArray());
+        $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
         $this->assertStringEndsWith('v2/customer-portal/subscriptions', $request->getUri()->getPath());
@@ -172,48 +171,57 @@ class CustomerPortalTest extends TestCase
     {
         $fixture = $this->loadFixture('sdk_preview_customer_subscription_plan_change_response_value_200_application_json');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->customerPortal()->previewCustomerSubscriptionPlanChange(1);
+        $result = $client->customerPortal()->previewCustomerSubscriptionPlanChange(1, targetVariantId: 1);
         $this->assertInstanceOf(\SellApp\Resource\SdkPreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJson::class, $result);
         $this->assertIsArray($result->toArray());
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/customer-portal/subscriptions/1/actions/change-plan/preview', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame(1, $body['target_variant_id']);
     }
 
     public function testConfirmCustomerSubscriptionPlanChange(): void
     {
         $fixture = $this->loadFixture('sdk_confirm_customer_subscription_plan_change_response_value_200_application_json');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->customerPortal()->confirmCustomerSubscriptionPlanChange(1);
+        $result = $client->customerPortal()->confirmCustomerSubscriptionPlanChange(1, targetVariantId: 1, previewToken: 'test_value');
         $this->assertInstanceOf(\SellApp\Resource\SdkConfirmCustomerSubscriptionPlanChangeResponseValue200ApplicationJson::class, $result);
         $this->assertIsArray($result->toArray());
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/customer-portal/subscriptions/1/actions/change-plan/confirm', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame(1, $body['target_variant_id']);
+        $this->assertSame('test_value', $body['preview_token']);
     }
 
     public function testPreviewCustomerSubscriptionRenewalDateChange(): void
     {
         $fixture = $this->loadFixture('sdk_preview_customer_subscription_renewal_date_change_response_value_200_application_json');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->customerPortal()->previewCustomerSubscriptionRenewalDateChange(1);
+        $result = $client->customerPortal()->previewCustomerSubscriptionRenewalDateChange(1, renewalDate: new \DateTimeImmutable('2023-01-01T00:00:00Z'));
         $this->assertInstanceOf(\SellApp\Resource\SdkPreviewCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson::class, $result);
         $this->assertIsArray($result->toArray());
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/customer-portal/subscriptions/1/actions/change-renewal-date/preview', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame('2023-01-01T00:00:00.000+00:00', $body['renewal_date']);
     }
 
     public function testConfirmCustomerSubscriptionRenewalDateChange(): void
     {
         $fixture = $this->loadFixture('sdk_confirm_customer_subscription_renewal_date_change_response_value_200_application_json');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->customerPortal()->confirmCustomerSubscriptionRenewalDateChange(1);
+        $result = $client->customerPortal()->confirmCustomerSubscriptionRenewalDateChange(1, renewalDate: new \DateTimeImmutable('2023-01-01T00:00:00Z'));
         $this->assertInstanceOf(\SellApp\Resource\SdkConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJson::class, $result);
         $this->assertIsArray($result->toArray());
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/customer-portal/subscriptions/1/actions/change-renewal-date/confirm', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame('2023-01-01T00:00:00.000+00:00', $body['renewal_date']);
     }
 
     public function testPaginationBoundary(): void

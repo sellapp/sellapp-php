@@ -37,6 +37,7 @@ readonly class SdkCreateChargeRequestApplicationJson implements \JsonSerializabl
         public ?bool $useAllPaymentMethods = null,
         public ?CreateChargeRequestApplicationJsonPropertyDeliverable $deliverable = null,
         public ?CreateChargeRequestApplicationJsonPropertyMetadata $metadata = null,
+        /** Optional coupon code. A charge takes a store-wide coupon for one-time purchases only: a coupon whose `applies_to` is `subscriptions` returns `422` with `Coupon code {code} only applies to subscriptions.` */
         public ?string $couponCode = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],

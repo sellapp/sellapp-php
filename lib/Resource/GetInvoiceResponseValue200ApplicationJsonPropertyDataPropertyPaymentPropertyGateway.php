@@ -10,11 +10,12 @@ readonly class GetInvoiceResponseValue200ApplicationJsonPropertyDataPropertyPaym
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'GetInvoiceResponseValue200ApplicationJsonPropertyDataPropertyPaymentPropertyGateway', 'required' => ['data', 'type'], 'properties' => ['data' => ['kind' => 'model', 'class' => 'GetInvoiceResponseValue200ApplicationJsonPropertyDataPropertyPaymentPropertyGatewayPropertyData'], 'type' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'GetInvoiceResponseValue200ApplicationJsonPropertyDataPropertyPaymentPropertyGateway', 'required' => ['data', 'type'], 'properties' => ['data' => ['kind' => 'model', 'class' => 'GetInvoiceResponseValue200ApplicationJsonPropertyDataPropertyPaymentPropertyGatewayPropertyData'], 'type' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']]], 'additionalProperties' => true];
 
     public function __construct(
         public GetInvoiceResponseValue200ApplicationJsonPropertyDataPropertyPaymentPropertyGatewayPropertyData $data,
-        public string $type,
+        /** The payment method, or `null` for an invoice that costs nothing. A free trial sold through Stripe, PayPal, or Razorpay keeps its payment method, because that provider bills the plan once the trial ends. */
+        public ?string $type,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -26,7 +27,7 @@ readonly class GetInvoiceResponseValue200ApplicationJsonPropertyDataPropertyPaym
         self::validate($data, 'response');
         return new self(
             data: GetInvoiceResponseValue200ApplicationJsonPropertyDataPropertyPaymentPropertyGatewayPropertyData::fromArray($data['data']),
-            type: $data['type'],
+            type: $data['type'] ?? null,
             additionalProperties: SchemaValidator::unknownFields($data, ['data', 'type']),
             presentFields: array_keys($data),
         );

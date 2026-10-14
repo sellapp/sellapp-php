@@ -80,6 +80,11 @@ public function create(
         ?\DateTimeImmutable $startsAt = null,
         ?\DateTimeImmutable $endsAt = null,
         ?int $maxRedemptions = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
+        ?bool $storeWide = null,
+        ?array $products = null,
+        ?array $productVariants = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCreatePromotionResponseValue201ApplicationJson
 ```
@@ -94,6 +99,11 @@ public function create(
 | startsAt | `?\DateTimeImmutable` | No |
 | endsAt | `?\DateTimeImmutable` | No |
 | maxRedemptions | `?int` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
+| storeWide | `?bool` | No |
+| products | `?array` | No |
+| productVariants | `?array` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkCreatePromotionResponseValue201ApplicationJson`.
@@ -307,6 +317,11 @@ public function replace(
         ?int $priority = null,
         ?bool $isStackable = null,
         ?int $maxRedemptions = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
+        ?bool $storeWide = null,
+        ?array $products = null,
+        ?array $productVariants = null,
         ?array $phases = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkReplacePromotionResponseValue200ApplicationJson
@@ -322,6 +337,11 @@ public function replace(
 | priority | `?int` | No |
 | isStackable | `?bool` | No |
 | maxRedemptions | `?int` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
+| storeWide | `?bool` | No |
+| products | `?array` | No |
+| productVariants | `?array` | No |
 | phases | `?array` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
@@ -385,6 +405,11 @@ public function update(
         ?int $priority = null,
         ?bool $isStackable = null,
         ?int $maxRedemptions = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
+        ?bool $storeWide = null,
+        ?array $products = null,
+        ?array $productVariants = null,
         ?array $phases = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdatePromotionResponseValue200ApplicationJson
@@ -400,6 +425,11 @@ public function update(
 | priority | `?int` | No |
 | isStackable | `?bool` | No |
 | maxRedemptions | `?int` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
+| storeWide | `?bool` | No |
+| products | `?array` | No |
+| productVariants | `?array` | No |
 | phases | `?array` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
@@ -522,6 +552,11 @@ public function restore(
         ?\DateTimeImmutable $startsAt = null,
         ?\DateTimeImmutable $endsAt = null,
         ?int $maxRedemptions = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
+        ?bool $storeWide = null,
+        ?array $products = null,
+        ?array $productVariants = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkRestorePromotionResponseValue200ApplicationJson
 ```
@@ -537,6 +572,11 @@ public function restore(
 | startsAt | `?\DateTimeImmutable` | No |
 | endsAt | `?\DateTimeImmutable` | No |
 | maxRedemptions | `?int` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
+| storeWide | `?bool` | No |
+| products | `?array` | No |
+| productVariants | `?array` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkRestorePromotionResponseValue200ApplicationJson`.

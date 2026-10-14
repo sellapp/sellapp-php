@@ -6,17 +6,21 @@ declare(strict_types=1);
 
 namespace SellApp\Service;
 
-use SellApp\Resource\ListSubscriptionsResponseValue200ApplicationJsonPropertyDataItem;
 use SellApp\Resource\SdkCancelSubscriptionAtPeriodEndResponseValue200ApplicationJson;
 use SellApp\Resource\SdkCancelSubscriptionImmediatelyResponseValue200ApplicationJson;
 use SellApp\Resource\SdkCancelSubscriptionResponseValue200ApplicationJson;
+use SellApp\Resource\SdkConfirmSubscriptionPlanChangeResponseValue200ApplicationJson;
 use SellApp\Resource\SdkConfirmSubscriptionRenewalDateChangeResponseValue200ApplicationJson;
 use SellApp\Resource\SdkGetSubscriptionCapabilitiesResponseValue200ApplicationJson;
 use SellApp\Resource\SdkGetSubscriptionResponseValue200ApplicationJson;
+use SellApp\Resource\SdkKeepSubscriptionResponseValue200ApplicationJson;
+use SellApp\Resource\SdkListSubscriptionsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkPauseSubscriptionResponseValue200ApplicationJson;
+use SellApp\Resource\SdkPreviewSubscriptionPlanChangeResponseValue200ApplicationJson;
 use SellApp\Resource\SdkPreviewSubscriptionRenewalDateChangeResponseValue200ApplicationJson;
 use SellApp\Resource\SdkResumeSubscriptionResponseValue200ApplicationJson;
-use SellApp\Resource\SearchSubscriptionsResponseValue200ApplicationJsonPropertyDataItem;
+use SellApp\Resource\SdkSearchSubscriptionsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkUpdateSubscriptionPaymentMethodResponseValue200ApplicationJson;
 
 class Subscriptions
 {
@@ -33,14 +37,15 @@ class Subscriptions
     /**
      * Cancel a subscription
      *
-     * Cancel an active subscription now or at period end. cancel_at_period_end is required. Refund flags are valid only when it is false; period-end cancellation does not refund the last payment. Refunds are off by default. refund_last_payment requests a real refund; pro_rated_refund requires refund_last_payment and defaults to false. Cancellation can succeed even if the requested refund fails. A 200 response or confirmed cancellation does not prove a refund, and the action response does not expose the provider refund result. Check the order and payment-provider refund records before retrying; do not replay cancellation as a refund-recovery step. Reuse an idempotency key only with identical action input and actor. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Cancel an active subscription now or at period end, or one with a payment still owed now: a past due one the store bills in house, or a past due or unpaid Stripe, PayPal, or Razorpay subscription. cancel_at_period_end is required. Refund flags are valid only when it is false; period-end cancellation does not refund the last payment. New integrations should use the cancel-at-period-end and cancel-immediately lifecycle actions instead. A provider refusal, or a state check such as a change already in progress or a subscription that is no longer active, returns `422` with the refusal sentence under `errors.subscription`. Requires the `invoice` Sanctum ability. Refunds are off by default. refund_last_payment requests a real refund; pro_rated_refund requires refund_last_payment and defaults to false. While a Stripe, PayPal, or Razorpay subscription is past due or unpaid, its current period was never paid for, so a pro-rated refund returns `422`; a full refund or no refund still works. Cancellation can succeed even if the requested refund fails. A 200 response or confirmed cancellation does not prove a refund, and the action response does not expose the provider refund result. Check the order and payment-provider refund records before retrying; do not replay cancellation as a refund-recovery step. Reuse an idempotency key only with identical action input and actor. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $subscription The subscription path parameter.
      * @param bool $cancelAtPeriodEnd
      * @param bool|null $refundLastPayment Request a real refund of the latest payment during immediate cancellation. Cancellation success does not prove refund success; verify provider/order refund records.
-     * @param bool|null $proRatedRefund Request a prorated refund. Requires refund_last_payment=true. False requests a full latest-payment refund when refund_last_payment is enabled.
+     * @param bool|null $proRatedRefund Request a prorated refund. Requires refund_last_payment=true. False requests a full latest-payment refund when refund_last_payment is enabled. Refused with `422` while a Stripe, PayPal, or Razorpay subscription is past due or unpaid.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
      * @return \SellApp\Resource\SdkCancelSubscriptionResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
+     * @deprecated
      */
     public function cancel(
         int $subscription,
@@ -68,9 +73,103 @@ class Subscriptions
     }
 
     /**
+     * List subscriptions
+     *
+     * List the subscriptions belonging to the authenticated store, ordered by identifier ascending. Requires the `invoice` Sanctum ability. Use `status[]` to keep only the states you care about. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
+     * @param bool|null $pagination Set to false to return at most 100 matching items in one data array without pagination links or metadata. Defaults to true.
+     * @param array<\SellApp\Resource\SubscriptionsStatus>|null $status Filter by one or more subscription statuses. Repeat the parameter to select several; a single `status=ACTIVE` works too. A status outside the list is rejected with a validation error.
+     * @return \SellApp\PaginatedResponse<\SellApp\Resource\SdkListSubscriptionsResponseValue200ApplicationJson>
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function listSubscriptions(
+        ?int $limit = null,
+        ?int $page = null,
+        ?bool $pagination = null,
+        ?array $status = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\PaginatedResponse {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listSubscriptions', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
+            'pagination' => $pagination,
+            'status[]' => $status,
+        ], fn ($v) => $v !== null);
+        return $this->client->requestPage(
+            method: 'GET',
+            path: 'v2/subscriptions',
+            query: $query,
+            modelClass: SdkListSubscriptionsResponseValue200ApplicationJson::class,
+            options: $options,
+        );
+    }
+
+    /**
+     * Search subscriptions
+     *
+     * Search the store's subscriptions, ordered by identifier ascending unless `sort` says otherwise. `search.value` matches the provider subscription ID, the provider customer ID, and the customer email. Filter on `id`, `customer_id` (the SellApp customer ID, as in `customer.id`), `provider`, `status`, or `product_variant_id`, and sort on `id`, `status`, `current_period_start`, `current_period_end`, `created_at`, or `updated_at`. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param array<\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertyFiltersItem>|null $filters
+     * @param array<\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertySortItem>|null $sort
+     * @param \SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertySearch|null $search
+     * @param array<\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertyIncludesItem>|null $includes
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
+     * @param bool|null $pagination Set to false to return at most 100 matching items in one data array without pagination links or metadata. Defaults to true.
+     * @return \SellApp\PaginatedResponse<\SellApp\Resource\SdkSearchSubscriptionsResponseValue200ApplicationJson>
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function searchSubscriptions(
+        ?array $filters = null,
+        ?array $sort = null,
+        ?\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertySearch $search = null,
+        ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
+        ?bool $pagination = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\PaginatedResponse {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'searchSubscriptions', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
+            'pagination' => $pagination,
+        ], fn ($v) => $v !== null);
+        return $this->client->requestPage(
+            method: 'POST',
+            path: 'v2/subscriptions/search',
+            query: $query,
+            modelClass: SdkSearchSubscriptionsResponseValue200ApplicationJson::class,
+            options: $options,
+        );
+    }
+
+    /**
+     * Retrieve a subscription
+     *
+     * Retrieve one subscription by its SellApp subscription record identifier. Requires the `invoice` Sanctum ability. Foreign-store identifiers return not found. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $productSubscription The productSubscription path parameter.
+     * @return \SellApp\Resource\SdkGetSubscriptionResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getSubscription(
+        int $productSubscription,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetSubscriptionResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getSubscription', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/subscriptions/' . rawurlencode((string) $productSubscription),
+            options: $options,
+        );
+        return SdkGetSubscriptionResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
      * View subscription capabilities
      *
-     * Return the lifecycle actions currently supported for a subscription. Capability status controls whether an actor can pause, resume, cancel, update the payment method, change plan, or shift the billing date. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Return the lifecycle actions currently supported for a subscription, each with the reason the customer and the seller are shown. A `customer_only` status names who owns the action rather than who may call the API: a store token carries a plan change and a payment method update on the customer's behalf, while a `customer_only` auto-renewal switch stays with the customer portal. `set_auto_renew` has no API route at all. While a Stripe, PayPal, or Razorpay subscription is past due or unpaid, every action except `cancel_immediately` and, on Razorpay, `update_payment_method`, is `unsupported`, and a subscription the store bills in house that is on hold for an unpaid renewal reports `resume` as `customer_only`, because only the customer can pay to resume it. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @return \SellApp\Resource\SdkGetSubscriptionCapabilitiesResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -91,7 +190,7 @@ class Subscriptions
     /**
      * Cancel a subscription at period end
      *
-     * Schedule cancellation at the end of the current billing period without requesting a refund. Inspect capabilities first. The response records the cancellation action; retrieve the subscription to observe its current state. Reuse an idempotency key only with identical action input and actor. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Schedule cancellation at the end of the current billing period without requesting a refund. Inspect capabilities first. PayPal has no cancellation at period end, so on a PayPal subscription this cancels it with PayPal straight away and keeps the customer's access until the period ends; it can't be kept afterwards. The response records the cancellation action; retrieve the subscription to observe its current state. Reuse an idempotency key only with identical action input and actor. A provider refusal, or a state check such as a change already in progress or a subscription that is no longer active, returns `422` with the refusal sentence under `errors.subscription`. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
      * @param string|null $reason
@@ -122,12 +221,12 @@ class Subscriptions
     /**
      * Cancel a subscription immediately
      *
-     * Request immediate subscription cancellation. Inspect capabilities for provider support. This ends future billing and can change customer access. Refunds are off by default. refund_last_payment requests a real refund; pro_rated_refund requires refund_last_payment and defaults to false. Cancellation can succeed even if the requested refund fails. A 200 response or confirmed cancellation does not prove a refund, and the action response does not expose the provider refund result. Check the order and payment-provider refund records before retrying; do not replay cancellation as a refund-recovery step. Reuse an idempotency key only with identical action input and actor. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Request immediate subscription cancellation. Inspect capabilities for provider support. This ends future billing and can change customer access. It is the one action left on a Stripe or PayPal subscription that is past due or unpaid, and one of two left on a Razorpay one alongside a payment method update. A provider refusal, or a state check such as a change already in progress or a subscription that is no longer active, returns `422` with the refusal sentence under `errors.subscription`. Requires the `invoice` Sanctum ability. Refunds are off by default. refund_last_payment requests a real refund; pro_rated_refund requires refund_last_payment and defaults to false. While a Stripe, PayPal, or Razorpay subscription is past due or unpaid, its current period was never paid for, so a pro-rated refund returns `422`; a full refund or no refund still works. Cancellation can succeed even if the requested refund fails. A 200 response or confirmed cancellation does not prove a refund, and the action response does not expose the provider refund result. Check the order and payment-provider refund records before retrying; do not replay cancellation as a refund-recovery step. Reuse an idempotency key only with identical action input and actor. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
      * @param string|null $reason
      * @param bool|null $refundLastPayment Request a real refund of the latest payment during immediate cancellation. Cancellation success does not prove refund success; verify provider/order refund records.
-     * @param bool|null $proRatedRefund Request a prorated refund. Requires refund_last_payment=true. False requests a full latest-payment refund when refund_last_payment is enabled.
+     * @param bool|null $proRatedRefund Request a prorated refund. Requires refund_last_payment=true. False requests a full latest-payment refund when refund_last_payment is enabled. Refused with `422` while a Stripe, PayPal, or Razorpay subscription is past due or unpaid.
      * @return \SellApp\Resource\SdkCancelSubscriptionImmediatelyResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
@@ -157,12 +256,40 @@ class Subscriptions
     }
 
     /**
-     * Pause a subscription
+     * Keep a subscription
      *
-     * Pause a subscription after checking capabilities. Automatic resume dates are supported only by the current Stripe flow; use a future resume_at when supplied. Other provider pauses may need an explicit resume action. Customer-originated pauses are also subject to store pause policies. Reuse an idempotency key only with identical input and actor, and retrieve the subscription after the action. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Stop a scheduled cancellation so the subscription keeps renewing, which is the undo for cancelling at period end. The subscription has to still be active, still be scheduled to cancel, and its period must not have ended yet. Any of those, a provider that cannot undo its own schedule (a PayPal subscription or a Razorpay trial, both already cancelled with the provider), or a change already in progress returns `422` with the refusal sentence under `errors.subscription`. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
-     * @param \DateTimeImmutable|null $resumeAt Use a future date-time at execution time. Automatic resume dates are supported only for Stripe; the shown date is illustrative.
+     * @return \SellApp\Resource\SdkKeepSubscriptionResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function keep(
+        int $productSubscription,
+        ?string $idempotencyKey = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkKeepSubscriptionResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'keepSubscription', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'idempotency_key' => $idempotencyKey,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkKeepSubscriptionRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/subscriptions/' . rawurlencode((string) $productSubscription) . '/actions/keep',
+            body: $body,
+            options: $options,
+        );
+        return SdkKeepSubscriptionResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Pause a subscription
+     *
+     * Pause a subscription after checking capabilities. Automatic resume dates are supported by Stripe and by subscriptions the store bills in house; use a future resume_at when supplied. Other provider pauses may need an explicit resume action. Customer-originated pauses are also subject to store pause policies. Reuse an idempotency key only with identical input and actor, and retrieve the subscription after the action. A provider refusal, or a state check such as a change already in progress or a subscription that is no longer active, returns `422` with the refusal sentence under `errors.subscription`. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $productSubscription The productSubscription path parameter.
+     * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
+     * @param \DateTimeImmutable|null $resumeAt Use a future date-time at execution time. Automatic resume dates are supported by Stripe and by subscriptions the store bills in house; the shown date is illustrative.
      * @param string|null $reason
      * @return \SellApp\Resource\SdkPauseSubscriptionResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -193,7 +320,7 @@ class Subscriptions
     /**
      * Resume a subscription
      *
-     * Resume a paused subscription and restore related entitlements where possible. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Resume a paused subscription and restore related entitlements where possible. A subscription that is not paused, a subscription the store bills in house that is on hold for an unpaid renewal (only the customer can resume it, by paying that renewal from the customer portal), a provider refusal, or a change already in progress returns `422` with the refusal sentence under `errors.subscription`. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
      * @return \SellApp\Resource\SdkResumeSubscriptionResponseValue200ApplicationJson
@@ -221,20 +348,23 @@ class Subscriptions
     /**
      * Update a subscription payment method
      *
-     * This action belongs to the customer. Seller API requests return a 422 validation error. Check subscription capabilities and use the customer flow; never expose a seller API key to work around this restriction. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Request a subscription payment method update. A payment method belongs to the customer, and a store token requests the update on their behalf. The customer still enters the new card themselves, so the action stays `pending` and `redirect_url` is where they finish it: Stripe's hosted page for a Stripe subscription, or a SellApp page for a Razorpay one. `return_url` chooses where Stripe sends the customer afterwards; Razorpay ignores it. PayPal subscriptions and subscriptions the store bills in house don't support the update. Read `update_payment_method` in the capabilities response before calling: an unsupported payment method, or a state check such as a change already in progress, a subscription that is no longer active, or a Stripe subscription with a payment still owed, returns `422` with the refusal sentence under `errors.subscription`. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
-     * @return mixed
+     * @param string|null $returnUrl Where Stripe returns the customer once its hosted page finishes. Defaults to the store's customer portal page for this subscription. Razorpay subscriptions ignore it.
+     * @return \SellApp\Resource\SdkUpdateSubscriptionPaymentMethodResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function updatePaymentMethod(
         int $productSubscription,
         ?string $idempotencyKey = null,
+        ?string $returnUrl = null,
         ?\SellApp\RequestOptions $options = null,
-    ): mixed {
+    ): \SellApp\Resource\SdkUpdateSubscriptionPaymentMethodResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'updateSubscriptionPaymentMethod', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
             'idempotency_key' => $idempotencyKey,
+            'return_url' => $returnUrl,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkUpdateSubscriptionPaymentMethodRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -243,20 +373,20 @@ class Subscriptions
             body: $body,
             options: $options,
         );
-        return $response;
+        return SdkUpdateSubscriptionPaymentMethodResponseValue200ApplicationJson::fromArray($response);
     }
 
     /**
      * Preview a subscription plan change
      *
-     * This action belongs to the customer. Seller API requests return a 422 validation error. Check subscription capabilities and use the customer flow; never expose a seller API key to work around this restriction. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Preview a subscription plan change before confirming it. The preview stores the change it was taken for and returns a `preview_token` the confirmation must send back, alongside the provider's own pricing preview. On Stripe and in-house subscriptions, `preview_payload.payment_required` says whether confirming charges `amount_due` today or leaves any amount to the next invoice, and `preview_payload.renewal_date` says when the subscription renews next. A plan change belongs to the customer, and a store token previews it on their behalf; a provider refusal, or a state check such as a change already in progress or a subscription that is no longer active, returns `422` with the refusal sentence under `errors.subscription`. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
      * @param int $targetVariantId
      * @param \SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming|null $effectiveTiming
      * @param \SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior|null $prorationBehavior
      * @param \SellApp\Resource\PreviewSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata|null $metadata
-     * @return mixed
+     * @return \SellApp\Resource\SdkPreviewSubscriptionPlanChangeResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function previewPlanChange(
@@ -267,7 +397,7 @@ class Subscriptions
         ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,
         ?\SellApp\Resource\PreviewSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
-    ): mixed {
+    ): \SellApp\Resource\SdkPreviewSubscriptionPlanChangeResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'previewSubscriptionPlanChange', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
             'idempotency_key' => $idempotencyKey,
@@ -283,13 +413,13 @@ class Subscriptions
             body: $body,
             options: $options,
         );
-        return $response;
+        return SdkPreviewSubscriptionPlanChangeResponseValue200ApplicationJson::fromArray($response);
     }
 
     /**
      * Confirm a subscription plan change
      *
-     * This action belongs to the customer. Seller API requests return a 422 validation error. Check subscription capabilities and use the customer flow; never expose a seller API key to work around this restriction. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Confirm a previously previewed subscription plan change, sending back the `preview_token` for a preview of the same change. A plan change belongs to the customer, and a store token confirms it on their behalf; a provider refusal, or a state check such as a change already in progress or a subscription that is no longer active, returns `422` with the refusal sentence under `errors.subscription`. `approval_url` accompanies a `pending` action whenever the customer still has to approve the revision at the provider or pay the proration order `proration_order_id` names, and is left out entirely when the provider applied the change itself. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
      * @param int $targetVariantId
@@ -297,7 +427,7 @@ class Subscriptions
      * @param \SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonEffectiveTiming|null $effectiveTiming
      * @param \SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior|null $prorationBehavior
      * @param \SellApp\Resource\ConfirmSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata|null $metadata
-     * @return mixed
+     * @return \SellApp\Resource\SdkConfirmSubscriptionPlanChangeResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function confirmPlanChange(
@@ -309,7 +439,7 @@ class Subscriptions
         ?\SellApp\Resource\SdkPreviewSubscriptionPlanChangeRequestApplicationJsonProrationBehavior $prorationBehavior = null,
         ?\SellApp\Resource\ConfirmSubscriptionPlanChangeRequestApplicationJsonPropertyMetadata $metadata = null,
         ?\SellApp\RequestOptions $options = null,
-    ): mixed {
+    ): \SellApp\Resource\SdkConfirmSubscriptionPlanChangeResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'confirmSubscriptionPlanChange', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
             'idempotency_key' => $idempotencyKey,
@@ -326,13 +456,13 @@ class Subscriptions
             body: $body,
             options: $options,
         );
-        return $response;
+        return SdkConfirmSubscriptionPlanChangeResponseValue200ApplicationJson::fromArray($response);
     }
 
     /**
      * Preview a subscription renewal date change
      *
-     * Preview a new renewal date before confirmation when the subscription's billing-date policy requires a preview. The current Stripe and PayPal provider flows do not support renewal-date changes and return 422. Check shift_billing_date capabilities before sending a request. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Preview a new renewal date before confirmation when the subscription's billing-date policy requires one. No payment method supports renewal-date changes today: Stripe, PayPal, Razorpay, and subscriptions the store bills in house all report `shift_billing_date` as `unsupported`, so this returns `422` with the refusal sentence under `errors.subscription`. Read the capabilities response first. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
      * @param \DateTimeImmutable $renewalDate
@@ -369,7 +499,7 @@ class Subscriptions
     /**
      * Confirm a subscription renewal date change
      *
-     * Confirm a subscription renewal date change. A preview token is required when the variant's billing-date policy requires previews. The current Stripe and PayPal provider flows do not support renewal-date changes and return 422. Check shift_billing_date capabilities before sending a request. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Confirm a subscription renewal date change, sending a `preview_token` when the variant's billing-date policy requires previews. No payment method supports renewal-date changes today: Stripe, PayPal, Razorpay, and subscriptions the store bills in house all report `shift_billing_date` as `unsupported`, so this returns `422` with the refusal sentence under `errors.subscription`. Read the capabilities response first. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
      * @param \DateTimeImmutable $renewalDate
@@ -404,68 +534,5 @@ class Subscriptions
             options: $options,
         );
         return SdkConfirmSubscriptionRenewalDateChangeResponseValue200ApplicationJson::fromArray($response);
-    }
-
-    /**
-     * List subscriptions
-     *
-     * List page-based subscriptions with canonical customer and deprecated provider aliases. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
-     * @return \SellApp\PaginatedResponse<\SellApp\Resource\ListSubscriptionsResponseValue200ApplicationJsonPropertyDataItem>
-     * @throws \SellApp\Exception\SDKException
-     */
-    public function listSubscriptions(
-        ?\SellApp\RequestOptions $options = null,
-    ): \SellApp\PaginatedResponse {
-        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listSubscriptions', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
-        return $this->client->requestPage(
-            method: 'GET',
-            path: 'v2/subscriptions',
-            modelClass: ListSubscriptionsResponseValue200ApplicationJsonPropertyDataItem::class,
-            options: $options,
-        );
-    }
-
-    /**
-     * Search subscriptions
-     *
-     * Search while preserving page-based pagination. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
-     * @param string|null $search
-     * @param string|null $status
-     * @return \SellApp\PaginatedResponse<\SellApp\Resource\SearchSubscriptionsResponseValue200ApplicationJsonPropertyDataItem>
-     * @throws \SellApp\Exception\SDKException
-     */
-    public function searchSubscriptions(
-        ?string $search = null,
-        ?string $status = null,
-        ?\SellApp\RequestOptions $options = null,
-    ): \SellApp\PaginatedResponse {
-        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'searchSubscriptions', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
-        return $this->client->requestPage(
-            method: 'POST',
-            path: 'v2/subscriptions/search',
-            modelClass: SearchSubscriptionsResponseValue200ApplicationJsonPropertyDataItem::class,
-            options: $options,
-        );
-    }
-
-    /**
-     * Retrieve a subscription
-     *
-     * Retrieve by SellApp subscription record ID. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
-     * @param int $productSubscription The productSubscription identifier.
-     * @return \SellApp\Resource\SdkGetSubscriptionResponseValue200ApplicationJson
-     * @throws \SellApp\Exception\SDKException
-     */
-    public function getSubscription(
-        int $productSubscription,
-        ?\SellApp\RequestOptions $options = null,
-    ): \SellApp\Resource\SdkGetSubscriptionResponseValue200ApplicationJson {
-        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getSubscription', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
-        $response = $this->client->request(
-            method: 'GET',
-            path: 'v2/subscriptions/' . rawurlencode((string) $productSubscription),
-            options: $options,
-        );
-        return SdkGetSubscriptionResponseValue200ApplicationJson::fromArray($response);
     }
 }

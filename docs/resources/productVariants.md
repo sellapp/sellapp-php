@@ -85,6 +85,7 @@ public function create(
         ?int $minimumPurchaseQuantity = null,
         ?int $maximumPurchaseQuantity = null,
         ?array $bulkDiscount = null,
+        ?array $customPaymentMethodIds = null,
         ?\SellApp\Resource\CreateProductVariantRequestApplicationJsonPropertyOtherSettings $otherSettings = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
         ?\SellApp\RequestOptions $options = null,
@@ -102,6 +103,7 @@ public function create(
 | minimumPurchaseQuantity | `?int` | No |
 | maximumPurchaseQuantity | `?int` | No |
 | bulkDiscount | `?array` | No |
+| customPaymentMethodIds | `?array` | No |
 | otherSettings | `?\SellApp\Resource\CreateProductVariantRequestApplicationJsonPropertyOtherSettings` | No |
 | expectedUpdatedAt | `?\DateTimeImmutable` | No |
 | options | `?\SellApp\RequestOptions` | No |
@@ -241,8 +243,10 @@ public function replace(
         ?int $maximumPurchaseQuantity = null,
         ?array $bulkDiscount = null,
         ?array $paymentMethods = null,
+        ?array $customPaymentMethodIds = null,
         ?\SellApp\Resource\ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings $otherSettings = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
+        ?int $stock = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkReplaceProductVariantWithPutResponseValue200ApplicationJson
 ```
@@ -259,8 +263,10 @@ public function replace(
 | maximumPurchaseQuantity | `?int` | No |
 | bulkDiscount | `?array` | No |
 | paymentMethods | `?array` | No |
+| customPaymentMethodIds | `?array` | No |
 | otherSettings | `?\SellApp\Resource\ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings` | No |
 | expectedUpdatedAt | `?\DateTimeImmutable` | No |
+| stock | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkReplaceProductVariantWithPutResponseValue200ApplicationJson`.
@@ -326,8 +332,10 @@ public function update(
         ?int $maximumPurchaseQuantity = null,
         ?array $bulkDiscount = null,
         ?array $paymentMethods = null,
+        ?array $customPaymentMethodIds = null,
         ?\SellApp\Resource\UpdateProductVariantRequestApplicationJsonPropertyOtherSettings $otherSettings = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
+        ?int $stock = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateProductVariantResponseValue200ApplicationJson
 ```
@@ -344,8 +352,10 @@ public function update(
 | maximumPurchaseQuantity | `?int` | No |
 | bulkDiscount | `?array` | No |
 | paymentMethods | `?array` | No |
+| customPaymentMethodIds | `?array` | No |
 | otherSettings | `?\SellApp\Resource\UpdateProductVariantRequestApplicationJsonPropertyOtherSettings` | No |
 | expectedUpdatedAt | `?\DateTimeImmutable` | No |
+| stock | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkUpdateProductVariantResponseValue200ApplicationJson`.
@@ -403,6 +413,7 @@ Delete a product variant
 public function delete(
         int $product,
         int $variant,
+        ?\DateTimeImmutable $expectedUpdatedAt = null,
         ?\SellApp\RequestOptions $options = null,
     ): void
 ```
@@ -411,6 +422,7 @@ public function delete(
 | --- | --- | --- |
 | product | `int` | Yes |
 | variant | `int` | Yes |
+| expectedUpdatedAt | `?\DateTimeImmutable` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `void`.

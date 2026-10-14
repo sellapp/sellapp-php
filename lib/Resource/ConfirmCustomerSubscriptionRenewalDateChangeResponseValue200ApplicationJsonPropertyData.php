@@ -10,19 +10,20 @@ readonly class ConfirmCustomerSubscriptionRenewalDateChangeResponseValue200Appli
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'ConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'status', 'provider_subscription_id', 'provider_customer_id', 'customer'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'status' => ['kind' => 'primitive', 'type' => 'string'], 'provider_subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'provider_customer_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'customer' => ['kind' => 'model', 'class' => 'ConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyDataPropertyCustomer'], 'subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'customer_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'product_variant_id' => ['kind' => 'primitive', 'type' => 'integer']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'ConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'subscription_id', 'action', 'status', 'customer_message', 'redirect_url', 'created_at'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'subscription_id' => ['kind' => 'primitive', 'type' => 'integer'], 'action' => ['kind' => 'enum', 'values' => ['pause', 'resume', 'cancel_at_period_end', 'cancel_immediately', 'keep_subscription', 'update_payment_method', 'change_plan', 'shift_billing_date', 'set_auto_renew']], 'status' => ['kind' => 'enum', 'values' => ['pending', 'confirmed', 'failed', 'expired', 'dismissed']], 'customer_message' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'redirect_url' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri']], 'created_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']]], 'additionalProperties' => true];
 
     public function __construct(
+        /** The subscription action ID. */
         public int $id,
-        public string $status,
-        public ?string $providerSubscriptionId,
-        public ?string $providerCustomerId,
-        public ConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyDataPropertyCustomer $customer,
-        /** @deprecated */
-        public ?string $subscriptionId = null,
-        /** @deprecated */
-        public ?string $customerId = null,
-        public ?int $productVariantId = null,
+        /** The SellApp subscription ID the action belongs to. */
+        public int $subscriptionId,
+        public KeepSubscriptionResponseValue200ApplicationJsonPropertyDataAction|string $action,
+        /** `pending` means the provider or the customer still has to finish the action. */
+        public PauseCustomerSubscriptionResponseValue200ApplicationJsonPropertyDataStatus|string $status,
+        public ?string $customerMessage,
+        /** Where to send the customer to finish the action, such as a payment method update or a plan change they approve or pay for with the provider. `null` when nothing is left to do. */
+        public ?string $redirectUrl,
+        public ?\DateTimeImmutable $createdAt,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -34,14 +35,13 @@ readonly class ConfirmCustomerSubscriptionRenewalDateChangeResponseValue200Appli
         self::validate($data, 'response');
         return new self(
             id: $data['id'],
-            status: $data['status'],
-            providerSubscriptionId: $data['provider_subscription_id'] ?? null,
-            providerCustomerId: $data['provider_customer_id'] ?? null,
-            customer: ConfirmCustomerSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyDataPropertyCustomer::fromArray($data['customer']),
-            subscriptionId: $data['subscription_id'] ?? null,
-            customerId: $data['customer_id'] ?? null,
-            productVariantId: $data['product_variant_id'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'status', 'provider_subscription_id', 'provider_customer_id', 'customer', 'subscription_id', 'customer_id', 'product_variant_id']),
+            subscriptionId: $data['subscription_id'],
+            action: KeepSubscriptionResponseValue200ApplicationJsonPropertyDataAction::tryFrom($data['action']) ?? $data['action'],
+            status: PauseCustomerSubscriptionResponseValue200ApplicationJsonPropertyDataStatus::tryFrom($data['status']) ?? $data['status'],
+            customerMessage: $data['customer_message'] ?? null,
+            redirectUrl: $data['redirect_url'] ?? null,
+            createdAt: isset($data['created_at']) ? new \DateTimeImmutable($data['created_at']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'subscription_id', 'action', 'status', 'customer_message', 'redirect_url', 'created_at']),
             presentFields: array_keys($data),
         );
     }
@@ -55,13 +55,12 @@ readonly class ConfirmCustomerSubscriptionRenewalDateChangeResponseValue200Appli
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'id' => $this->id,
-            'status' => $this->status,
-            'provider_subscription_id' => $this->providerSubscriptionId,
-            'provider_customer_id' => $this->providerCustomerId,
-            'customer' => $this->customer->toArray(),
             'subscription_id' => $this->subscriptionId,
-            'customer_id' => $this->customerId,
-            'product_variant_id' => $this->productVariantId,
-        ], ['id', 'status', 'provider_subscription_id', 'provider_customer_id', 'customer'], $this->presentFields));
+            'action' => $this->action instanceof \BackedEnum ? $this->action->value : $this->action,
+            'status' => $this->status instanceof \BackedEnum ? $this->status->value : $this->status,
+            'customer_message' => $this->customerMessage,
+            'redirect_url' => $this->redirectUrl,
+            'created_at' => $this->createdAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+        ], ['id', 'subscription_id', 'action', 'status', 'customer_message', 'redirect_url', 'created_at'], $this->presentFields));
     }
 }

@@ -11,19 +11,27 @@ readonly class CreateAddOnDraftRequestApplicationJsonPropertyVariant implements 
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariant', 'required' => ['title', 'description', 'deliverable', 'pricing', 'payment_methods'], 'properties' => ['title' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'deliverable' => ['kind' => 'model', 'class' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyDeliverable'], 'pricing' => ['kind' => 'model', 'class' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyPricing'], 'payment_methods' => ['kind' => 'array', 'items' => ['kind' => 'enum', 'values' => ['AUTHNET', 'BTCPAY', 'CASHAPP', 'COINBASE', 'PADDLE', 'PAYDASH', 'PAYPAL', 'PAYSTACK', 'SQUARE', 'STRIPE', 'VENMO', 'NMI', 'MERCADO_PAGO', 'MOLLIE', 'RAZORPAY', 'CUSTOM_PAYMENT_METHOD', 'LIFI', 'BTC', 'LTC', 'ETH', 'XMR', 'SOL', 'ADA', 'BNB', 'TRX', 'MATIC', 'ETH_USDT', 'ETH_USDC', 'ETH_UNI', 'ETH_SHIB', 'ETH_DAI', 'BNB_USDT', 'BNB_USDC', 'TRX_USDT', 'TRX_USDC', 'SOL_USDT', 'SOL_USDC']], 'minItems' => 1], 'minimum_purchase_quantity' => ['kind' => 'primitive', 'type' => 'integer'], 'maximum_purchase_quantity' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'bulk_discount' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyBulkDiscountItem']], 'other_settings' => ['kind' => 'model', 'class' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyOtherSettings'], 'expected_updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariant', 'required' => ['title', 'description', 'deliverable', 'pricing', 'payment_methods'], 'properties' => ['title' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'deliverable' => ['kind' => 'model', 'class' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyDeliverable'], 'pricing' => ['kind' => 'model', 'class' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyPricing'], 'payment_methods' => ['kind' => 'array', 'items' => ['kind' => 'enum', 'values' => ['AUTHNET', 'BTCPAY', 'CASHAPP', 'COINBASE', 'PADDLE', 'PAYDASH', 'PAYPAL', 'PAYSTACK', 'SQUARE', 'STRIPE', 'VENMO', 'NMI', 'MERCADO_PAGO', 'MOLLIE', 'RAZORPAY', 'CUSTOM_PAYMENT_METHOD', 'LIFI', 'BTC', 'LTC', 'ETH', 'XMR', 'SOL', 'ADA', 'BNB', 'TRX', 'MATIC', 'ETH_USDT', 'ETH_USDC', 'ETH_UNI', 'ETH_SHIB', 'ETH_DAI', 'BNB_USDT', 'BNB_USDC', 'TRX_USDT', 'TRX_USDC', 'SOL_USDT', 'SOL_USDC']], 'minItems' => 1], 'minimum_purchase_quantity' => ['kind' => 'primitive', 'type' => 'integer'], 'maximum_purchase_quantity' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'bulk_discount' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyBulkDiscountItem']], 'custom_payment_method_ids' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string', 'pattern' => '^[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26}$']], 'other_settings' => ['kind' => 'model', 'class' => 'CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyOtherSettings'], 'expected_updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'additionalProperties' => true];
 
     public function __construct(
         public string $title,
         public string $description,
         public CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyDeliverable $deliverable,
         public CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyPricing $pricing,
-        /** @var array<\SellApp\Resource\PaymentMethod> */
+        /**
+         * Complete gateway selection for this variant. Selecting CUSTOM_PAYMENT_METHOD also requires at least one custom_payment_method_ids entry.
+         * @var array<\SellApp\Resource\PaymentMethod>
+         */
         public array $paymentMethods,
         public ?int $minimumPurchaseQuantity = null,
         public ?int $maximumPurchaseQuantity = null,
         /** @var array<\SellApp\Resource\CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyBulkDiscountItem>|null */
         public ?array $bulkDiscount = null,
+        /**
+         * Enabled, usable custom payment method ULIDs belonging to the selected store. Supply at least one when payment_methods includes CUSTOM_PAYMENT_METHOD. Include CUSTOM_PAYMENT_METHOD in payment_methods whenever sending nonempty IDs. On updates, omitting both selections preserves the current methods. Nonempty IDs are rejected when custom payments are not selected.
+         * @var array<string>|null
+         */
+        public ?array $customPaymentMethodIds = null,
         public ?CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyOtherSettings $otherSettings = null,
         /** Optional optimistic-concurrency snapshot for updates. Use the variant's latest updated_at value; stale snapshots receive a 422 validation response. */
         public ?\DateTimeImmutable $expectedUpdatedAt = null,
@@ -45,9 +53,10 @@ readonly class CreateAddOnDraftRequestApplicationJsonPropertyVariant implements 
             minimumPurchaseQuantity: $data['minimum_purchase_quantity'] ?? null,
             maximumPurchaseQuantity: $data['maximum_purchase_quantity'] ?? null,
             bulkDiscount: isset($data['bulk_discount']) ? array_map(fn ($item) => CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyBulkDiscountItem::fromArray($item), $data['bulk_discount']) : null,
+            customPaymentMethodIds: $data['custom_payment_method_ids'] ?? null,
             otherSettings: isset($data['other_settings']) ? CreateAddOnDraftRequestApplicationJsonPropertyVariantPropertyOtherSettings::fromArray($data['other_settings']) : null,
             expectedUpdatedAt: isset($data['expected_updated_at']) ? new \DateTimeImmutable($data['expected_updated_at']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['title', 'description', 'deliverable', 'pricing', 'payment_methods', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'other_settings', 'expected_updated_at']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['title', 'description', 'deliverable', 'pricing', 'payment_methods', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'custom_payment_method_ids', 'other_settings', 'expected_updated_at']),
             presentFields: array_keys($data),
         );
     }
@@ -68,6 +77,7 @@ readonly class CreateAddOnDraftRequestApplicationJsonPropertyVariant implements 
             'minimum_purchase_quantity' => $this->minimumPurchaseQuantity,
             'maximum_purchase_quantity' => $this->maximumPurchaseQuantity,
             'bulk_discount' => $this->bulkDiscount !== null ? array_map(fn ($item) => $item->toArray(), $this->bulkDiscount) : null,
+            'custom_payment_method_ids' => $this->customPaymentMethodIds,
             'other_settings' => $this->otherSettings?->toArray(),
             'expected_updated_at' => $this->expectedUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
         ], ['title', 'description', 'deliverable', 'pricing', 'payment_methods'], $this->presentFields));

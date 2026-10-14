@@ -10,6 +10,8 @@ enum GetWebhookDeliveryResponseValue200ApplicationJsonPropertyDataStatus: string
 {
     case Pending = 'pending';
     case Delivering = 'delivering';
+    case Retrying = 'retrying';
     case Succeeded = 'succeeded';
     case Failed = 'failed';
+    case Disabled = 'disabled';
 }

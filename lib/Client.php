@@ -68,6 +68,7 @@ use SellApp\Service\StoreCustomDomains;
 use SellApp\Service\StoreNotificationChannels;
 use SellApp\Service\StoreSettings;
 use SellApp\Service\Subscriptions;
+use SellApp\Service\SubscriptionsActions;
 use SellApp\Service\Tickets;
 use SellApp\Service\TicketsMessages;
 use SellApp\Service\UpsellOffers;
@@ -98,6 +99,7 @@ final class Client
     private ?Service\ProductVariantsPricing $productVariantsPricing = null;
     private ?Service\ProductVariantsBooking $productVariantsBooking = null;
     private ?Service\Subscriptions $subscriptions = null;
+    private ?Service\SubscriptionsActions $subscriptionsActions = null;
     private ?Service\Bookings $bookings = null;
     private ?Service\BookingsCalendarEvents $bookingsCalendarEvents = null;
     private ?Service\BundleItems $bundleItems = null;
@@ -241,6 +243,11 @@ final class Client
     public function subscriptions(): Subscriptions
     {
         return $this->subscriptions ??= new Service\Subscriptions($this->httpClient);
+    }
+
+    public function subscriptionsActions(): SubscriptionsActions
+    {
+        return $this->subscriptionsActions ??= new Service\SubscriptionsActions($this->httpClient);
     }
 
     public function bookings(): Bookings

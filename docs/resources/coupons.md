@@ -78,6 +78,8 @@ public function create(
         ?int $limit = null,
         ?\DateTimeImmutable $expiresAt = null,
         float|string|null $minimumAmount = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCreateCouponResponseValue201ApplicationJson
 ```
@@ -93,6 +95,8 @@ public function create(
 | limit | `?int` | No |
 | expiresAt | `?\DateTimeImmutable` | No |
 | minimumAmount | `float\|string\|null` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkCreateCouponResponseValue201ApplicationJson`.
@@ -212,6 +216,8 @@ public function replace(
         ?int $limit = null,
         ?\DateTimeImmutable $expiresAt = null,
         float|string|null $minimumAmount = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
@@ -230,6 +236,8 @@ public function replace(
 | limit | `?int` | No |
 | expiresAt | `?\DateTimeImmutable` | No |
 | minimumAmount | `float\|string\|null` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
 | withTrashed | `?bool` | No |
 | onlyTrashed | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
@@ -292,6 +300,8 @@ public function update(
         ?int $limit = null,
         ?\DateTimeImmutable $expiresAt = null,
         float|string|null $minimumAmount = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
@@ -310,6 +320,8 @@ public function update(
 | limit | `?int` | No |
 | expiresAt | `?\DateTimeImmutable` | No |
 | minimumAmount | `float\|string\|null` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
 | withTrashed | `?bool` | No |
 | onlyTrashed | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
@@ -740,6 +752,8 @@ public function v2CreateCoupon(
         ?int $limit = null,
         ?\DateTimeImmutable $expiresAt = null,
         float|string|null $minimumAmount = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkV2CreateCouponResponseValue201ApplicationJson
 ```
@@ -755,6 +769,8 @@ public function v2CreateCoupon(
 | limit | `?int` | No |
 | expiresAt | `?\DateTimeImmutable` | No |
 | minimumAmount | `float\|string\|null` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkV2CreateCouponResponseValue201ApplicationJson`.
@@ -955,6 +971,8 @@ public function v2ReplaceCoupon(
         ?int $limit = null,
         ?\DateTimeImmutable $expiresAt = null,
         float|string|null $minimumAmount = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
@@ -973,6 +991,8 @@ public function v2ReplaceCoupon(
 | limit | `?int` | No |
 | expiresAt | `?\DateTimeImmutable` | No |
 | minimumAmount | `float\|string\|null` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
 | withTrashed | `?bool` | No |
 | onlyTrashed | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
@@ -1040,6 +1060,8 @@ public function v2UpdateCoupon(
         ?int $limit = null,
         ?\DateTimeImmutable $expiresAt = null,
         float|string|null $minimumAmount = null,
+        ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
+        ?int $subscriptionPayments = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
@@ -1058,6 +1080,8 @@ public function v2UpdateCoupon(
 | limit | `?int` | No |
 | expiresAt | `?\DateTimeImmutable` | No |
 | minimumAmount | `float\|string\|null` | No |
+| appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
+| subscriptionPayments | `?int` | No |
 | withTrashed | `?bool` | No |
 | onlyTrashed | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |

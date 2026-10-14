@@ -10,13 +10,10 @@ readonly class SdkPauseCustomerSubscriptionRequestApplicationJson implements \Js
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkPauseCustomerSubscriptionRequestApplicationJson', 'required' => [], 'properties' => ['preview_id' => ['kind' => 'primitive', 'type' => 'string'], 'product_variant_id' => ['kind' => 'primitive', 'type' => 'integer'], 'renewal_date' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date'], 'return_url' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri'], 'reason' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkPauseCustomerSubscriptionRequestApplicationJson', 'required' => [], 'properties' => ['resume_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'reason' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 500]]], 'additionalProperties' => true];
 
     public function __construct(
-        public ?string $previewId = null,
-        public ?int $productVariantId = null,
-        public ?string $renewalDate = null,
-        public ?string $returnUrl = null,
+        public ?\DateTimeImmutable $resumeAt = null,
         public ?string $reason = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
@@ -28,12 +25,9 @@ readonly class SdkPauseCustomerSubscriptionRequestApplicationJson implements \Js
     {
         self::validate($data, 'response');
         return new self(
-            previewId: $data['preview_id'] ?? null,
-            productVariantId: $data['product_variant_id'] ?? null,
-            renewalDate: $data['renewal_date'] ?? null,
-            returnUrl: $data['return_url'] ?? null,
+            resumeAt: isset($data['resume_at']) ? new \DateTimeImmutable($data['resume_at']) : null,
             reason: $data['reason'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['preview_id', 'product_variant_id', 'renewal_date', 'return_url', 'reason']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['resume_at', 'reason']),
             presentFields: array_keys($data),
         );
     }
@@ -46,10 +40,7 @@ readonly class SdkPauseCustomerSubscriptionRequestApplicationJson implements \Js
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'preview_id' => $this->previewId,
-            'product_variant_id' => $this->productVariantId,
-            'renewal_date' => $this->renewalDate,
-            'return_url' => $this->returnUrl,
+            'resume_at' => $this->resumeAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'reason' => $this->reason,
         ], [], $this->presentFields));
     }

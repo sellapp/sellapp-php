@@ -10,11 +10,12 @@ readonly class CreateCheckoutSessionResponseValue200ApplicationJsonPropertyInvoi
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'CreateCheckoutSessionResponseValue200ApplicationJsonPropertyInvoicePropertyPaymentPropertyGateway', 'required' => ['data', 'type'], 'properties' => ['data' => ['kind' => 'model', 'class' => 'CreateCheckoutSessionResponseValue200ApplicationJsonPropertyInvoicePropertyPaymentPropertyGatewayPropertyData'], 'type' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'CreateCheckoutSessionResponseValue200ApplicationJsonPropertyInvoicePropertyPaymentPropertyGateway', 'required' => ['data', 'type'], 'properties' => ['data' => ['kind' => 'model', 'class' => 'CreateCheckoutSessionResponseValue200ApplicationJsonPropertyInvoicePropertyPaymentPropertyGatewayPropertyData'], 'type' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']]], 'additionalProperties' => true];
 
     public function __construct(
         public CreateCheckoutSessionResponseValue200ApplicationJsonPropertyInvoicePropertyPaymentPropertyGatewayPropertyData $data,
-        public string $type,
+        /** The payment method, or `null` for an invoice that costs nothing. A free trial sold through Stripe, PayPal, or Razorpay keeps its payment method, because that provider bills the plan once the trial ends. */
+        public ?string $type,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -26,7 +27,7 @@ readonly class CreateCheckoutSessionResponseValue200ApplicationJsonPropertyInvoi
         self::validate($data, 'response');
         return new self(
             data: CreateCheckoutSessionResponseValue200ApplicationJsonPropertyInvoicePropertyPaymentPropertyGatewayPropertyData::fromArray($data['data']),
-            type: $data['type'],
+            type: $data['type'] ?? null,
             additionalProperties: SchemaValidator::unknownFields($data, ['data', 'type']),
             presentFields: array_keys($data),
         );

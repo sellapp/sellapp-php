@@ -75,7 +75,8 @@ class ProductVariants
      * @param int|null $minimumPurchaseQuantity
      * @param int|null $maximumPurchaseQuantity
      * @param array<\SellApp\Resource\CreateProductVariantRequestApplicationJsonPropertyBulkDiscountItem>|null $bulkDiscount
-     * @param array<\SellApp\Resource\PaymentMethod> $paymentMethods
+     * @param array<\SellApp\Resource\PaymentMethod> $paymentMethods Complete gateway selection for this variant. Selecting CUSTOM_PAYMENT_METHOD also requires at least one custom_payment_method_ids entry.
+     * @param array<string>|null $customPaymentMethodIds Enabled, usable custom payment method ULIDs belonging to the selected store. Supply at least one when payment_methods includes CUSTOM_PAYMENT_METHOD. Include CUSTOM_PAYMENT_METHOD in payment_methods whenever sending nonempty IDs. On updates, omitting both selections preserves the current methods. Nonempty IDs are rejected when custom payments are not selected.
      * @param \SellApp\Resource\CreateProductVariantRequestApplicationJsonPropertyOtherSettings|null $otherSettings
      * @param \DateTimeImmutable|null $expectedUpdatedAt Optional optimistic-concurrency snapshot for updates. Use the variant's latest updated_at value; stale snapshots receive a 422 validation response.
      * @return \SellApp\Resource\SdkCreateProductVariantResponseValue201ApplicationJson
@@ -91,6 +92,7 @@ class ProductVariants
         ?int $minimumPurchaseQuantity = null,
         ?int $maximumPurchaseQuantity = null,
         ?array $bulkDiscount = null,
+        ?array $customPaymentMethodIds = null,
         ?\SellApp\Resource\CreateProductVariantRequestApplicationJsonPropertyOtherSettings $otherSettings = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
         ?\SellApp\RequestOptions $options = null,
@@ -105,6 +107,7 @@ class ProductVariants
             'maximum_purchase_quantity' => $maximumPurchaseQuantity,
             'bulk_discount' => $bulkDiscount,
             'payment_methods' => $paymentMethods,
+            'custom_payment_method_ids' => $customPaymentMethodIds,
             'other_settings' => $otherSettings,
             'expected_updated_at' => $expectedUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
         ], fn ($v) => $v !== null);
@@ -153,7 +156,7 @@ class ProductVariants
     /**
      * Update a product variant with PUT
      *
-     * Update a product variant using the PUT compatibility method. Fields remain partial for backward compatibility. Requires a token with the listing ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update a product variant using the PUT compatibility method. Fields remain partial for backward compatibility. Bundle products only support one-time pricing. Adding the bundle deliverable type to a subscription variant is refused with a `422` carrying that sentence on `deliverable.types`. Requires a token with the listing ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $product The product path parameter.
      * @param int $variant The variant path parameter.
      * @param string|null $title
@@ -163,9 +166,11 @@ class ProductVariants
      * @param int|null $minimumPurchaseQuantity
      * @param int|null $maximumPurchaseQuantity
      * @param array<\SellApp\Resource\ReplaceProductVariantWithPutRequestApplicationJsonPropertyBulkDiscountItem>|null $bulkDiscount
-     * @param array<\SellApp\Resource\PaymentMethod>|null $paymentMethods
+     * @param array<\SellApp\Resource\PaymentMethod>|null $paymentMethods Complete gateway selection for this variant. Selecting CUSTOM_PAYMENT_METHOD also requires at least one custom_payment_method_ids entry.
+     * @param array<string>|null $customPaymentMethodIds Enabled, usable custom payment method ULIDs belonging to the selected store. Supply at least one when payment_methods includes CUSTOM_PAYMENT_METHOD. Include CUSTOM_PAYMENT_METHOD in payment_methods whenever sending nonempty IDs. On updates, omitting both selections preserves the current methods. Nonempty IDs are rejected when custom payments are not selected.
      * @param \SellApp\Resource\ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings|null $otherSettings
      * @param \DateTimeImmutable|null $expectedUpdatedAt Optional optimistic-concurrency snapshot for updates. Use the variant's latest updated_at value; stale snapshots receive a 422 validation response.
+     * @param int|null $stock Set an existing variant's stock count while preserving delivery instructions and uploaded files. Send 0 for out of stock or null for unlimited stock. Omit deliverable for a stock-only change. TEXT variants manage stock through their serial inventory and reject this field.
      * @return \SellApp\Resource\SdkReplaceProductVariantWithPutResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
@@ -180,8 +185,10 @@ class ProductVariants
         ?int $maximumPurchaseQuantity = null,
         ?array $bulkDiscount = null,
         ?array $paymentMethods = null,
+        ?array $customPaymentMethodIds = null,
         ?\SellApp\Resource\ReplaceProductVariantWithPutRequestApplicationJsonPropertyOtherSettings $otherSettings = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
+        ?int $stock = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkReplaceProductVariantWithPutResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'replaceProductVariantWithPut', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
@@ -194,8 +201,10 @@ class ProductVariants
             'maximum_purchase_quantity' => $maximumPurchaseQuantity,
             'bulk_discount' => $bulkDiscount,
             'payment_methods' => $paymentMethods,
+            'custom_payment_method_ids' => $customPaymentMethodIds,
             'other_settings' => $otherSettings,
             'expected_updated_at' => $expectedUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'stock' => $stock,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkReplaceProductVariantWithPutRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -210,7 +219,7 @@ class ProductVariants
     /**
      * Update a product variant
      *
-     * Updates a product variant's details. Requires a token with the listing ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Updates a product variant's details. Bundle products only support one-time pricing. Adding the bundle deliverable type to a subscription variant is refused with a `422` carrying that sentence on `deliverable.types`. Requires a token with the listing ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $product The product path parameter.
      * @param int $variant The variant path parameter.
      * @param string|null $title
@@ -220,9 +229,11 @@ class ProductVariants
      * @param int|null $minimumPurchaseQuantity
      * @param int|null $maximumPurchaseQuantity
      * @param array<\SellApp\Resource\UpdateProductVariantRequestApplicationJsonPropertyBulkDiscountItem>|null $bulkDiscount
-     * @param array<\SellApp\Resource\PaymentMethod>|null $paymentMethods
+     * @param array<\SellApp\Resource\PaymentMethod>|null $paymentMethods Complete gateway selection for this variant. Selecting CUSTOM_PAYMENT_METHOD also requires at least one custom_payment_method_ids entry.
+     * @param array<string>|null $customPaymentMethodIds Enabled, usable custom payment method ULIDs belonging to the selected store. Supply at least one when payment_methods includes CUSTOM_PAYMENT_METHOD. Include CUSTOM_PAYMENT_METHOD in payment_methods whenever sending nonempty IDs. On updates, omitting both selections preserves the current methods. Nonempty IDs are rejected when custom payments are not selected.
      * @param \SellApp\Resource\UpdateProductVariantRequestApplicationJsonPropertyOtherSettings|null $otherSettings
      * @param \DateTimeImmutable|null $expectedUpdatedAt Optional optimistic-concurrency snapshot for updates. Use the variant's latest updated_at value; stale snapshots receive a 422 validation response.
+     * @param int|null $stock Set an existing variant's stock count while preserving delivery instructions and uploaded files. Send 0 for out of stock or null for unlimited stock. Omit deliverable for a stock-only change. TEXT variants manage stock through their serial inventory and reject this field.
      * @return \SellApp\Resource\SdkUpdateProductVariantResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
@@ -237,8 +248,10 @@ class ProductVariants
         ?int $maximumPurchaseQuantity = null,
         ?array $bulkDiscount = null,
         ?array $paymentMethods = null,
+        ?array $customPaymentMethodIds = null,
         ?\SellApp\Resource\UpdateProductVariantRequestApplicationJsonPropertyOtherSettings $otherSettings = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
+        ?int $stock = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateProductVariantResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'updateProductVariant', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
@@ -251,8 +264,10 @@ class ProductVariants
             'maximum_purchase_quantity' => $maximumPurchaseQuantity,
             'bulk_discount' => $bulkDiscount,
             'payment_methods' => $paymentMethods,
+            'custom_payment_method_ids' => $customPaymentMethodIds,
             'other_settings' => $otherSettings,
             'expected_updated_at' => $expectedUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'stock' => $stock,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkUpdateProductVariantRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -267,21 +282,28 @@ class ProductVariants
     /**
      * Delete a product variant
      *
-     * Deletes a product variant. This will permanently delete the product variant and all of its details, including the sensitive deliverables, will no longer be retrievable. Requires a token with the listing ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Soft-delete a variant in the authenticated store. Variants referenced by non-terminal subscriptions cannot be deleted. Send expected_updated_at from the latest variant response to reject a stale deletion with 422. Requires a token with the listing ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $product The product path parameter.
      * @param int $variant The variant path parameter.
+     * @param \DateTimeImmutable|null $expectedUpdatedAt Optional optimistic-concurrency snapshot. Send the exact `updated_at` value from the product you last retrieved; the mutation is rejected if the product has changed.
      * @return void
      * @throws \SellApp\Exception\SDKException
      */
     public function delete(
         int $product,
         int $variant,
+        ?\DateTimeImmutable $expectedUpdatedAt = null,
         ?\SellApp\RequestOptions $options = null,
     ): void {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'deleteProductVariant', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'expected_updated_at' => $expectedUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkDeleteProductVariantRequestApplicationJson::validate($body, 'request');
         $this->client->request(
             method: 'DELETE',
             path: 'v2/products/' . rawurlencode((string) $product) . '/variants/' . rawurlencode((string) $variant),
+            body: $body,
             options: $options,
         );
     }

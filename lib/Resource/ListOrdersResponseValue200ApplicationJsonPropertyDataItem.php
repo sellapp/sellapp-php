@@ -20,6 +20,7 @@ readonly class ListOrdersResponseValue200ApplicationJsonPropertyDataItem impleme
         public ListOrdersResponseValue200ApplicationJsonPropertyDataItemPropertyCustomer $customer,
         public ListOrdersResponseValue200ApplicationJsonPropertyDataItemPropertyPayment $payment,
         public ListOrdersResponseValue200ApplicationJsonPropertyDataItemPropertyTotals $totals,
+        /** The coupon this order was sold with, or null. A subscription's renewal and plan-change orders carry null, even while the subscription still bills a discounted price, so a coupon's `limit` counts a subscription once, at signup. */
         public ?int $couponId,
         /** @var array<\SellApp\Resource\ListOrdersResponseValue200ApplicationJsonPropertyDataItemPropertyLineItemsItem> */
         public array $lineItems,

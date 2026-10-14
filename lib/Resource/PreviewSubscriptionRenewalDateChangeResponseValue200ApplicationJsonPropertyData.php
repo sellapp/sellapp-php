@@ -13,6 +13,7 @@ readonly class PreviewSubscriptionRenewalDateChangeResponseValue200ApplicationJs
     private const SCHEMA = ['name' => 'PreviewSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyData', 'required' => [], 'properties' => ['preview_token' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'expires_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'preview_payload' => ['kind' => 'model', 'class' => 'PreviewSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyDataPropertyPreviewPayload'], 'request_payload' => ['kind' => 'model', 'class' => 'PreviewSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyDataPropertyRequestPayload'], 'customer_message' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'seller_message' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']]], 'additionalProperties' => true];
 
     public function __construct(
+        /** The token the matching confirmation must send back. Previews expire 30 minutes after they are created. */
         public ?string $previewToken = null,
         public ?\DateTimeImmutable $expiresAt = null,
         public ?PreviewSubscriptionRenewalDateChangeResponseValue200ApplicationJsonPropertyDataPropertyPreviewPayload $previewPayload = null,

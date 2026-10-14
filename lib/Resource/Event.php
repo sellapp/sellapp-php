@@ -26,9 +26,13 @@ enum Event: string
     case ProductCreated = 'product.created';
     case ProductTrashed = 'product.trashed';
     case ProductUpdated = 'product.updated';
+    case SubscriptionAction = 'subscription.action';
     case SubscriptionCancelled = 'subscription.cancelled';
     case SubscriptionCreated = 'subscription.created';
+    case SubscriptionPlanChangeNeedsAttention = 'subscription.plan_change_needs_attention';
+    case SubscriptionRenewalNeedsAttention = 'subscription.renewal_needs_attention';
     case SubscriptionRenewed = 'subscription.renewed';
+    case SubscriptionSignupNeedsAttention = 'subscription.signup_needs_attention';
     case TicketMessageCreated = 'ticket_message.created';
     case VariantCreated = 'variant.created';
     case VariantSoldOut = 'variant.sold_out';

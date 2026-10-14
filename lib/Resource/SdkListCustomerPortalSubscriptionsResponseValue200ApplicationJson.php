@@ -10,11 +10,13 @@ readonly class SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson', 'required' => ['data'], 'properties' => ['data' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'ListCustomerPortalSubscriptionsResponseValue200ApplicationJsonPropertyDataItem']]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson', 'required' => ['data', 'links', 'meta'], 'properties' => ['data' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'CustomerPortalSubscription']], 'links' => ['kind' => 'model', 'class' => 'PaginationLinks'], 'meta' => ['kind' => 'model', 'class' => 'PaginationMeta']], 'additionalProperties' => true];
 
     public function __construct(
-        /** @var array<\SellApp\Resource\ListCustomerPortalSubscriptionsResponseValue200ApplicationJsonPropertyDataItem> */
+        /** @var array<\SellApp\Resource\CustomerPortalSubscription> */
         public array $data,
+        public PaginationLinks $links,
+        public PaginationMeta $meta,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -25,8 +27,10 @@ readonly class SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson
     {
         self::validate($data, 'response');
         return new self(
-            data: array_map(fn ($item) => ListCustomerPortalSubscriptionsResponseValue200ApplicationJsonPropertyDataItem::fromArray($item), $data['data']),
-            additionalProperties: SchemaValidator::unknownFields($data, ['data']),
+            data: array_map(fn ($item) => CustomerPortalSubscription::fromArray($item), $data['data']),
+            links: PaginationLinks::fromArray($data['links']),
+            meta: PaginationMeta::fromArray($data['meta']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['data', 'links', 'meta']),
             presentFields: array_keys($data),
         );
     }
@@ -40,6 +44,8 @@ readonly class SdkListCustomerPortalSubscriptionsResponseValue200ApplicationJson
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'data' => array_map(fn ($item) => $item->toArray(), $this->data),
-        ], ['data'], $this->presentFields));
+            'links' => $this->links->toArray(),
+            'meta' => $this->meta->toArray(),
+        ], ['data', 'links', 'meta'], $this->presentFields));
     }
 }

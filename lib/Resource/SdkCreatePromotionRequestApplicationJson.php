@@ -10,7 +10,7 @@ readonly class SdkCreatePromotionRequestApplicationJson implements \JsonSerializ
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkCreatePromotionRequestApplicationJson', 'required' => ['name', 'status', 'priority', 'is_stackable', 'phases'], 'properties' => ['name' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'status' => ['kind' => 'enum', 'values' => ['active', 'disabled']], 'priority' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0, 'maximum' => 2147483647], 'is_stackable' => ['kind' => 'primitive', 'type' => 'boolean'], 'phases' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'CreatePromotionRequestApplicationJsonPropertyPhasesItem'], 'minItems' => 1], 'starts_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'ends_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'max_redemptions' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1, 'maximum' => 4294967295]]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkCreatePromotionRequestApplicationJson', 'required' => ['name', 'status', 'priority', 'is_stackable', 'phases'], 'properties' => ['name' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'status' => ['kind' => 'enum', 'values' => ['active', 'disabled']], 'priority' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0, 'maximum' => 2147483647], 'is_stackable' => ['kind' => 'primitive', 'type' => 'boolean'], 'phases' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'CreatePromotionRequestApplicationJsonPropertyPhasesItem'], 'minItems' => 1], 'starts_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'ends_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'max_redemptions' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1, 'maximum' => 4294967295]], 'applies_to' => ['kind' => 'enum', 'values' => ['one_time', 'subscriptions']], 'subscription_payments' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1, 'maximum' => 36]], 'store_wide' => ['kind' => 'primitive', 'type' => 'boolean'], 'products' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'product_variants' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']]], 'additionalProperties' => true];
 
     public function __construct(
         public string $name,
@@ -26,6 +26,22 @@ readonly class SdkCreatePromotionRequestApplicationJson implements \JsonSerializ
         /** A date and time after starts_at and after the current time, or null for no end date. */
         public ?\DateTimeImmutable $endsAt = null,
         public ?int $maxRedemptions = null,
+        /** What the promotion discounts: `one_time` for one-time purchases, or `subscriptions` for the first payments of a subscription plan. A new promotion defaults to `one_time`, and an update that leaves this out keeps the current kind. The promotion only discounts order lines of its kind. */
+        public SdkCreateCouponRequestApplicationJsonAppliesTo|string|null $appliesTo = null,
+        /** How many payments a `subscriptions` promotion discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` promotion needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` promotion, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` promotion always stores null here. */
+        public ?int $subscriptionPayments = null,
+        /** Send `false` with `products` to limit a `subscriptions` promotion to picked products and plans. Required whenever the request sends `products` or `product_variants`. A new promotion defaults to `true`, an update that leaves it out keeps the current scope, and switching a promotion to `one_time` makes it store-wide again. A `one_time` promotion with `false` returns `422` on `store_wide` with `A promotion for one-time purchases applies to the whole store.` */
+        public ?bool $storeWide = null,
+        /**
+         * Product IDs a narrowed subscription promotion reaches. Each one must sell a subscription, or the request returns `422` on `products` with `Pick only products that sell a subscription.` A narrowed promotion left with no products returns `422` with `Pick at least one subscription product for this promotion.` An update replaces the picks with this list, or keeps them when it is left out.
+         * @var array<int>|null
+         */
+        public ?array $products = null,
+        /**
+         * Subscription plan IDs to limit the picked products to. Each one must be a subscription plan of a product in `products`, or the request returns `422` on `product_variants` with `Pick only subscription plans of the picked products.` A picked product with none of its plans listed takes every plan, including plans added later. An update that leaves this out keeps the listed plans of products that stay picked.
+         * @var array<int>|null
+         */
+        public ?array $productVariants = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -44,7 +60,12 @@ readonly class SdkCreatePromotionRequestApplicationJson implements \JsonSerializ
             startsAt: isset($data['starts_at']) ? new \DateTimeImmutable($data['starts_at']) : null,
             endsAt: isset($data['ends_at']) ? new \DateTimeImmutable($data['ends_at']) : null,
             maxRedemptions: $data['max_redemptions'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['name', 'status', 'priority', 'is_stackable', 'phases', 'starts_at', 'ends_at', 'max_redemptions']),
+            appliesTo: isset($data['applies_to']) ? SdkCreateCouponRequestApplicationJsonAppliesTo::tryFrom($data['applies_to']) ?? $data['applies_to'] : null,
+            subscriptionPayments: $data['subscription_payments'] ?? null,
+            storeWide: $data['store_wide'] ?? null,
+            products: $data['products'] ?? null,
+            productVariants: $data['product_variants'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['name', 'status', 'priority', 'is_stackable', 'phases', 'starts_at', 'ends_at', 'max_redemptions', 'applies_to', 'subscription_payments', 'store_wide', 'products', 'product_variants']),
             presentFields: array_keys($data),
         );
     }
@@ -65,6 +86,11 @@ readonly class SdkCreatePromotionRequestApplicationJson implements \JsonSerializ
             'starts_at' => $this->startsAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'ends_at' => $this->endsAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'max_redemptions' => $this->maxRedemptions,
+            'applies_to' => $this->appliesTo instanceof \BackedEnum ? $this->appliesTo->value : $this->appliesTo,
+            'subscription_payments' => $this->subscriptionPayments,
+            'store_wide' => $this->storeWide,
+            'products' => $this->products,
+            'product_variants' => $this->productVariants,
         ], ['name', 'status', 'priority', 'is_stackable', 'phases'], $this->presentFields));
     }
 }

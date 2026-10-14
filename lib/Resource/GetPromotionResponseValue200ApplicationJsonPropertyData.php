@@ -10,7 +10,7 @@ readonly class GetPromotionResponseValue200ApplicationJsonPropertyData implement
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'GetPromotionResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'name', 'status', 'priority', 'is_stackable', 'phases'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'name' => ['kind' => 'primitive', 'type' => 'string'], 'status' => ['kind' => 'enum', 'values' => ['active', 'disabled']], 'priority' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0], 'is_stackable' => ['kind' => 'primitive', 'type' => 'boolean'], 'phases' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'GetPromotionResponseValue200ApplicationJsonPropertyDataPropertyPhasesItem']], 'starts_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'ends_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'max_redemptions' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'created_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'updated_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'GetPromotionResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'name', 'status', 'priority', 'is_stackable', 'applies_to', 'subscription_payments', 'store_wide', 'products', 'product_variants', 'phases'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'name' => ['kind' => 'primitive', 'type' => 'string'], 'status' => ['kind' => 'enum', 'values' => ['active', 'disabled']], 'priority' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0], 'is_stackable' => ['kind' => 'primitive', 'type' => 'boolean'], 'applies_to' => ['kind' => 'enum', 'values' => ['one_time', 'subscriptions']], 'subscription_payments' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'store_wide' => ['kind' => 'primitive', 'type' => 'boolean'], 'products' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'product_variants' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'phases' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'GetPromotionResponseValue200ApplicationJsonPropertyDataPropertyPhasesItem']], 'starts_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'ends_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'max_redemptions' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'created_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'updated_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']]], 'additionalProperties' => true];
 
     public function __construct(
         public int $id,
@@ -18,6 +18,22 @@ readonly class GetPromotionResponseValue200ApplicationJsonPropertyData implement
         public SdkCreatePromotionRequestApplicationJsonStatus|string $status,
         public int $priority,
         public bool $isStackable,
+        /** `one_time` when the promotion discounts one-time purchases, or `subscriptions` when it discounts the first payments of a subscription plan. */
+        public SdkCreateCouponRequestApplicationJsonAppliesTo|string $appliesTo,
+        /** How many payments a `subscriptions` promotion discounts, counting the signup payment as the first. Null on a `one_time` promotion. */
+        public ?int $subscriptionPayments,
+        /** Whether the promotion reaches every product of its kind. A `one_time` promotion is always store-wide. A `subscriptions` promotion with `false` reaches only the products in `products`, limited to the plans in `product_variants`. */
+        public bool $storeWide,
+        /**
+         * Product IDs a narrowed subscription promotion reaches. Empty when the promotion is store-wide.
+         * @var array<int>
+         */
+        public array $products,
+        /**
+         * Subscription plan IDs the picked products are limited to. A picked product with none of its plans listed here takes every plan of that product, including plans added later. Empty when the promotion is store-wide.
+         * @var array<int>
+         */
+        public array $productVariants,
         /** @var array<\SellApp\Resource\GetPromotionResponseValue200ApplicationJsonPropertyDataPropertyPhasesItem> */
         public array $phases,
         public ?\DateTimeImmutable $startsAt = null,
@@ -41,6 +57,11 @@ readonly class GetPromotionResponseValue200ApplicationJsonPropertyData implement
             status: SdkCreatePromotionRequestApplicationJsonStatus::tryFrom($data['status']) ?? $data['status'],
             priority: $data['priority'],
             isStackable: $data['is_stackable'],
+            appliesTo: SdkCreateCouponRequestApplicationJsonAppliesTo::tryFrom($data['applies_to']) ?? $data['applies_to'],
+            subscriptionPayments: $data['subscription_payments'] ?? null,
+            storeWide: $data['store_wide'],
+            products: $data['products'],
+            productVariants: $data['product_variants'],
             phases: array_map(fn ($item) => GetPromotionResponseValue200ApplicationJsonPropertyDataPropertyPhasesItem::fromArray($item), $data['phases']),
             startsAt: isset($data['starts_at']) ? new \DateTimeImmutable($data['starts_at']) : null,
             endsAt: isset($data['ends_at']) ? new \DateTimeImmutable($data['ends_at']) : null,
@@ -48,7 +69,7 @@ readonly class GetPromotionResponseValue200ApplicationJsonPropertyData implement
             createdAt: isset($data['created_at']) ? new \DateTimeImmutable($data['created_at']) : null,
             updatedAt: isset($data['updated_at']) ? new \DateTimeImmutable($data['updated_at']) : null,
             deletedAt: isset($data['deleted_at']) ? new \DateTimeImmutable($data['deleted_at']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'name', 'status', 'priority', 'is_stackable', 'phases', 'starts_at', 'ends_at', 'max_redemptions', 'created_at', 'updated_at', 'deleted_at']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'name', 'status', 'priority', 'is_stackable', 'applies_to', 'subscription_payments', 'store_wide', 'products', 'product_variants', 'phases', 'starts_at', 'ends_at', 'max_redemptions', 'created_at', 'updated_at', 'deleted_at']),
             presentFields: array_keys($data),
         );
     }
@@ -66,6 +87,11 @@ readonly class GetPromotionResponseValue200ApplicationJsonPropertyData implement
             'status' => $this->status instanceof \BackedEnum ? $this->status->value : $this->status,
             'priority' => $this->priority,
             'is_stackable' => $this->isStackable,
+            'applies_to' => $this->appliesTo instanceof \BackedEnum ? $this->appliesTo->value : $this->appliesTo,
+            'subscription_payments' => $this->subscriptionPayments,
+            'store_wide' => $this->storeWide,
+            'products' => $this->products,
+            'product_variants' => $this->productVariants,
             'phases' => array_map(fn ($item) => $item->toArray(), $this->phases),
             'starts_at' => $this->startsAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'ends_at' => $this->endsAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
@@ -73,6 +99,6 @@ readonly class GetPromotionResponseValue200ApplicationJsonPropertyData implement
             'created_at' => $this->createdAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'updated_at' => $this->updatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'deleted_at' => $this->deletedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
-        ], ['id', 'name', 'status', 'priority', 'is_stackable', 'phases'], $this->presentFields));
+        ], ['id', 'name', 'status', 'priority', 'is_stackable', 'applies_to', 'subscription_payments', 'store_wide', 'products', 'product_variants', 'phases'], $this->presentFields));
     }
 }

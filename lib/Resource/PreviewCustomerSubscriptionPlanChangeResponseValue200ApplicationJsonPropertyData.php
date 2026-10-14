@@ -10,19 +10,14 @@ readonly class PreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJ
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'PreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'status', 'provider_subscription_id', 'provider_customer_id', 'customer'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'status' => ['kind' => 'primitive', 'type' => 'string'], 'provider_subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'provider_customer_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'customer' => ['kind' => 'model', 'class' => 'PreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJsonPropertyDataPropertyCustomer'], 'subscription_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'customer_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'product_variant_id' => ['kind' => 'primitive', 'type' => 'integer']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'PreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJsonPropertyData', 'required' => ['preview_token', 'expires_at', 'preview', 'customer_message'], 'properties' => ['preview_token' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'expires_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'preview' => ['kind' => 'model', 'class' => 'SubscriptionPlanChangePreviewPayload'], 'customer_message' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']]], 'additionalProperties' => true];
 
     public function __construct(
-        public int $id,
-        public string $status,
-        public ?string $providerSubscriptionId,
-        public ?string $providerCustomerId,
-        public PreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJsonPropertyDataPropertyCustomer $customer,
-        /** @deprecated */
-        public ?string $subscriptionId = null,
-        /** @deprecated */
-        public ?string $customerId = null,
-        public ?int $productVariantId = null,
+        /** Send this back to the matching confirm route. A preview expires 30 minutes after it is created. */
+        public ?string $previewToken,
+        public ?\DateTimeImmutable $expiresAt,
+        public SubscriptionPlanChangePreviewPayload $preview,
+        public ?string $customerMessage,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -33,15 +28,11 @@ readonly class PreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJ
     {
         self::validate($data, 'response');
         return new self(
-            id: $data['id'],
-            status: $data['status'],
-            providerSubscriptionId: $data['provider_subscription_id'] ?? null,
-            providerCustomerId: $data['provider_customer_id'] ?? null,
-            customer: PreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJsonPropertyDataPropertyCustomer::fromArray($data['customer']),
-            subscriptionId: $data['subscription_id'] ?? null,
-            customerId: $data['customer_id'] ?? null,
-            productVariantId: $data['product_variant_id'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'status', 'provider_subscription_id', 'provider_customer_id', 'customer', 'subscription_id', 'customer_id', 'product_variant_id']),
+            previewToken: $data['preview_token'] ?? null,
+            expiresAt: isset($data['expires_at']) ? new \DateTimeImmutable($data['expires_at']) : null,
+            preview: SubscriptionPlanChangePreviewPayload::fromArray($data['preview']),
+            customerMessage: $data['customer_message'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['preview_token', 'expires_at', 'preview', 'customer_message']),
             presentFields: array_keys($data),
         );
     }
@@ -54,14 +45,10 @@ readonly class PreviewCustomerSubscriptionPlanChangeResponseValue200ApplicationJ
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'id' => $this->id,
-            'status' => $this->status,
-            'provider_subscription_id' => $this->providerSubscriptionId,
-            'provider_customer_id' => $this->providerCustomerId,
-            'customer' => $this->customer->toArray(),
-            'subscription_id' => $this->subscriptionId,
-            'customer_id' => $this->customerId,
-            'product_variant_id' => $this->productVariantId,
-        ], ['id', 'status', 'provider_subscription_id', 'provider_customer_id', 'customer'], $this->presentFields));
+            'preview_token' => $this->previewToken,
+            'expires_at' => $this->expiresAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'preview' => $this->preview->toArray(),
+            'customer_message' => $this->customerMessage,
+        ], ['preview_token', 'expires_at', 'preview', 'customer_message'], $this->presentFields));
     }
 }
