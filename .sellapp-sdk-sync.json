@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "language": "php",
   "repository": "sellapp/sellapp-php",
-  "sourceSha": "2a8fd1a82c3091e60f332257fe4460785b0c6e9a",
-  "specSha256": "aea767326d7193deffe5004a5751f7e8f59e40b037636c8fc29b936699dfff2e",
+  "sourceSha": "5bfb944881c821f7c8b0af0e254d6f9bd16c0806",
+  "specSha256": "22a0f17c1c7099fa036382e9f037daa5b7e273d57605163d22042e03f964f1c8",
   "runId": "0",
   "runAttempt": "1",
-  "treeDigest": "b637d90aab3c52b1cf5de709a39817dd47436702594f9f1df61ffc7a1a3f1a05",
-  "contentDigest": "b4cce00d81bbb14c28cd5809aee6dbc549cbde2b15e0c5a7b57c8eb428fe624a",
+  "treeDigest": "2bd9ad0d96c0fc0cb16dc2fff72365388a43a285c0b854d57e4d601fa5d791b1",
+  "contentDigest": "2d0cb330246264cd3d077176689925d9221fe1c4bf7fcc2a80cfb76361629560",
   "files": [
     {
       "path": ".github/scripts/native-ci.mjs",
@@ -52,7 +52,7 @@
     {
       "path": "README.md",
       "mode": "100644",
-      "sha256": "65240d8f3c4352581194266980a61ac690cfc7a47c8c16f39e95f9314b329716"
+      "sha256": "9385932a4163020c7c2dac6b1ad97afaaa5391355ea3570f70c98d7da6387a95"
     },
     {
       "path": "composer.json",
@@ -67,7 +67,7 @@
     {
       "path": "docs/migration.md",
       "mode": "100644",
-      "sha256": "d2152af699fb26ebea01160423ee170c0d2516d1100b8188a4e583956b20528d"
+      "sha256": "fc66a4951d15ce6a3455cd4aac9a310b3f8db00af0c07ef4567bdb83c3f54bea"
     },
     {
       "path": "docs/operation-examples.json",
@@ -497,7 +497,7 @@
     {
       "path": "generation-manifest.json",
       "mode": "100644",
-      "sha256": "69fbf7a490a8eb84983190a34a74fea0046c1546b4c50e0f293fbff4fed01b19"
+      "sha256": "60004e10af680817de23fadb8a95ce7f7d8c3641428dde613cc4ad358de3986b"
     },
     {
       "path": "lib/Client.php",
@@ -537,7 +537,7 @@
     {
       "path": "lib/HttpClient.php",
       "mode": "100644",
-      "sha256": "8300facdbd1201e15e17409c079c59240fcc0554cda90cf7c22586296893785d"
+      "sha256": "24323114343e8fee1bedf53f0d7fbd27da87874a6f6963896d6956ba131be3f7"
     },
     {
       "path": "lib/PaginatedResponse.php",
@@ -8187,7 +8187,7 @@
     {
       "path": "lib/Resource/SdkDismissSubscriptionActionRequestApplicationJson.php",
       "mode": "100644",
-      "sha256": "22134c906103958daa82fa5abeb1ab3d02be7d610a8f50f1c19953f892602649"
+      "sha256": "ee1a2f5a72d494e7987365561014276f038550b97678c09382b468129ded2cbf"
     },
     {
       "path": "lib/Resource/SdkDismissSubscriptionActionResponseValue200ApplicationJson.php",
@@ -14112,7 +14112,7 @@
     {
       "path": "lib/Service/SubscriptionsActions.php",
       "mode": "100644",
-      "sha256": "aa96daa9912902e2dfd97ec9798bcba1216dd35b125b9f398f45e10925f1613b"
+      "sha256": "ef443f5471f63de196b7df127a660a202f6df55801bca4bb765f3b461ce94438"
     },
     {
       "path": "lib/Service/Tickets.php",

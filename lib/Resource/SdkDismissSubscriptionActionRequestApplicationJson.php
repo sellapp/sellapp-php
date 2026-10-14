@@ -15,7 +15,10 @@ readonly class SdkDismissSubscriptionActionRequestApplicationJson implements \Js
     public function __construct(
         /** Why the action is being dismissed. The note is kept on the dismissed action as its error. */
         public string $note,
-        /** Optional idempotency key. You may also send this as the Idempotency-Key header. */
+        /**
+         * Accepted for compatibility but ignored by this operation. Retrieve the action after an uncertain response; repeating a completed dismissal returns 422.
+         * @deprecated
+         */
         public ?string $idempotencyKey = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],

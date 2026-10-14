@@ -81,10 +81,10 @@ class SubscriptionsActions
     /**
      * Dismiss a subscription action
      *
-     * Dismiss a pending lifecycle action that the provider left unresolved, which frees the subscription for its next change. Only a pending action can be dismissed, and the required `note` is stored on the action as its `error` so the decision stays on the record. An action in any other state returns `422` with the refusal sentence under `errors.subscription`, while a missing or over-long `note` returns an ordinary field error. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Dismiss a pending lifecycle action that the provider left unresolved, which frees the subscription for its next change. Only a pending action can be dismissed, and the required `note` is stored on the action as its `error` so the decision stays on the record. An action in any other state returns `422` with the refusal sentence under `errors.subscription`, while a missing or over-long `note` returns an ordinary field error. This operation does not replay completed dismissals: idempotency keys are ignored. After a lost response, retrieve the action before repeating the request; an already-dismissed action returns `422`. Requires the `invoice` Sanctum ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $productSubscription The productSubscription path parameter.
      * @param int $action The action path parameter.
-     * @param string|null $idempotencyKey Optional idempotency key. You may also send this as the Idempotency-Key header.
+     * @param string|null $idempotencyKey (deprecated) Accepted for compatibility but ignored by this operation. Retrieve the action after an uncertain response; repeating a completed dismissal returns 422.
      * @param string $note Why the action is being dismissed. The note is kept on the dismissed action as its error.
      * @return \SellApp\Resource\SdkDismissSubscriptionActionResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -96,7 +96,7 @@ class SubscriptionsActions
         ?string $idempotencyKey = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkDismissSubscriptionActionResponseValue200ApplicationJson {
-        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'dismissSubscriptionAction', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'dismissSubscriptionAction', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
             'idempotency_key' => $idempotencyKey,
             'note' => $note,
