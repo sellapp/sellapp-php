@@ -10,7 +10,7 @@ readonly class BatchCreateProductVariantsResponseValue200ApplicationJsonProperty
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['id', 'product_id', 'title', 'description', 'deliverable', 'pricing', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'payment_methods', 'other_settings', 'order', 'created_at', 'updated_at', 'deleted_at', 'product'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'product_id' => ['kind' => 'primitive', 'type' => 'integer'], 'title' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'deliverable' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverable'], 'pricing' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricing'], 'minimum_purchase_quantity' => ['kind' => 'primitive', 'type' => 'integer'], 'maximum_purchase_quantity' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'bulk_discount' => ['kind' => 'nullable', 'inner' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyBulkDiscountItem']]], 'payment_methods' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string']], 'other_settings' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyOtherSettings'], 'order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'product' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyProduct']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['id', 'product_id', 'title', 'description', 'deliverable', 'pricing', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'payment_methods', 'other_settings', 'order', 'created_at', 'updated_at', 'deleted_at', 'product', 'is_draft'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'product_id' => ['kind' => 'primitive', 'type' => 'integer'], 'title' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'deliverable' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverable'], 'pricing' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyPricing'], 'minimum_purchase_quantity' => ['kind' => 'primitive', 'type' => 'integer'], 'maximum_purchase_quantity' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'bulk_discount' => ['kind' => 'nullable', 'inner' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyBulkDiscountItem']]], 'payment_methods' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string']], 'other_settings' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyOtherSettings'], 'order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'product' => ['kind' => 'model', 'class' => 'BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyProduct'], 'is_draft' => ['kind' => 'primitive', 'type' => 'boolean']], 'additionalProperties' => true];
 
     public function __construct(
         public int $id,
@@ -31,6 +31,8 @@ readonly class BatchCreateProductVariantsResponseValue200ApplicationJsonProperty
         public \DateTimeImmutable $updatedAt,
         public ?\DateTimeImmutable $deletedAt,
         public BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyProduct $product,
+        /** `true` while the variant is a draft that customers cannot buy. Listing, searching, and retrieving variants leave drafts out unless you send `with_drafts` or `only_drafts`. */
+        public bool $isDraft,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -57,7 +59,8 @@ readonly class BatchCreateProductVariantsResponseValue200ApplicationJsonProperty
             updatedAt: new \DateTimeImmutable($data['updated_at']),
             deletedAt: isset($data['deleted_at']) ? new \DateTimeImmutable($data['deleted_at']) : null,
             product: BatchCreateProductVariantsResponseValue200ApplicationJsonPropertyDataItemPropertyProduct::fromArray($data['product']),
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'product_id', 'title', 'description', 'deliverable', 'pricing', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'payment_methods', 'other_settings', 'order', 'created_at', 'updated_at', 'deleted_at', 'product']),
+            isDraft: $data['is_draft'],
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'product_id', 'title', 'description', 'deliverable', 'pricing', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'payment_methods', 'other_settings', 'order', 'created_at', 'updated_at', 'deleted_at', 'product', 'is_draft']),
             presentFields: array_keys($data),
         );
     }
@@ -86,6 +89,7 @@ readonly class BatchCreateProductVariantsResponseValue200ApplicationJsonProperty
             'updated_at' => $this->updatedAt->format(\DateTimeInterface::RFC3339_EXTENDED),
             'deleted_at' => $this->deletedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
             'product' => $this->product->toArray(),
-        ], ['id', 'product_id', 'title', 'description', 'deliverable', 'pricing', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'payment_methods', 'other_settings', 'order', 'created_at', 'updated_at', 'deleted_at', 'product'], $this->presentFields));
+            'is_draft' => $this->isDraft,
+        ], ['id', 'product_id', 'title', 'description', 'deliverable', 'pricing', 'minimum_purchase_quantity', 'maximum_purchase_quantity', 'bulk_discount', 'payment_methods', 'other_settings', 'order', 'created_at', 'updated_at', 'deleted_at', 'product', 'is_draft'], $this->presentFields));
     }
 }

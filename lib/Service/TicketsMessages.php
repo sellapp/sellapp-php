@@ -198,12 +198,14 @@ class TicketsMessages
     /**
      * Search ticket messages
      *
-     * Search a ticket's messages using JSON body filters, search terms, includes, and sort instructions. This v2 route is store-scoped. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Search a ticket's messages using JSON body filters, search terms, includes, and sort instructions. This v2 route is store-scoped. Page through results with `limit` (1 to 100, default 15; a larger value returns `422`) and `page`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $ticket The ticket path parameter.
      * @param array<\SellApp\Resource\V2SearchTicketMessagesRequestApplicationJsonPropertyFiltersItem>|null $filters
      * @param array<\SellApp\Resource\V2SearchTicketMessagesRequestApplicationJsonPropertySortItem>|null $sort
      * @param \SellApp\Resource\V2SearchTicketMessagesRequestApplicationJsonPropertySearch|null $search
      * @param array<\SellApp\Resource\V2SearchTicketMessagesRequestApplicationJsonPropertyIncludesItem>|null $includes
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\V2SearchTicketMessagesResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
@@ -213,12 +215,19 @@ class TicketsMessages
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchTicketMessagesRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'v2SearchTicketMessages', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'POST',
             path: 'v2/tickets/' . rawurlencode((string) $ticket) . '/messages/search',
+            query: $query,
             modelClass: V2SearchTicketMessagesResponseValue200ApplicationJsonPropertyDataItem::class,
             options: $options,
         );

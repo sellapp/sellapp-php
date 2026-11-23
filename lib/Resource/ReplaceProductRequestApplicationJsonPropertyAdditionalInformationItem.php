@@ -13,7 +13,7 @@ readonly class ReplaceProductRequestApplicationJsonPropertyAdditionalInformation
     private const SCHEMA = ['name' => 'ReplaceProductRequestApplicationJsonPropertyAdditionalInformationItem', 'required' => ['type', 'required', 'label'], 'properties' => ['type' => ['kind' => 'enum', 'values' => ['text', 'number', 'email', 'phone', 'currency', 'link', 'textarea', 'select', 'radio', 'checkbox-group', 'pillbox', 'checkbox', 'switch', 'date', 'date-range', 'hidden']], 'required' => ['kind' => 'primitive', 'type' => 'boolean'], 'label' => ['kind' => 'primitive', 'type' => 'string'], 'key' => ['kind' => 'primitive', 'type' => 'string'], 'options' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string']], 'placeholder' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'variant' => ['kind' => 'primitive', 'type' => 'string'], 'date_options' => ['kind' => 'model', 'class' => 'ReplaceProductRequestApplicationJsonPropertyAdditionalInformationItemPropertyDateOptions']], 'additionalProperties' => true];
 
     public function __construct(
-        public CreateProductRequestApplicationJsonPropertyAdditionalInformationItemType|string $type,
+        public CreateCheckoutFieldTemplateRequestApplicationJsonPropertyFieldsItemType|string $type,
         public bool $required,
         public string $label,
         public ?string $key = null,
@@ -33,7 +33,7 @@ readonly class ReplaceProductRequestApplicationJsonPropertyAdditionalInformation
     {
         self::validate($data, 'response');
         return new self(
-            type: CreateProductRequestApplicationJsonPropertyAdditionalInformationItemType::tryFrom($data['type']) ?? $data['type'],
+            type: CreateCheckoutFieldTemplateRequestApplicationJsonPropertyFieldsItemType::tryFrom($data['type']) ?? $data['type'],
             required: $data['required'],
             label: $data['label'],
             key: $data['key'] ?? null,

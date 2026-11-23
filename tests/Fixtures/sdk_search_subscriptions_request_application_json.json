@@ -24,5 +24,13 @@
     {
       "relation": "test_relation"
     }
-  ]
+  ],
+  "order_id": 1,
+  "product_id": 1,
+  "renews_after": "test_renews_after",
+  "renews_before": "test_renews_before",
+  "cancelled_after": "test_cancelled_after",
+  "cancelled_before": "test_cancelled_before",
+  "scheduled_to_cancel": true,
+  "paused": true
 }

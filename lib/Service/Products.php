@@ -10,7 +10,10 @@ use SellApp\Resource\ListProductsResponseValue200ApplicationJsonPropertyDataItem
 use SellApp\Resource\SdkBatchCreateProductsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkBatchUpdateProductsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkCreateProductResponseValue201ApplicationJson;
+use SellApp\Resource\SdkDuplicateProductResponseValue201ApplicationJson;
 use SellApp\Resource\SdkGetProductResponseValue200ApplicationJson;
+use SellApp\Resource\SdkMoveProductResponseValue200ApplicationJson;
+use SellApp\Resource\SdkPublishProductResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceProductResponseValue200ApplicationJson;
 use SellApp\Resource\SdkUpdateProductResponseValue200ApplicationJson;
 use SellApp\Resource\SearchProductsResponseValue200ApplicationJsonPropertyDataItem;
@@ -35,6 +38,11 @@ class Products
      * @param int|null $page Page number to return. Defaults to 1.
      * @param bool|null $withDrafts Include draft products alongside published products.
      * @param bool|null $onlyDrafts Return only draft products.
+     * @param int|null $minPrice Only products whose every priced variant costs at least this much, in integer minor units of that variant's own currency: `999` means $9.99 for a USD variant. Draft variants count. A product without a priced variant never matches a price filter. Must not be greater than `max_price`.
+     * @param int|null $maxPrice Only products whose every priced variant costs at most this much, in integer minor units of that variant's own currency: `2500` means $25.00 for a USD variant. Draft variants count. A product without a priced variant never matches a price filter.
+     * @param \SellApp\Resource\ProductsStock|null $stock Filter by stock, draft variants included. `in_stock`: at least one variant can be bought (unlimited stock, or at least its minimum purchase quantity left). `sold_out`: no variant can be bought. `any_variant_sold_out`: at least one variant with a stock count is sold out. `limited`: at least one variant has a stock count. `unlimited`: no variant has a stock count.
+     * @param array<\SellApp\Resource\CatalogVisibility>|null $visibility Only products with one of these visibilities. Repeat the parameter to select several. A single `visibility=HIDDEN` also works.
+     * @param bool|null $hasSales `true` for products with at least one completed sale, `false` for products without one. Only purchase line items with status `COMPLETED` count, so pending or refunded ones do not.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\ListProductsResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
@@ -43,6 +51,11 @@ class Products
         ?int $page = null,
         ?bool $withDrafts = null,
         ?bool $onlyDrafts = null,
+        ?int $minPrice = null,
+        ?int $maxPrice = null,
+        ?\SellApp\Resource\ProductsStock $stock = null,
+        ?array $visibility = null,
+        ?bool $hasSales = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listProducts', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
@@ -51,6 +64,11 @@ class Products
             'page' => $page,
             'with_drafts' => $withDrafts,
             'only_drafts' => $onlyDrafts,
+            'min_price' => $minPrice,
+            'max_price' => $maxPrice,
+            'stock' => $stock?->value,
+            'visibility[]' => $visibility,
+            'has_sales' => $hasSales,
         ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'GET',
@@ -272,11 +290,18 @@ class Products
     /**
      * Search products
      *
-     * Search products using JSON body filters, search terms, includes, and sort instructions. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
-     * @param array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertyFiltersItem>|null $filters
-     * @param array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertySortItem>|null $sort
+     * Search your store's products by title and narrow them by price, stock, visibility, or sales, 15 per page by default. Send the filters in the JSON body. Products support no `filters` or `sort` entries: any entry returns `422`. A filter value that is not valid, such as an unknown `stock` state or a `min_price` above `max_price`, returns `422` on that field. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertyFiltersItem>|null $filters Not supported for products: no field can be filtered this way, so any entry returns `422` on `filters`. Use the price, stock, visibility, and sales fields instead.
+     * @param array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertySortItem>|null $sort Not supported for products: any entry returns `422` on `sort`.
      * @param \SellApp\Resource\SearchProductsRequestApplicationJsonPropertySearch|null $search
-     * @param array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertyIncludesItem>|null $includes
+     * @param array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertyIncludesItem>|null $includes Only `variants` is accepted, and variants are always included.
+     * @param int|null $minPrice Only products whose every priced variant costs at least this much, in integer minor units of that variant's own currency: `999` means $9.99 for a USD variant. Draft variants count. A product without a priced variant never matches a price filter. Must not be greater than `max_price`.
+     * @param int|null $maxPrice Only products whose every priced variant costs at most this much, in integer minor units of that variant's own currency: `2500` means $25.00 for a USD variant. Draft variants count. A product without a priced variant never matches a price filter.
+     * @param \SellApp\Resource\Stock|null $stock Filter by stock, draft variants included. `in_stock`: at least one variant can be bought (unlimited stock, or at least its minimum purchase quantity left). `sold_out`: no variant can be bought. `any_variant_sold_out`: at least one variant with a stock count is sold out. `limited`: at least one variant has a stock count. `unlimited`: no variant has a stock count.
+     * @param array<\SellApp\Resource\CatalogVisibility>|null $visibility Only products with one of these visibilities. A single string such as `"HIDDEN"` is also accepted.
+     * @param bool|null $hasSales `true` for products with at least one completed sale, `false` for products without one. Only purchase line items with status `COMPLETED` count, so pending or refunded ones do not.
+     * @param bool|null $withDrafts Include draft products alongside published products.
+     * @param bool|null $onlyDrafts Return only draft products.
      * @param int|null $limit Number of items to return per page. Defaults to 15.
      * @param int|null $page Page number to return. Defaults to 1.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\SearchProductsResponseValue200ApplicationJsonPropertyDataItem>
@@ -287,6 +312,13 @@ class Products
         ?array $sort = null,
         ?\SellApp\Resource\SearchProductsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $minPrice = null,
+        ?int $maxPrice = null,
+        ?\SellApp\Resource\Stock $stock = null,
+        ?array $visibility = null,
+        ?bool $hasSales = null,
+        ?bool $withDrafts = null,
+        ?bool $onlyDrafts = null,
         ?int $limit = null,
         ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
@@ -380,5 +412,88 @@ class Products
             body: $body,
             options: $options,
         );
+    }
+
+    /**
+     * Publish a product
+     *
+     * Publish a draft product so customers can buy it. Works for normal products, bundles, add-ons, credits products, booking products, and courses. Each is checked as saved, the way its dashboard editor checks it before publishing, and nothing else about the product changes. A normal product needs a description and at least one published variant, and every variant that will be on sale needs a title, a description of at least 5 characters, a working delivery (for example an uploaded file for a download), a price, and payment methods enabled for the store that can take that currency. With exactly one variant, that variant is published with the product. With several, send the draft variants to publish with it in `variant_ids`; the others stay drafts. Publishing a subscription variant also creates its billing plans with the payment providers. A booking product publishes its one option with it; with several options, publish at least one with `POST /v2/products/{product}/variants/{variant}/publish` first, and the other options keep their own state. A bundle needs at least one product in it. A course is published with `visibility`, or with its saved visibility when you leave it out; `PUBLIC` also needs a ready promo video and at least one published lesson. A subscription-priced course cannot be published here. Publishing does not change a normal product's `visibility`: a product that is not `PUBLIC` is published but stays off the storefront listing. Requires the `listing` API-key ability and the `listing` permission in your team role. Safe to repeat: once the product is published, another call changes nothing and returns `422` with `The product is already published.` on `product`. Every refusal returns `422`. `visibility` is accepted only for a course and `variant_ids` only for a normal product; each is otherwise refused on that field, and `variant_ids.{i}` names an ID that is not a variant of this product. Everything else is on `product`, with one sentence per thing the product still needs. One `product` refusal comes after the product was published: when a payment provider refuses to create a subscription billing plan, the product and its variants are already published and the message is the provider's reason. Retrieve the product before trying again. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $product The product path parameter.
+     * @param \SellApp\Resource\CatalogVisibility|null $visibility
+     * @param array<int>|null $variantIds Normal products only. IDs of this product's draft variants to publish with it. Needed when the product has several variants and none is published yet; a single variant is published anyway. Draft variants you leave out stay drafts.
+     * @return \SellApp\Resource\SdkPublishProductResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function publish(
+        int $product,
+        ?\SellApp\Resource\CatalogVisibility $visibility = null,
+        ?array $variantIds = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkPublishProductResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'publishProduct', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'visibility' => $visibility?->value,
+            'variant_ids' => $variantIds,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkPublishProductRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/products/' . rawurlencode((string) $product) . '/publish',
+            body: $body,
+            options: $options,
+        );
+        return SdkPublishProductResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Duplicate a product
+     *
+     * Copy a normal product, bundle, add-on, credits product, or booking product within the same store and return the copy. Courses cannot be duplicated. The copy is titled `(Copy)`, `(Copy 2)`, and so on, with a matching `-copy` slug, and keeps every other product setting, including its images, `visibility`, and draft state. A copy of a published product is therefore on sale straight away. It gets no place in the product order or in a section. A normal product's variants are copied with their settings and downloadable files, except subscription variants. A bundle's variant is copied with the products in it, an add-on's with its downloadable files and the products it is offered with, a credits product's with its rate tiers, and a booking product's options, except subscription options, with their schedules. Never copied: sales, reviews, appointments, serial codes, issued licence keys, and group membership. A copied variant that delivers serial codes gets a stock of `0`, so it shows as sold out until you add codes. Requires the `listing` API-key ability and the `listing` permission in your team role. Not safe to retry blindly: every call creates another copy. If a response is lost, list your products and look for the copy before trying again. A course, or a product with nothing to copy (only subscription variants), returns `422` on `product`. A product that changed while the copy was being made also returns `422` on `product`; nothing was copied. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $product The product path parameter.
+     * @return \SellApp\Resource\SdkDuplicateProductResponseValue201ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function duplicate(
+        int $product,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkDuplicateProductResponseValue201ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'duplicateProduct', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/products/' . rawurlencode((string) $product) . '/duplicate',
+            options: $options,
+        );
+        return SdkDuplicateProductResponseValue201ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Move a product
+     *
+     * Move a normal product to a position in your store's product order, shifting the products in between by one. Positions run from `1` to the number of normal products, drafts included; a product's position is its `order`. Gaps in the stored order are closed first. Requires the `listing` API-key ability and the `listing` permission in your team role. Safe to repeat: moving a product to the position it already has changes nothing. Send `expected_position` with the position you last read to refuse the move when someone else moved the product in the meantime. A position past the end returns `422` on `position` with the allowed range, a product that is no longer at `expected_position` returns `422` on `expected_position` with its current position, and a listing that is not a normal product returns `422` on `product`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $product The product path parameter.
+     * @param int $position The new position, where `1` is first. At most the number of normal products in the store, drafts included.
+     * @param int|null $expectedPosition The position you last read for this product (its `order`). The move is refused when the product is no longer there.
+     * @return \SellApp\Resource\SdkMoveProductResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function move(
+        int $product,
+        int $position,
+        ?int $expectedPosition = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkMoveProductResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'moveProduct', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'position' => $position,
+            'expected_position' => $expectedPosition,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkMoveProductRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PUT',
+            path: 'v2/products/' . rawurlencode((string) $product) . '/position',
+            body: $body,
+            options: $options,
+        );
+        return SdkMoveProductResponseValue200ApplicationJson::fromArray($response);
     }
 }

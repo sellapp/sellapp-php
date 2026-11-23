@@ -10,7 +10,7 @@ readonly class SdkSearchSubscriptionsRequestApplicationJson implements \JsonSeri
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkSearchSubscriptionsRequestApplicationJson', 'required' => [], 'properties' => ['filters' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertyFiltersItem']], 'sort' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertySortItem']], 'search' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertySearch'], 'includes' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertyIncludesItem']]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkSearchSubscriptionsRequestApplicationJson', 'required' => [], 'properties' => ['filters' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertyFiltersItem']], 'sort' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertySortItem']], 'search' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertySearch'], 'includes' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchSubscriptionsRequestApplicationJsonPropertyIncludesItem']], 'order_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'product_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'renews_after' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 64]], 'renews_before' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 64]], 'cancelled_after' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 64]], 'cancelled_before' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 64]], 'scheduled_to_cancel' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'boolean']], 'paused' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'boolean']]], 'additionalProperties' => true];
 
     public function __construct(
         /** @var array<\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertyFiltersItem>|null */
@@ -20,6 +20,22 @@ readonly class SdkSearchSubscriptionsRequestApplicationJson implements \JsonSeri
         public ?SearchSubscriptionsRequestApplicationJsonPropertySearch $search = null,
         /** @var array<\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertyIncludesItem>|null */
         public ?array $includes = null,
+        /** Keep subscriptions sold by this order. */
+        public ?int $orderId = null,
+        /** Keep subscriptions whose plan is a variant of this product, including subscriptions moved to that plan after signup. */
+        public ?int $productId = null,
+        /** Keep subscriptions that renew on or after this moment. Only `ACTIVE` and `TRIALING` subscriptions with a renewal date that are neither paused nor scheduled to cancel match a renewal filter. A date such as `2026-11-01` starts at midnight of that day in the store's time zone; a date-time without an offset is also read in the store's time zone. Inclusive. */
+        public ?string $renewsAfter = null,
+        /** Keep subscriptions that renew on or before this moment, with the same rules as `renews_after`. A date runs to the last second of that day in the store's time zone. Inclusive. Must not be earlier than `renews_after`. */
+        public ?string $renewsBefore = null,
+        /** Keep `CANCELED` subscriptions cancelled on or after this moment. The cancellation time is when an immediate cancellation happened; for a subscription that ran out at its period end it is approximate, the last time the subscription record changed. Dates are read like `renews_after`. Inclusive. */
+        public ?string $cancelledAfter = null,
+        /** Keep `CANCELED` subscriptions cancelled on or before this moment, with the same rules as `cancelled_after`. A date runs to the last second of that day in the store's time zone. Inclusive. Must not be earlier than `cancelled_after`. */
+        public ?string $cancelledBefore = null,
+        /** `true` keeps `ACTIVE` and `TRIALING` subscriptions set to cancel at the end of their period; `false` keeps subscriptions that are not set to. */
+        public ?bool $scheduledToCancel = null,
+        /** `true` keeps paused subscriptions; `false` keeps subscriptions that are not paused. */
+        public ?bool $paused = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -34,7 +50,15 @@ readonly class SdkSearchSubscriptionsRequestApplicationJson implements \JsonSeri
             sort: isset($data['sort']) ? array_map(fn ($item) => SearchSubscriptionsRequestApplicationJsonPropertySortItem::fromArray($item), $data['sort']) : null,
             search: isset($data['search']) ? SearchSubscriptionsRequestApplicationJsonPropertySearch::fromArray($data['search']) : null,
             includes: isset($data['includes']) ? array_map(fn ($item) => SearchSubscriptionsRequestApplicationJsonPropertyIncludesItem::fromArray($item), $data['includes']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['filters', 'sort', 'search', 'includes']),
+            orderId: $data['order_id'] ?? null,
+            productId: $data['product_id'] ?? null,
+            renewsAfter: $data['renews_after'] ?? null,
+            renewsBefore: $data['renews_before'] ?? null,
+            cancelledAfter: $data['cancelled_after'] ?? null,
+            cancelledBefore: $data['cancelled_before'] ?? null,
+            scheduledToCancel: $data['scheduled_to_cancel'] ?? null,
+            paused: $data['paused'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['filters', 'sort', 'search', 'includes', 'order_id', 'product_id', 'renews_after', 'renews_before', 'cancelled_after', 'cancelled_before', 'scheduled_to_cancel', 'paused']),
             presentFields: array_keys($data),
         );
     }
@@ -51,6 +75,14 @@ readonly class SdkSearchSubscriptionsRequestApplicationJson implements \JsonSeri
             'sort' => $this->sort !== null ? array_map(fn ($item) => $item->toArray(), $this->sort) : null,
             'search' => $this->search?->toArray(),
             'includes' => $this->includes !== null ? array_map(fn ($item) => $item->toArray(), $this->includes) : null,
+            'order_id' => $this->orderId,
+            'product_id' => $this->productId,
+            'renews_after' => $this->renewsAfter,
+            'renews_before' => $this->renewsBefore,
+            'cancelled_after' => $this->cancelledAfter,
+            'cancelled_before' => $this->cancelledBefore,
+            'scheduled_to_cancel' => $this->scheduledToCancel,
+            'paused' => $this->paused,
         ], [], $this->presentFields));
     }
 }

@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace SellApp\Service;
 
 use SellApp\Resource\SdkCancelAppointmentResponseValue200ApplicationJson;
+use SellApp\Resource\SdkCreateBookingProductResponseValue201ApplicationJson;
 use SellApp\Resource\SdkGetAppointmentResponseValue200ApplicationJson;
 use SellApp\Resource\SdkListAppointmentsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkSearchAppointmentsResponseValue200ApplicationJson;
@@ -172,5 +173,94 @@ class Bookings
             options: $options,
         );
         return SdkCancelAppointmentResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Create a booking product
+     *
+     * Create a draft booking product with one draft option that customers book as a timed appointment, one per purchase and one customer per time slot. Nothing can be booked until you publish it, whatever `visibility` you send: `visibility`, `PRIVATE` by default, applies once the product is published. Publish it with `POST /v2/products/{product}/publish`. Schedule fields you leave out take their defaults; read the result with `GET /v2/products/{product}/variants/{variant}/booking`. Each successful call creates another product, so do not retry blindly after a lost response: list your products first. Requires the `listing` API-key ability and the `listing` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param string $title The product name customers see. The URL slug is made from it.
+     * @param string|null $description The product description as HTML, 5 to 5000 characters. Leave it out to start without one.
+     * @param \SellApp\Resource\CatalogVisibility|null $visibility
+     * @param string|null $variantTitle The name of the bookable option.
+     * @param string|null $variantDescription The option's description. Defaults to the product description, or to `Book an appointment for` and the title when there is none.
+     * @param int $priceCents The price of one appointment in the smallest unit of `currency`: `2500` means $25.00 in USD, and `0` makes it free. A paid price outside the currency's limits, such as below 0.50 in USD, returns `422` on `price_cents`.
+     * @param int|null $compareAtPriceCents An optional crossed-out price shown next to the real one, in the same unit. It must be higher than `price_cents` and within the currency's limits; otherwise the request returns `422` on `compare_at_price_cents`.
+     * @param \SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonCurrency|null $currency The currency of both prices.
+     * @param array<\SellApp\Resource\PaymentMethod>|null $paymentMethods How customers can pay. Each must be enabled for the store, or the request returns `422` on `payment_methods`. Leave it out to use the store's default payment methods for the currency; a paid booking with none available returns `422` on `payment_methods`.
+     * @param string|null $timezone The IANA timezone the weekly availability is read in. Defaults to the store's timezone.
+     * @param int|null $durationMinutes
+     * @param int|null $minNoticeMinutes
+     * @param int|null $maxAdvanceDays
+     * @param int|null $bufferBeforeMinutes
+     * @param int|null $bufferAfterMinutes
+     * @param array<int>|null $providerConnectionIds
+     * @param \SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider|null $videoProvider
+     * @param int|null $videoProviderConnectionId
+     * @param bool|null $remindersEnabled
+     * @param int|null $reminderOffsetValue
+     * @param \SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit|null $reminderOffsetUnit
+     * @param array<\SellApp\Resource\CreateBookingProductRequestApplicationJsonPropertyAvailabilityItem>|null $availability Weekly opening hours, one entry per day from `1` to `7`, in 30-minute steps. Days you leave out are closed. Leave the whole list out to open days `1` to `5` from 09:00 to 17:00.
+     * @return \SellApp\Resource\SdkCreateBookingProductResponseValue201ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function create(
+        string $title,
+        int $priceCents,
+        ?string $description = null,
+        ?\SellApp\Resource\CatalogVisibility $visibility = null,
+        ?string $variantTitle = null,
+        ?string $variantDescription = null,
+        ?int $compareAtPriceCents = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonCurrency $currency = null,
+        ?array $paymentMethods = null,
+        ?string $timezone = null,
+        ?int $durationMinutes = null,
+        ?int $minNoticeMinutes = null,
+        ?int $maxAdvanceDays = null,
+        ?int $bufferBeforeMinutes = null,
+        ?int $bufferAfterMinutes = null,
+        ?array $providerConnectionIds = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider $videoProvider = null,
+        ?int $videoProviderConnectionId = null,
+        ?bool $remindersEnabled = null,
+        ?int $reminderOffsetValue = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit $reminderOffsetUnit = null,
+        ?array $availability = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkCreateBookingProductResponseValue201ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'createBookingProduct', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'title' => $title,
+            'description' => $description,
+            'visibility' => $visibility?->value,
+            'variant_title' => $variantTitle,
+            'variant_description' => $variantDescription,
+            'price_cents' => $priceCents,
+            'compare_at_price_cents' => $compareAtPriceCents,
+            'currency' => $currency?->value,
+            'payment_methods' => $paymentMethods,
+            'timezone' => $timezone,
+            'duration_minutes' => $durationMinutes,
+            'min_notice_minutes' => $minNoticeMinutes,
+            'max_advance_days' => $maxAdvanceDays,
+            'buffer_before_minutes' => $bufferBeforeMinutes,
+            'buffer_after_minutes' => $bufferAfterMinutes,
+            'provider_connection_ids' => $providerConnectionIds,
+            'video_provider' => $videoProvider?->value,
+            'video_provider_connection_id' => $videoProviderConnectionId,
+            'reminders_enabled' => $remindersEnabled,
+            'reminder_offset_value' => $reminderOffsetValue,
+            'reminder_offset_unit' => $reminderOffsetUnit?->value,
+            'availability' => $availability,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkCreateBookingProductRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/booking-products',
+            body: $body,
+            options: $options,
+        );
+        return SdkCreateBookingProductResponseValue201ApplicationJson::fromArray($response);
     }
 }

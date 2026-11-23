@@ -28,6 +28,20 @@ class CoursesTest extends TestCase
         $this->assertArrayHasKey('pagination', $query);
     }
 
+    public function testCreate(): void
+    {
+        $fixture = $this->loadFixture('sdk_create_course_response_value_201_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->courses()->create(title: 'test_value');
+        $this->assertInstanceOf(\SellApp\Resource\SdkCreateCourseResponseValue201ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/courses', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame('test_value', $body['title']);
+    }
+
     public function testSearch(): void
     {
         $fixture = $this->loadFixture('list_sdk_search_courses_response_value_200_application_json');
@@ -77,6 +91,18 @@ class CoursesTest extends TestCase
         $request = $this->getLastRequest();
         $this->assertSame('PATCH', $request->getMethod());
         $this->assertStringEndsWith('v2/courses/test_value', $request->getUri()->getPath());
+    }
+
+    public function testGetStudentSummary(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_course_student_summary_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->courses()->getStudentSummary(startDate: 'test_value', endDate: 'test_value');
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetCourseStudentSummaryResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/course-students', $request->getUri()->getPath());
     }
 
     public function testPaginationBoundary(): void

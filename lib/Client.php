@@ -14,13 +14,18 @@ use SellApp\Service\AffiliateProgram;
 use SellApp\Service\AffiliateReferrals;
 use SellApp\Service\AffiliateReferralSessions;
 use SellApp\Service\Affiliates;
+use SellApp\Service\AffiliatesCoupon;
+use SellApp\Service\AffiliatesProducts;
 use SellApp\Service\Blacklists;
 use SellApp\Service\Bookings;
 use SellApp\Service\BookingsCalendarEvents;
 use SellApp\Service\BundleItems;
 use SellApp\Service\CashbackRules;
 use SellApp\Service\Charges;
+use SellApp\Service\CheckoutFieldTemplates;
 use SellApp\Service\CommunityConnections;
+use SellApp\Service\CommunityConnectionsServers;
+use SellApp\Service\CommunityConnectionsSlack;
 use SellApp\Service\Coupons;
 use SellApp\Service\Courses;
 use SellApp\Service\CoursesLessons;
@@ -46,17 +51,23 @@ use SellApp\Service\LicenseInstances;
 use SellApp\Service\Licenses;
 use SellApp\Service\LicensesInstances;
 use SellApp\Service\LineItems;
+use SellApp\Service\Notifications;
 use SellApp\Service\OAuth;
 use SellApp\Service\OAuthManagement;
 use SellApp\Service\Orders;
 use SellApp\Service\OrdersLineItems;
 use SellApp\Service\PaymentMethods;
 use SellApp\Service\PaymentMethodsCustom;
+use SellApp\Service\PaymentMethodsModifier;
 use SellApp\Service\Products;
 use SellApp\Service\ProductsAddons;
+use SellApp\Service\ProductsFeaturedVariant;
+use SellApp\Service\ProductsSimilarProducts;
 use SellApp\Service\ProductVariants;
 use SellApp\Service\ProductVariantsBooking;
+use SellApp\Service\ProductVariantsCommunityAccess;
 use SellApp\Service\ProductVariantsPricing;
+use SellApp\Service\ProductVariantsSubscriptionSettings;
 use SellApp\Service\Promotions;
 use SellApp\Service\PromotionsPhases;
 use SellApp\Service\Refunds;
@@ -65,12 +76,20 @@ use SellApp\Service\RewardGrants;
 use SellApp\Service\RewardRules;
 use SellApp\Service\Sections;
 use SellApp\Service\StoreCustomDomains;
+use SellApp\Service\StoreIntegrations;
 use SellApp\Service\StoreNotificationChannels;
+use SellApp\Service\StoreSenderEmail;
 use SellApp\Service\StoreSettings;
 use SellApp\Service\Subscriptions;
 use SellApp\Service\SubscriptionsActions;
+use SellApp\Service\SupportAutomationRules;
+use SellApp\Service\SupportAutomationSettings;
+use SellApp\Service\SupportReasons;
+use SellApp\Service\SupportReplyTemplates;
 use SellApp\Service\Tickets;
+use SellApp\Service\TicketsAnalytics;
 use SellApp\Service\TicketsMessages;
+use SellApp\Service\TicketsWalletRefunds;
 use SellApp\Service\UpsellOffers;
 use SellApp\Service\VariantDeliverableFiles;
 use SellApp\Service\VariantDeliverableFolders;
@@ -78,6 +97,8 @@ use SellApp\Service\VariantDeliverables;
 use SellApp\Service\VariantSerials;
 use SellApp\Service\Wallet;
 use SellApp\Service\WalletBonusTiers;
+use SellApp\Service\WalletLedger;
+use SellApp\Service\WalletOverview;
 use SellApp\Service\WalletSettings;
 use SellApp\Service\WalletTopups;
 use SellApp\Service\WalletTransactions;
@@ -95,14 +116,19 @@ final class Client
     private ?Service\LicensesInstances $licensesInstances = null;
     private ?Service\LicenseInstances $licenseInstances = null;
     private ?Service\Products $products = null;
+    private ?Service\ProductsFeaturedVariant $productsFeaturedVariant = null;
+    private ?Service\ProductsSimilarProducts $productsSimilarProducts = null;
     private ?Service\ProductVariants $productVariants = null;
     private ?Service\ProductVariantsPricing $productVariantsPricing = null;
     private ?Service\ProductVariantsBooking $productVariantsBooking = null;
+    private ?Service\ProductVariantsSubscriptionSettings $productVariantsSubscriptionSettings = null;
+    private ?Service\ProductVariantsCommunityAccess $productVariantsCommunityAccess = null;
     private ?Service\Subscriptions $subscriptions = null;
     private ?Service\SubscriptionsActions $subscriptionsActions = null;
     private ?Service\Bookings $bookings = null;
     private ?Service\BookingsCalendarEvents $bookingsCalendarEvents = null;
     private ?Service\BundleItems $bundleItems = null;
+    private ?Service\VariantDeliverables $variantDeliverables = null;
     private ?Service\Promotions $promotions = null;
     private ?Service\PromotionsPhases $promotionsPhases = null;
     private ?Service\AddOns $addOns = null;
@@ -111,11 +137,14 @@ final class Client
     private ?Service\Highlights $highlights = null;
     private ?Service\HighlightsMedia $highlightsMedia = null;
     private ?Service\WebhookChannels $webhookChannels = null;
+    private ?Service\SupportReplyTemplates $supportReplyTemplates = null;
+    private ?Service\SupportReasons $supportReasons = null;
+    private ?Service\SupportAutomationRules $supportAutomationRules = null;
+    private ?Service\SupportAutomationSettings $supportAutomationSettings = null;
     private ?Service\Customers $customers = null;
     private ?Service\Orders $orders = null;
     private ?Service\LineItems $lineItems = null;
     private ?Service\OrdersLineItems $ordersLineItems = null;
-    private ?Service\VariantDeliverables $variantDeliverables = null;
     private ?Service\VariantDeliverableFiles $variantDeliverableFiles = null;
     private ?Service\VariantDeliverableFolders $variantDeliverableFolders = null;
     private ?Service\VariantSerials $variantSerials = null;
@@ -125,25 +154,36 @@ final class Client
     private ?Service\RewardGrants $rewardGrants = null;
     private ?Service\UpsellOffers $upsellOffers = null;
     private ?Service\CommunityConnections $communityConnections = null;
+    private ?Service\CommunityConnectionsServers $communityConnectionsServers = null;
+    private ?Service\CommunityConnectionsSlack $communityConnectionsSlack = null;
     private ?Service\WalletSettings $walletSettings = null;
     private ?Service\Wallet $wallet = null;
     private ?Service\WalletTransactions $walletTransactions = null;
+    private ?Service\WalletLedger $walletLedger = null;
+    private ?Service\WalletOverview $walletOverview = null;
     private ?Service\WalletTopups $walletTopups = null;
     private ?Service\CashbackRules $cashbackRules = null;
     private ?Service\WalletBonusTiers $walletBonusTiers = null;
     private ?Service\Courses $courses = null;
     private ?Service\CoursesSections $coursesSections = null;
     private ?Service\CoursesLessons $coursesLessons = null;
+    private ?Service\CheckoutFieldTemplates $checkoutFieldTemplates = null;
     private ?Service\PaymentMethods $paymentMethods = null;
+    private ?Service\PaymentMethodsModifier $paymentMethodsModifier = null;
     private ?Service\PaymentMethodsCustom $paymentMethodsCustom = null;
     private ?Service\StoreSettings $storeSettings = null;
+    private ?Service\StoreSenderEmail $storeSenderEmail = null;
+    private ?Service\StoreIntegrations $storeIntegrations = null;
     private ?Service\StoreNotificationChannels $storeNotificationChannels = null;
     private ?Service\StoreCustomDomains $storeCustomDomains = null;
+    private ?Service\Notifications $notifications = null;
     private ?Service\CreditsProducts $creditsProducts = null;
     private ?Service\CreditsBalances $creditsBalances = null;
     private ?Service\Credits $credits = null;
     private ?Service\CreditsBalancesTransactions $creditsBalancesTransactions = null;
     private ?Service\Affiliates $affiliates = null;
+    private ?Service\AffiliatesProducts $affiliatesProducts = null;
+    private ?Service\AffiliatesCoupon $affiliatesCoupon = null;
     private ?Service\AffiliateReferrals $affiliateReferrals = null;
     private ?Service\AffiliateReferralSessions $affiliateReferralSessions = null;
     private ?Service\AffiliatePayouts $affiliatePayouts = null;
@@ -163,6 +203,8 @@ final class Client
     private ?Service\Sections $sections = null;
     private ?Service\Tickets $tickets = null;
     private ?Service\TicketsMessages $ticketsMessages = null;
+    private ?Service\TicketsWalletRefunds $ticketsWalletRefunds = null;
+    private ?Service\TicketsAnalytics $ticketsAnalytics = null;
     private ?Service\OAuth $oauth = null;
 
     public function __construct(
@@ -225,6 +267,16 @@ final class Client
         return $this->products ??= new Service\Products($this->httpClient);
     }
 
+    public function productsFeaturedVariant(): ProductsFeaturedVariant
+    {
+        return $this->productsFeaturedVariant ??= new Service\ProductsFeaturedVariant($this->httpClient);
+    }
+
+    public function productsSimilarProducts(): ProductsSimilarProducts
+    {
+        return $this->productsSimilarProducts ??= new Service\ProductsSimilarProducts($this->httpClient);
+    }
+
     public function productVariants(): ProductVariants
     {
         return $this->productVariants ??= new Service\ProductVariants($this->httpClient);
@@ -238,6 +290,16 @@ final class Client
     public function productVariantsBooking(): ProductVariantsBooking
     {
         return $this->productVariantsBooking ??= new Service\ProductVariantsBooking($this->httpClient);
+    }
+
+    public function productVariantsSubscriptionSettings(): ProductVariantsSubscriptionSettings
+    {
+        return $this->productVariantsSubscriptionSettings ??= new Service\ProductVariantsSubscriptionSettings($this->httpClient);
+    }
+
+    public function productVariantsCommunityAccess(): ProductVariantsCommunityAccess
+    {
+        return $this->productVariantsCommunityAccess ??= new Service\ProductVariantsCommunityAccess($this->httpClient);
     }
 
     public function subscriptions(): Subscriptions
@@ -263,6 +325,11 @@ final class Client
     public function bundleItems(): BundleItems
     {
         return $this->bundleItems ??= new Service\BundleItems($this->httpClient);
+    }
+
+    public function variantDeliverables(): VariantDeliverables
+    {
+        return $this->variantDeliverables ??= new Service\VariantDeliverables($this->httpClient);
     }
 
     public function promotions(): Promotions
@@ -305,6 +372,26 @@ final class Client
         return $this->webhookChannels ??= new Service\WebhookChannels($this->httpClient);
     }
 
+    public function supportReplyTemplates(): SupportReplyTemplates
+    {
+        return $this->supportReplyTemplates ??= new Service\SupportReplyTemplates($this->httpClient);
+    }
+
+    public function supportReasons(): SupportReasons
+    {
+        return $this->supportReasons ??= new Service\SupportReasons($this->httpClient);
+    }
+
+    public function supportAutomationRules(): SupportAutomationRules
+    {
+        return $this->supportAutomationRules ??= new Service\SupportAutomationRules($this->httpClient);
+    }
+
+    public function supportAutomationSettings(): SupportAutomationSettings
+    {
+        return $this->supportAutomationSettings ??= new Service\SupportAutomationSettings($this->httpClient);
+    }
+
     public function customers(): Customers
     {
         return $this->customers ??= new Service\Customers($this->httpClient);
@@ -323,11 +410,6 @@ final class Client
     public function ordersLineItems(): OrdersLineItems
     {
         return $this->ordersLineItems ??= new Service\OrdersLineItems($this->httpClient);
-    }
-
-    public function variantDeliverables(): VariantDeliverables
-    {
-        return $this->variantDeliverables ??= new Service\VariantDeliverables($this->httpClient);
     }
 
     public function variantDeliverableFiles(): VariantDeliverableFiles
@@ -375,6 +457,16 @@ final class Client
         return $this->communityConnections ??= new Service\CommunityConnections($this->httpClient);
     }
 
+    public function communityConnectionsServers(): CommunityConnectionsServers
+    {
+        return $this->communityConnectionsServers ??= new Service\CommunityConnectionsServers($this->httpClient);
+    }
+
+    public function communityConnectionsSlack(): CommunityConnectionsSlack
+    {
+        return $this->communityConnectionsSlack ??= new Service\CommunityConnectionsSlack($this->httpClient);
+    }
+
     public function walletSettings(): WalletSettings
     {
         return $this->walletSettings ??= new Service\WalletSettings($this->httpClient);
@@ -388,6 +480,16 @@ final class Client
     public function walletTransactions(): WalletTransactions
     {
         return $this->walletTransactions ??= new Service\WalletTransactions($this->httpClient);
+    }
+
+    public function walletLedger(): WalletLedger
+    {
+        return $this->walletLedger ??= new Service\WalletLedger($this->httpClient);
+    }
+
+    public function walletOverview(): WalletOverview
+    {
+        return $this->walletOverview ??= new Service\WalletOverview($this->httpClient);
     }
 
     public function walletTopups(): WalletTopups
@@ -420,9 +522,19 @@ final class Client
         return $this->coursesLessons ??= new Service\CoursesLessons($this->httpClient);
     }
 
+    public function checkoutFieldTemplates(): CheckoutFieldTemplates
+    {
+        return $this->checkoutFieldTemplates ??= new Service\CheckoutFieldTemplates($this->httpClient);
+    }
+
     public function paymentMethods(): PaymentMethods
     {
         return $this->paymentMethods ??= new Service\PaymentMethods($this->httpClient);
+    }
+
+    public function paymentMethodsModifier(): PaymentMethodsModifier
+    {
+        return $this->paymentMethodsModifier ??= new Service\PaymentMethodsModifier($this->httpClient);
     }
 
     public function paymentMethodsCustom(): PaymentMethodsCustom
@@ -435,6 +547,16 @@ final class Client
         return $this->storeSettings ??= new Service\StoreSettings($this->httpClient);
     }
 
+    public function storeSenderEmail(): StoreSenderEmail
+    {
+        return $this->storeSenderEmail ??= new Service\StoreSenderEmail($this->httpClient);
+    }
+
+    public function storeIntegrations(): StoreIntegrations
+    {
+        return $this->storeIntegrations ??= new Service\StoreIntegrations($this->httpClient);
+    }
+
     public function storeNotificationChannels(): StoreNotificationChannels
     {
         return $this->storeNotificationChannels ??= new Service\StoreNotificationChannels($this->httpClient);
@@ -443,6 +565,11 @@ final class Client
     public function storeCustomDomains(): StoreCustomDomains
     {
         return $this->storeCustomDomains ??= new Service\StoreCustomDomains($this->httpClient);
+    }
+
+    public function notifications(): Notifications
+    {
+        return $this->notifications ??= new Service\Notifications($this->httpClient);
     }
 
     public function creditsProducts(): CreditsProducts
@@ -468,6 +595,16 @@ final class Client
     public function affiliates(): Affiliates
     {
         return $this->affiliates ??= new Service\Affiliates($this->httpClient);
+    }
+
+    public function affiliatesProducts(): AffiliatesProducts
+    {
+        return $this->affiliatesProducts ??= new Service\AffiliatesProducts($this->httpClient);
+    }
+
+    public function affiliatesCoupon(): AffiliatesCoupon
+    {
+        return $this->affiliatesCoupon ??= new Service\AffiliatesCoupon($this->httpClient);
     }
 
     public function affiliateReferrals(): AffiliateReferrals
@@ -563,6 +700,16 @@ final class Client
     public function ticketsMessages(): TicketsMessages
     {
         return $this->ticketsMessages ??= new Service\TicketsMessages($this->httpClient);
+    }
+
+    public function ticketsWalletRefunds(): TicketsWalletRefunds
+    {
+        return $this->ticketsWalletRefunds ??= new Service\TicketsWalletRefunds($this->httpClient);
+    }
+
+    public function ticketsAnalytics(): TicketsAnalytics
+    {
+        return $this->ticketsAnalytics ??= new Service\TicketsAnalytics($this->httpClient);
     }
 
     public function oauth(): OAuth

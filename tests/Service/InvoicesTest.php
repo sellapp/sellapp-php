@@ -130,7 +130,7 @@ class InvoicesTest extends TestCase
     {
         $fixture = $this->loadFixture('sdk_issue_replacement_for_completed_invoice_response_value_200_application_json');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->invoices()->issueReplacement(1, productVariants: \SellApp\Resource\IssueReplacementForCompletedInvoiceRequestApplicationJsonPropertyProductVariants::fromArray($this->loadFixture('issue_replacement_for_completed_invoice_request_application_json_property_product_variants')));
+        $result = $client->invoices()->issueReplacement(1, productVariants: 1);
         $this->assertInstanceOf(\SellApp\Resource\SdkIssueReplacementForCompletedInvoiceResponseValue200ApplicationJson::class, $result);
         $this->assertIsArray($result->toArray());
         $request = $this->getLastRequest();

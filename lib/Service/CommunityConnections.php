@@ -8,8 +8,10 @@ namespace SellApp\Service;
 
 use SellApp\Resource\SdkCompleteCommunityConnectionResponseValue200ApplicationJson;
 use SellApp\Resource\SdkListCommunityConnectionsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkListCommunityFailedGrantReasonsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkPollCommunityConnectionResponseValue200ApplicationJson;
 use SellApp\Resource\SdkStartCommunityConnectionResponseValue200ApplicationJson;
+use SellApp\Resource\SdkSyncDiscordRolesResponseValue200ApplicationJson;
 use SellApp\Resource\SdkVerifyCommunityConnectionResponseValue200ApplicationJson;
 
 class CommunityConnections
@@ -168,5 +170,50 @@ class CommunityConnections
             path: 'v2/community-connections/' . rawurlencode((string) $platform->value),
             options: $options,
         );
+    }
+
+    /**
+     * List community failed grant reasons
+     *
+     * List why community access grants failed across all platforms, with how many grants failed for each reason and what you can do about it, most frequent first. A grant is the access a purchase gives a customer, such as a Discord role or a place in a Telegram group. Only reasons that still need attention or are retried are counted; failures nobody can act on, such as a customer who left the server, are not. Only SellApp's records are read; no platform is contacted. An empty `data` array means no grant is failing. Requires the `community` API-key ability and the `community` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @return \SellApp\Resource\SdkListCommunityFailedGrantReasonsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function listFailedGrantReasons(
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkListCommunityFailedGrantReasonsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listCommunityFailedGrantReasons', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/community-connections/failed-grant-reasons',
+            options: $options,
+        );
+        return SdkListCommunityFailedGrantReasonsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Sync Discord roles
+     *
+     * Read the role list of the store's Discord servers from Discord again and check the bot's role position, which tells whether the bot can give the roles your products sell. Syncs every connected server, or only `server_id`. A server Discord refuses is reported on its own row with `synced: false`, and the others still sync; `failed_count` counts those rows. Nothing is given to or taken from a member, so repeating the request is safe. `422` on `platform` when no Discord server is connected, and on `server_id` when that server is not connected to this store. Requires the `community` API-key ability and the `community` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param string|null $serverId The Discord server to sync. Leave out or send `null` to sync every connected server.
+     * @return \SellApp\Resource\SdkSyncDiscordRolesResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function syncDiscordRoles(
+        ?string $serverId = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkSyncDiscordRolesResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'syncDiscordRoles', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'server_id' => $serverId,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkSyncDiscordRolesRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/community-connections/discord/sync-roles',
+            body: $body,
+            options: $options,
+        );
+        return SdkSyncDiscordRolesResponseValue200ApplicationJson::fromArray($response);
     }
 }

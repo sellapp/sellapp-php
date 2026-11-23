@@ -45,17 +45,32 @@ class WebhookPlatform
     /**
      * List webhook deliveries
      *
-     * Destination origin only; response bodies are redacted and capped. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List your store's outbound webhook deliveries, newest first, 25 per page by default. Each delivery shows only the destination origin; response bodies are redacted and capped. Filter by `event_type` or `status`; both must match exactly, and a value that matches nothing returns an empty page rather than an error. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int|null $page Page number, starting at 1. Defaults to 1.
+     * @param int|null $limit Deliveries per page. Values below 1 are read as 1 and values above 100 as 100. Defaults to 25.
+     * @param string|null $eventType Keep deliveries of this event type, as listed by `GET /v2/webhook-event-types`.
+     * @param \SellApp\Resource\WebhookPlatformStatus|null $status Keep deliveries in this state: `pending`, `retrying`, `succeeded`, `failed`, or `disabled`.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\ListWebhookDeliveriesResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
     public function listWebhookDeliveries(
+        ?int $page = null,
+        ?int $limit = null,
+        ?string $eventType = null,
+        ?\SellApp\Resource\WebhookPlatformStatus $status = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listWebhookDeliveries', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'page' => $page,
+            'limit' => $limit,
+            'event_type' => $eventType,
+            'status' => $status?->value,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'GET',
             path: 'v2/webhook-deliveries',
+            query: $query,
             modelClass: ListWebhookDeliveriesResponseValue200ApplicationJsonPropertyDataItem::class,
             options: $options,
         );

@@ -868,6 +868,8 @@ public function v2SearchSections(
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchSectionsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -878,6 +880,8 @@ public function v2SearchSections(
 | sort | `?array` | No |
 | search | `?\SellApp\Resource\V2SearchSectionsRequestApplicationJsonPropertySearch` | No |
 | includes | `?array` | No |
+| limit | `?int` | No |
+| page | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

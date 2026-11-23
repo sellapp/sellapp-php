@@ -100,4 +100,227 @@ class StoreSettingsTest extends TestCase
         $this->assertSame('PATCH', $request->getMethod());
         $this->assertStringEndsWith('v2/store/settings/marketing', $request->getUri()->getPath());
     }
+
+    public function testGetCheckout(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_checkout_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->getCheckout();
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetCheckoutSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/checkout', $request->getUri()->getPath());
+    }
+
+    public function testReplaceCheckout(): void
+    {
+        $fixture = $this->loadFixture('sdk_replace_checkout_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->replaceCheckout(shoppingCartEnabled: true, customerEmailRequired: true, allowVpnPurchases: true, blacklistOnDispute: true, minimumSpend: '1', billingDescriptor: 'test_value', attemptsPerCustomer: 1, attemptsPerIp: 1, attemptsPerEmail: 1, attemptsPerFingerprint: 1, rateLimitWindowSeconds: 60);
+        $this->assertInstanceOf(\SellApp\Resource\SdkReplaceCheckoutSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PUT', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/checkout', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertTrue($body['shopping_cart_enabled']);
+        $this->assertTrue($body['customer_email_required']);
+        $this->assertTrue($body['allow_vpn_purchases']);
+        $this->assertTrue($body['blacklist_on_dispute']);
+        $this->assertSame(1, $body['attempts_per_customer']);
+        $this->assertSame(60, $body['rate_limit_window_seconds']);
+    }
+
+    public function testUpdateCheckout(): void
+    {
+        $fixture = $this->loadFixture('sdk_update_checkout_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->updateCheckout();
+        $this->assertInstanceOf(\SellApp\Resource\SdkUpdateCheckoutSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PATCH', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/checkout', $request->getUri()->getPath());
+    }
+
+    public function testGetTaxes(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_tax_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->getTaxes();
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetTaxSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/taxes', $request->getUri()->getPath());
+    }
+
+    public function testReplaceTaxes(): void
+    {
+        $fixture = $this->loadFixture('sdk_replace_tax_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->replaceTaxes(vatEnabled: true, vatInclusivePricing: true, collectBillingDetails: true);
+        $this->assertInstanceOf(\SellApp\Resource\SdkReplaceTaxSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PUT', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/taxes', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertTrue($body['vat_enabled']);
+        $this->assertTrue($body['vat_inclusive_pricing']);
+        $this->assertTrue($body['collect_billing_details']);
+    }
+
+    public function testUpdateTaxes(): void
+    {
+        $fixture = $this->loadFixture('sdk_update_tax_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->updateTaxes();
+        $this->assertInstanceOf(\SellApp\Resource\SdkUpdateTaxSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PATCH', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/taxes', $request->getUri()->getPath());
+    }
+
+    public function testGetCustomerEmails(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_customer_email_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->getCustomerEmails();
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetCustomerEmailSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/customer-emails', $request->getUri()->getPath());
+    }
+
+    public function testReplaceCustomerEmails(): void
+    {
+        $fixture = $this->loadFixture('sdk_replace_customer_email_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->replaceCustomerEmails(sendDeliveryEmail: true, sendPaymentFailureEmail: true);
+        $this->assertInstanceOf(\SellApp\Resource\SdkReplaceCustomerEmailSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PUT', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/customer-emails', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertTrue($body['send_delivery_email']);
+        $this->assertTrue($body['send_payment_failure_email']);
+    }
+
+    public function testUpdateCustomerEmails(): void
+    {
+        $fixture = $this->loadFixture('sdk_update_customer_email_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->updateCustomerEmails();
+        $this->assertInstanceOf(\SellApp\Resource\SdkUpdateCustomerEmailSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PATCH', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/customer-emails', $request->getUri()->getPath());
+    }
+
+    public function testGetStoreAlerts(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_store_alert_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->getStoreAlerts();
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetStoreAlertSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/store-alerts', $request->getUri()->getPath());
+    }
+
+    public function testReplaceStoreAlerts(): void
+    {
+        $fixture = $this->loadFixture('sdk_replace_store_alert_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->replaceStoreAlerts(saleEmailsEnabled: true);
+        $this->assertInstanceOf(\SellApp\Resource\SdkReplaceStoreAlertSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PUT', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/store-alerts', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertTrue($body['sale_emails_enabled']);
+    }
+
+    public function testUpdateStoreAlerts(): void
+    {
+        $fixture = $this->loadFixture('sdk_update_store_alert_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->updateStoreAlerts();
+        $this->assertInstanceOf(\SellApp\Resource\SdkUpdateStoreAlertSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PATCH', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/store-alerts', $request->getUri()->getPath());
+    }
+
+    public function testGetPersonalization(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_personalization_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->getPersonalization();
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetPersonalizationSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/personalization', $request->getUri()->getPath());
+    }
+
+    public function testReplacePersonalization(): void
+    {
+        $fixture = $this->loadFixture('sdk_replace_personalization_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->replacePersonalization(supportEmail: 'test_value', trustpilotEmail: 'test_value', senderName: 'test_value', storeAddress: 'test_value', storeCity: 'test_value', storeState: 'test_value', storeZip: 'test_value', storeCountry: 'test_value', storeTax: 'test_value', backLinkLabel: 'test_value', backLinkUrl: 'test_value');
+        $this->assertInstanceOf(\SellApp\Resource\SdkReplacePersonalizationSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PUT', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/personalization', $request->getUri()->getPath());
+    }
+
+    public function testUpdatePersonalization(): void
+    {
+        $fixture = $this->loadFixture('sdk_update_personalization_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->updatePersonalization();
+        $this->assertInstanceOf(\SellApp\Resource\SdkUpdatePersonalizationSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PATCH', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/personalization', $request->getUri()->getPath());
+    }
+
+    public function testReplaceCryptoCheckout(): void
+    {
+        $fixture = $this->loadFixture('sdk_replace_crypto_checkout_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->replaceCryptoCheckout(underpaidPercentage: 1, minimumConfirmations: 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkReplaceCryptoCheckoutSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PUT', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/checkout/crypto', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame(1, $body['underpaid_percentage']);
+        $this->assertSame(1, $body['minimum_confirmations']);
+    }
+
+    public function testUpdateCryptoCheckout(): void
+    {
+        $fixture = $this->loadFixture('sdk_update_crypto_checkout_settings_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->storeSettings()->updateCryptoCheckout();
+        $this->assertInstanceOf(\SellApp\Resource\SdkUpdateCryptoCheckoutSettingsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PATCH', $request->getMethod());
+        $this->assertStringEndsWith('v2/store/settings/checkout/crypto', $request->getUri()->getPath());
+    }
 }

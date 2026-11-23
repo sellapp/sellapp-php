@@ -24,7 +24,7 @@ class WalletSettings
     /**
      * Retrieve wallet settings
      *
-     * Retrieve wallet settings for the authenticated store. Requires the `wallet` or `wallet:write` API ability. Payment methods are returned as their effective configurable values when no explicit restriction is stored. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Retrieve wallet settings for the authenticated store. Requires the `wallet` or `wallet:write` API-key ability. Payment methods are returned as their effective configurable values when no explicit restriction is stored. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @return \SellApp\Resource\SdkGetWalletSettingsResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
@@ -43,7 +43,7 @@ class WalletSettings
     /**
      * Update wallet settings
      *
-     * Update wallet settings. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update wallet settings. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param bool $enabled
      * @param int|null $minimumTopUpCents
      * @param int|null $maximumTopUpCents

@@ -46,7 +46,7 @@ class LicensesTest extends TestCase
     {
         $fixture = $this->loadFixture('list_sdk_list_license_keys_response_value_200_application_json');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->licenses()->list(limit: 1, page: 1);
+        $result = $client->licenses()->list(limit: 1, page: 1, key: 'en', customerEmail: 'test_value', productId: 1, orderId: 1, validity: \SellApp\Resource\LicensesValidity::Active);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
@@ -54,6 +54,11 @@ class LicensesTest extends TestCase
         parse_str($request->getUri()->getQuery(), $query);
         $this->assertArrayHasKey('limit', $query);
         $this->assertArrayHasKey('page', $query);
+        $this->assertSame('en', $query['key']);
+        $this->assertSame('test_value', $query['customer_email']);
+        $this->assertArrayHasKey('product_id', $query);
+        $this->assertArrayHasKey('order_id', $query);
+        $this->assertSame('active', $query['validity']);
     }
 
     public function testGet(): void

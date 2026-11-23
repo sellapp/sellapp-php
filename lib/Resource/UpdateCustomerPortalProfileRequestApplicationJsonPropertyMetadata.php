@@ -10,7 +10,7 @@ readonly class UpdateCustomerPortalProfileRequestApplicationJsonPropertyMetadata
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'UpdateCustomerPortalProfileRequestApplicationJsonPropertyMetadata', 'required' => [], 'properties' => [], 'additionalProperties' => ['kind' => 'model', 'class' => 'UpdateCustomerPortalProfileRequestApplicationJsonPropertyMetadataMapValue'], 'maxProperties' => 50];
+    private const SCHEMA = ['name' => 'UpdateCustomerPortalProfileRequestApplicationJsonPropertyMetadata', 'required' => [], 'properties' => [], 'additionalProperties' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'string', 'maxLength' => 500], ['kind' => 'primitive', 'type' => 'number'], ['kind' => 'primitive', 'type' => 'boolean']], 'composition' => 'oneOf'], 'maxProperties' => 50];
 
     public function __construct(
         /** @var array<string, mixed> */

@@ -84,4 +84,28 @@ class CommunityConnectionsTest extends TestCase
         $this->assertSame('DELETE', $request->getMethod());
         $this->assertStringEndsWith('v2/community-connections/discord', $request->getUri()->getPath());
     }
+
+    public function testListFailedGrantReasons(): void
+    {
+        $fixture = $this->loadFixture('sdk_list_community_failed_grant_reasons_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->communityConnections()->listFailedGrantReasons();
+        $this->assertInstanceOf(\SellApp\Resource\SdkListCommunityFailedGrantReasonsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/community-connections/failed-grant-reasons', $request->getUri()->getPath());
+    }
+
+    public function testSyncDiscordRoles(): void
+    {
+        $fixture = $this->loadFixture('sdk_sync_discord_roles_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->communityConnections()->syncDiscordRoles();
+        $this->assertInstanceOf(\SellApp\Resource\SdkSyncDiscordRolesResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/community-connections/discord/sync-roles', $request->getUri()->getPath());
+    }
 }

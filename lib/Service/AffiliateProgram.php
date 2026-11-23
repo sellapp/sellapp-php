@@ -10,6 +10,7 @@ use SellApp\Resource\ListPendingAffiliateInvitationsResponseValue200ApplicationJ
 use SellApp\Resource\SdkGetAffiliateProgramConfigurationResponseValue200ApplicationJson;
 use SellApp\Resource\SdkInviteAffiliateResponseValue201ApplicationJson;
 use SellApp\Resource\SdkReplaceAffiliateProgramConfigurationResponseValue200ApplicationJson;
+use SellApp\Resource\SdkResendAffiliateInvitationResponseValue200ApplicationJson;
 
 class AffiliateProgram
 {
@@ -45,7 +46,7 @@ class AffiliateProgram
     /**
      * Replace affiliate program configuration
      *
-     * Replace the complete affiliate-program configuration. The products array is authoritative: enabled entries replace existing store-level product restrictions, and every variant ID must belong to the authenticated store. Requires the `affiliate` token ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Replace the complete affiliate-program configuration. The products array is authoritative: enabled entries replace existing store-level product restrictions, and every variant ID must belong to the authenticated store. Requires the `affiliate` token ability, and the staff member who owns the key also needs the `store` permission, the same permission that changing the program in the dashboard requires. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param bool $enabled
      * @param \SellApp\Resource\ReplaceAffiliateProgramConfigurationRequestApplicationJsonPropertySettings $settings
      * @param array<\SellApp\Resource\ReplaceAffiliateProgramConfigurationRequestApplicationJsonPropertyProductsItem> $products
@@ -105,7 +106,7 @@ class AffiliateProgram
     /**
      * Invite an affiliate
      *
-     * Create a pending affiliate invitation and email a single-use onboarding link. Duplicate invitations are rejected and invites are rate limited per store. The affiliate program must be enabled. Requires the `affiliate` token ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Create a pending affiliate invitation and email a single-use onboarding link. Duplicate invitations are rejected and invites are rate limited per store. The affiliate program must be enabled. Requires the `affiliate` token ability, and the staff member who owns the key also needs the `store` permission, the same permission that inviting affiliates in the dashboard requires. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param string $email
      * @return \SellApp\Resource\SdkInviteAffiliateResponseValue201ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -126,5 +127,26 @@ class AffiliateProgram
             options: $options,
         );
         return SdkInviteAffiliateResponseValue201ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Resend an affiliate invitation
+     *
+     * Email a pending affiliate invitation again, with a new sign-in link that expires after 6 hours, to the address it was created for. The invitation itself does not change: `invited_at` keeps the original date. Send no body. Requires the `affiliate` API-key ability, and the staff member who owns the key needs the affiliate and `store` permissions, the same as inviting an affiliate. Every refusal returns `422` on `invitation` and sends nothing: the invitation was already answered or is no longer pending, the affiliate program is not configured or turned off, the same invitation was sent within the last minute, your store reached its limit of 10 invitation emails per hour (new invitations and resends count together; the message says how many seconds to wait), or the email could not be sent. An invitation from another store returns `404`. Not safe to retry blindly: each successful call sends another email. A repeat within a minute is refused, so a quick retry after a lost response cannot send twice; after that, check with the invitee or wait for them to answer before sending again. If sending failed, wait a minute and try again. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $invitation The invitation ID, as returned by `GET /v2/affiliate-invitations` or `POST /v2/affiliate-invitations`.
+     * @return \SellApp\Resource\SdkResendAffiliateInvitationResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function resend(
+        int $invitation,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkResendAffiliateInvitationResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'resendAffiliateInvitation', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/affiliate-invitations/' . rawurlencode((string) $invitation) . '/resend',
+            options: $options,
+        );
+        return SdkResendAffiliateInvitationResponseValue200ApplicationJson::fromArray($response);
     }
 }

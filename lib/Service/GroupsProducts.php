@@ -163,12 +163,14 @@ class GroupsProducts
     /**
      * Search products within group
      *
-     * Search the products in a group using JSON body filters, search terms, includes, and sort instructions. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Search the products in a group using JSON body filters, search terms, includes, and sort instructions, 15 per page by default. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $group The group path parameter.
      * @param array<\SellApp\Resource\SearchProductsWithinGroupRequestApplicationJsonPropertyFiltersItem>|null $filters
      * @param array<\SellApp\Resource\SearchProductsWithinGroupRequestApplicationJsonPropertySortItem>|null $sort
      * @param \SellApp\Resource\SearchProductsWithinGroupRequestApplicationJsonPropertySearch|null $search
      * @param array<\SellApp\Resource\SearchProductsWithinGroupRequestApplicationJsonPropertyIncludesItem>|null $includes
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\SearchProductsWithinGroupResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
@@ -178,12 +180,19 @@ class GroupsProducts
         ?array $sort = null,
         ?\SellApp\Resource\SearchProductsWithinGroupRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'searchProductsWithinGroup', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'POST',
             path: 'v2/groups/' . rawurlencode((string) $group) . '/products/search',
+            query: $query,
             modelClass: SearchProductsWithinGroupResponseValue200ApplicationJsonPropertyDataItem::class,
             options: $options,
         );

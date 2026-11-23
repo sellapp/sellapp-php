@@ -76,11 +76,14 @@ class GroupsProductsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_search_products_within_group_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->groupsProducts()->search(1, filters: [], sort: [], search: \SellApp\Resource\SearchProductsWithinGroupRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('search_products_within_group_request_application_json_property_search')), includes: []);
+        $result = $client->groupsProducts()->search(1, filters: [], sort: [], search: \SellApp\Resource\SearchProductsWithinGroupRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('search_products_within_group_request_application_json_property_search')), includes: [], limit: 1, page: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/groups/1/products/search', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertArrayHasKey('page', $query);
     }
 
     public function testPaginationBoundary(): void

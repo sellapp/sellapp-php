@@ -13,6 +13,30 @@ class VariantDeliverablesTest extends TestCase
 {
     use TestHelper;
 
+    public function testPreview(): void
+    {
+        $fixture = $this->loadFixture('sdk_preview_variant_buyer_notification_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->variantDeliverables()->preview(1, 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkPreviewVariantBuyerNotificationResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/products/1/variants/1/deliverable/buyer-notification', $request->getUri()->getPath());
+    }
+
+    public function testNotify(): void
+    {
+        $fixture = $this->loadFixture('sdk_notify_variant_buyers_response_value_202_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->variantDeliverables()->notify(1, 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkNotifyVariantBuyersResponseValue202ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/products/1/variants/1/deliverable/buyer-notification', $request->getUri()->getPath());
+    }
+
     public function testGet(): void
     {
         $fixture = $this->loadFixture('sdk_get_variant_deliverable_configuration_response_value_200_application_json');

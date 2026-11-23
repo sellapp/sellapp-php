@@ -17,7 +17,7 @@ class ChargesTest extends TestCase
     {
         $fixture = $this->loadFixture('list_list_charges_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->charges()->list(limit: 1, page: 1);
+        $result = $client->charges()->list(limit: 1, page: 1, status: \SellApp\Resource\ChargesStatus::Pending, customerEmail: 'test_value', createdAfter: 'test_value', createdBefore: 'test_value');
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
@@ -25,6 +25,10 @@ class ChargesTest extends TestCase
         parse_str($request->getUri()->getQuery(), $query);
         $this->assertArrayHasKey('limit', $query);
         $this->assertArrayHasKey('page', $query);
+        $this->assertSame('PENDING', $query['status']);
+        $this->assertSame('test_value', $query['customer_email']);
+        $this->assertSame('test_value', $query['created_after']);
+        $this->assertSame('test_value', $query['created_before']);
     }
 
     public function testCreate(): void
@@ -78,6 +82,18 @@ class ChargesTest extends TestCase
         $request = $this->getLastRequest();
         $this->assertSame('PUT', $request->getMethod());
         $this->assertStringEndsWith('v2/charges/1/voided', $request->getUri()->getPath());
+    }
+
+    public function testGetSummary(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_charge_summary_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->charges()->getSummary();
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetChargeSummaryResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/charges/summary', $request->getUri()->getPath());
     }
 
     public function testPaginationBoundary(): void

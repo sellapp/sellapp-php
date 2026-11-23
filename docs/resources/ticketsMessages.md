@@ -378,6 +378,8 @@ public function v2SearchTicketMessages(
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchTicketMessagesRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -389,6 +391,8 @@ public function v2SearchTicketMessages(
 | sort | `?array` | No |
 | search | `?\SellApp\Resource\V2SearchTicketMessagesRequestApplicationJsonPropertySearch` | No |
 | includes | `?array` | No |
+| limit | `?int` | No |
+| page | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

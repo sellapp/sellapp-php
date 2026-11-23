@@ -17,12 +17,13 @@ class AffiliateReferralsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_list_affiliate_referrals_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->affiliateReferrals()->list(affiliateId: 1, orderId: 1, status: \SellApp\Resource\AffiliateReferralsStatus::Created, limit: 1, page: 1);
+        $result = $client->affiliateReferrals()->list(search: 'test_value', affiliateId: 1, orderId: 1, status: \SellApp\Resource\AffiliateReferralsStatus::Created, limit: 1, page: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
         $this->assertStringEndsWith('v2/affiliate-referrals', $request->getUri()->getPath());
         parse_str($request->getUri()->getQuery(), $query);
+        $this->assertSame('test_value', $query['search']);
         $this->assertArrayHasKey('affiliate_id', $query);
         $this->assertArrayHasKey('order_id', $query);
         $this->assertSame('created', $query['status']);

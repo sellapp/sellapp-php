@@ -10,7 +10,10 @@ use SellApp\Resource\ListProductVariantsResponseValue200ApplicationJsonPropertyD
 use SellApp\Resource\SdkBatchCreateProductVariantsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkBatchUpdateProductVariantsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkCreateProductVariantResponseValue201ApplicationJson;
+use SellApp\Resource\SdkDuplicateProductVariantResponseValue201ApplicationJson;
 use SellApp\Resource\SdkGetProductVariantResponseValue200ApplicationJson;
+use SellApp\Resource\SdkPublishProductVariantResponseValue200ApplicationJson;
+use SellApp\Resource\SdkReorderProductVariantsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceProductVariantWithPutResponseValue200ApplicationJson;
 use SellApp\Resource\SdkUpdateProductVariantResponseValue200ApplicationJson;
 use SellApp\Resource\SearchProductVariantsResponseValue200ApplicationJsonPropertyDataItem;
@@ -311,12 +314,16 @@ class ProductVariants
     /**
      * Search product variants
      *
-     * Search a product's variants using JSON body filters, search terms, includes, and sort instructions. Requires a token with the listing ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Search a product's variants using JSON body filters, search terms, includes, and sort instructions, 15 per page by default. Draft variants are left out unless you send `with_drafts` or `only_drafts`. Requires a token with the listing ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $product The product path parameter.
      * @param array<\SellApp\Resource\SearchProductVariantsRequestApplicationJsonPropertyFiltersItem>|null $filters
      * @param array<\SellApp\Resource\SearchProductVariantsRequestApplicationJsonPropertySortItem>|null $sort
      * @param \SellApp\Resource\SearchProductVariantsRequestApplicationJsonPropertySearch|null $search
      * @param array<\SellApp\Resource\SearchProductVariantsRequestApplicationJsonPropertyIncludesItem>|null $includes
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
+     * @param bool|null $withDrafts Include draft variants alongside published variants.
+     * @param bool|null $onlyDrafts Return only draft variants.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\SearchProductVariantsResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
@@ -326,12 +333,23 @@ class ProductVariants
         ?array $sort = null,
         ?\SellApp\Resource\SearchProductVariantsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
+        ?bool $withDrafts = null,
+        ?bool $onlyDrafts = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'searchProductVariants', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
+            'with_drafts' => $withDrafts,
+            'only_drafts' => $onlyDrafts,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'POST',
             path: 'v2/products/' . rawurlencode((string) $product) . '/variants/search',
+            query: $query,
             modelClass: SearchProductVariantsResponseValue200ApplicationJsonPropertyDataItem::class,
             options: $options,
         );
@@ -418,5 +436,79 @@ class ProductVariants
             body: $body,
             options: $options,
         );
+    }
+
+    /**
+     * Publish a product variant
+     *
+     * Publish one draft option of a booking product so customers can book it. It is checked the way the booking editor checks it: a title, a description of at least 5 characters, finished booking settings, a price, and payment methods enabled for the store that can take its currency. On a published booking product the option can be booked straight away; a draft booking product still needs `POST /v2/products/{product}/publish`, which needs at least one published option when the product has several. Only booking options are published one at a time. A variant of any other kind of product returns `422` on `variant`: its variants are published with the product through `POST /v2/products/{product}/publish`. Requires the `listing` API-key ability and the `listing` permission in your team role. Safe to repeat: once the option is published, another call changes nothing and returns `422` with `This booking option is already published.` on `variant`. Every other refusal is also `422` on `variant`, with one sentence per thing the option still needs. A variant of another product, or a product of another store, returns `404`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $product The product path parameter.
+     * @param int $variant The variant path parameter.
+     * @return \SellApp\Resource\SdkPublishProductVariantResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function publish(
+        int $product,
+        int $variant,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkPublishProductVariantResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'publishProductVariant', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/products/' . rawurlencode((string) $product) . '/variants/' . rawurlencode((string) $variant) . '/publish',
+            options: $options,
+        );
+        return SdkPublishProductVariantResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Duplicate a product variant
+     *
+     * Copy a variant of a normal product onto the same product and return the copy. The copy keeps every setting, the title, and the draft state, so a copy of a published variant is on sale straight away. Downloadable files and their folders are copied too. Serial codes and issued licence keys are not copied: a copy that delivers serial codes gets a stock of `0`, so it shows as sold out until you add codes. Subscription variants cannot be duplicated. Requires the `listing` API-key ability and the `listing` permission in your team role. Not safe to retry blindly: every call creates another variant. If a response is lost, list the product's variants, with `with_drafts=true` for a draft, before trying again. A variant of a bundle, add-on, credits product, booking product, or course returns `422` on `product`. A subscription variant returns `422` on `variant`. A variant of another product returns `404`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $product The product path parameter.
+     * @param int $variant The variant path parameter.
+     * @return \SellApp\Resource\SdkDuplicateProductVariantResponseValue201ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function duplicate(
+        int $product,
+        int $variant,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkDuplicateProductVariantResponseValue201ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'duplicateProductVariant', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/products/' . rawurlencode((string) $product) . '/variants/' . rawurlencode((string) $variant) . '/duplicate',
+            options: $options,
+        );
+        return SdkDuplicateProductVariantResponseValue201ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Reorder product variants
+     *
+     * Set the order buyers see a normal product's published variants in, first to last. Send every published variant ID exactly once; draft variants are not part of the order and are refused. The response lists the product's published variants in their new order, without pagination. Requires the `listing` API-key ability and the `listing` permission in your team role. Safe to repeat: the same list gives the same order. A list that leaves out a published variant, or names a draft or a variant of another product, returns `422` on `variant_ids`; read the variants again and send the full list. An ID sent twice returns `422` on `variant_ids.{i}`. A listing that is not a normal product returns `422` on `product`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $product The product path parameter.
+     * @param array<int> $variantIds Every published variant ID of the product, first to last.
+     * @return \SellApp\Resource\SdkReorderProductVariantsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function reorder(
+        int $product,
+        array $variantIds,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkReorderProductVariantsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'reorderProductVariants', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = [
+            'variant_ids' => $variantIds,
+        ];
+        \SellApp\Resource\SdkReorderProductVariantsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PUT',
+            path: 'v2/products/' . rawurlencode((string) $product) . '/variants/order',
+            body: $body,
+            options: $options,
+        );
+        return SdkReorderProductVariantsResponseValue200ApplicationJson::fromArray($response);
     }
 }

@@ -10,12 +10,14 @@ List exports
 
 ```php
 public function listExports(
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
 
 | Argument | Native type | Required |
 | --- | --- | --- |
+| page | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

@@ -21,7 +21,7 @@ readonly class ReplaceAffiliateProgramConfigurationRequestApplicationJsonPropert
         public int $trackingLength,
         public bool $subscriptionCommission,
         public bool $enabledSpecificProducts,
-        /** @var array<\SellApp\Resource\ReplaceAffiliateProgramConfigurationRequestApplicationJsonPropertySettingsPayoutMethods> */
+        /** @var array<\SellApp\Resource\AffiliatesPayoutMethod> */
         public array $payoutMethods,
         public bool $enableHub,
         /** @var array<string, mixed> */
@@ -41,7 +41,7 @@ readonly class ReplaceAffiliateProgramConfigurationRequestApplicationJsonPropert
             trackingLength: $data['tracking_length'],
             subscriptionCommission: $data['subscription_commission'],
             enabledSpecificProducts: $data['enabled_specific_products'],
-            payoutMethods: array_map(fn ($item) => ReplaceAffiliateProgramConfigurationRequestApplicationJsonPropertySettingsPayoutMethods::tryFrom($item) ?? $item, $data['payout_methods']),
+            payoutMethods: array_map(fn ($item) => AffiliatesPayoutMethod::tryFrom($item) ?? $item, $data['payout_methods']),
             enableHub: $data['enable_hub'],
             additionalProperties: SchemaValidator::unknownFields($data, ['auto_approve_affiliates', 'minimum_payout', 'commission', 'referrer_type', 'tracking_length', 'subscription_commission', 'enabled_specific_products', 'payout_methods', 'enable_hub']),
             presentFields: array_keys($data),

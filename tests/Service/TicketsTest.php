@@ -54,7 +54,7 @@ class TicketsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_v_2_list_tickets_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->tickets()->v2ListTickets(limit: 1, page: 1);
+        $result = $client->tickets()->v2ListTickets(limit: 1, page: 1, waitingOn: \SellApp\Resource\TicketsWaitingOn::Store, reason: 'test_value', customerEmail: 'test_value');
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
@@ -62,17 +62,23 @@ class TicketsTest extends TestCase
         parse_str($request->getUri()->getQuery(), $query);
         $this->assertArrayHasKey('limit', $query);
         $this->assertArrayHasKey('page', $query);
+        $this->assertSame('store', $query['waiting_on']);
+        $this->assertSame('test_value', $query['reason']);
+        $this->assertSame('test_value', $query['customer_email']);
     }
 
     public function testV2SearchTickets(): void
     {
         $fixture = $this->loadFixture('list_v_2_search_tickets_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->tickets()->v2SearchTickets(filters: [], sort: [], search: \SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('v_2_search_tickets_request_application_json_property_search')), includes: []);
+        $result = $client->tickets()->v2SearchTickets(filters: [], sort: [], search: \SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('v_2_search_tickets_request_application_json_property_search')), includes: [], waitingOn: \SellApp\Resource\WaitingOn::Store, reason: 'test_value', customerEmail: 'test_value', limit: 1, page: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/tickets/search', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertArrayHasKey('page', $query);
     }
 
     public function testV2GetTicket(): void
@@ -97,6 +103,30 @@ class TicketsTest extends TestCase
         $request = $this->getLastRequest();
         $this->assertSame('PATCH', $request->getMethod());
         $this->assertStringEndsWith('v2/tickets/1', $request->getUri()->getPath());
+    }
+
+    public function testBatchUpdate(): void
+    {
+        $fixture = $this->loadFixture('sdk_batch_update_tickets_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->tickets()->batchUpdate(action: \SellApp\Resource\SdkBatchUpdateTicketsRequestApplicationJsonAction::Close, resources: [1]);
+        $this->assertInstanceOf(\SellApp\Resource\SdkBatchUpdateTicketsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PATCH', $request->getMethod());
+        $this->assertStringEndsWith('v2/tickets/batch', $request->getUri()->getPath());
+    }
+
+    public function testGetContext(): void
+    {
+        $fixture = $this->loadFixture('sdk_v_2_get_ticket_context_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->tickets()->getContext(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkV2GetTicketContextResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/tickets/1/context', $request->getUri()->getPath());
     }
 
     public function testPaginationBoundary(): void

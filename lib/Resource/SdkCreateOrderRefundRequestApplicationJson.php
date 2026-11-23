@@ -10,11 +10,13 @@ readonly class SdkCreateOrderRefundRequestApplicationJson implements \JsonSerial
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkCreateOrderRefundRequestApplicationJson', 'required' => [], 'properties' => ['amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 32]]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkCreateOrderRefundRequestApplicationJson', 'required' => [], 'properties' => ['amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 32]], 'expected_refunded_total_cents' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0]]], 'additionalProperties' => true];
 
     public function __construct(
-        /** Decimal major-unit amount in the order currency, positive and no greater than remaining balance. Precision follows that currency. Omission/null/empty requests the full remaining balance. */
+        /** Decimal major-unit amount in the order's `totals.refund_currency`, positive and no greater than remaining balance. Precision follows that currency. Omission/null/empty requests the full remaining balance. */
         public ?string $amount = null,
+        /** The refunded total you expect, in integer minor units of the order's `totals.refund_currency`, which can differ from the order currency: `500` means $5.00 in USD. Read it from `totals.refunded_total_cents` on the order and send it unchanged; it is `0` before the first refund. After a refund, `data.order.totals.refunded_total_cents` in the response is the value to send with the next one. With this field, the refund goes out only while the refunded total still equals it and no other refund on the order is pending. Omit it or send null to refund without the check. */
+        public ?int $expectedRefundedTotalCents = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -26,7 +28,8 @@ readonly class SdkCreateOrderRefundRequestApplicationJson implements \JsonSerial
         self::validate($data, 'response');
         return new self(
             amount: $data['amount'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['amount']),
+            expectedRefundedTotalCents: $data['expected_refunded_total_cents'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['amount', 'expected_refunded_total_cents']),
             presentFields: array_keys($data),
         );
     }
@@ -40,6 +43,7 @@ readonly class SdkCreateOrderRefundRequestApplicationJson implements \JsonSerial
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'amount' => $this->amount,
+            'expected_refunded_total_cents' => $this->expectedRefundedTotalCents,
         ], [], $this->presentFields));
     }
 }

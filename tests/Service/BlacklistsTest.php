@@ -79,11 +79,16 @@ class BlacklistsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_blacklist');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->blacklists()->v2ListBlacklists();
+        $result = $client->blacklists()->v2ListBlacklists(limit: 1, page: 1, search: 'test_value', type: \SellApp\Resource\BlacklistType::Asn);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
         $this->assertStringEndsWith('v2/blacklists', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertArrayHasKey('page', $query);
+        $this->assertSame('test_value', $query['search']);
+        $this->assertSame('ASN', $query['type']);
     }
 
     public function testV2CreateBlacklist(): void

@@ -14,6 +14,11 @@ public function list(
         ?int $page = null,
         ?bool $withDrafts = null,
         ?bool $onlyDrafts = null,
+        ?int $minPrice = null,
+        ?int $maxPrice = null,
+        ?\SellApp\Resource\ProductsStock $stock = null,
+        ?array $visibility = null,
+        ?bool $hasSales = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -24,6 +29,11 @@ public function list(
 | page | `?int` | No |
 | withDrafts | `?bool` | No |
 | onlyDrafts | `?bool` | No |
+| minPrice | `?int` | No |
+| maxPrice | `?int` | No |
+| stock | `?\SellApp\Resource\ProductsStock` | No |
+| visibility | `?array` | No |
+| hasSales | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.
@@ -443,6 +453,13 @@ public function search(
         ?array $sort = null,
         ?\SellApp\Resource\SearchProductsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $minPrice = null,
+        ?int $maxPrice = null,
+        ?\SellApp\Resource\Stock $stock = null,
+        ?array $visibility = null,
+        ?bool $hasSales = null,
+        ?bool $withDrafts = null,
+        ?bool $onlyDrafts = null,
         ?int $limit = null,
         ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
@@ -455,6 +472,13 @@ public function search(
 | sort | `?array` | No |
 | search | `?\SellApp\Resource\SearchProductsRequestApplicationJsonPropertySearch` | No |
 | includes | `?array` | No |
+| minPrice | `?int` | No |
+| maxPrice | `?int` | No |
+| stock | `?\SellApp\Resource\Stock` | No |
+| visibility | `?array` | No |
+| hasSales | `?bool` | No |
+| withDrafts | `?bool` | No |
+| onlyDrafts | `?bool` | No |
 | limit | `?int` | No |
 | page | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
@@ -474,8 +498,11 @@ $client = new Client(
 );
 
 $result = $client->products()->search(
-    filters: [['field' => 'id', 'operator' => '=', 'value' => 1]],
-    sort: [['field' => 'created_at', 'direction' => 'desc']],
+    search: ['value' => 'launch'],
+    maxPrice: 2500,
+    stock: 'in_stock',
+    visibility: ['PUBLIC'],
+    hasSales: true,
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
@@ -682,6 +709,195 @@ Supported credential alternatives (each object is one alternative):
 ```
 
 Documented HTTP responses: 200, 400, 401, 403, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## publish
+
+Publish a product
+
+[API reference](https://sell.app/docs/api/products/publish-a-product) · Effect: **consequential**
+
+```php
+public function publish(
+        int $product,
+        ?\SellApp\Resource\CatalogVisibility $visibility = null,
+        ?array $variantIds = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkPublishProductResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| product | `int` | Yes |
+| visibility | `?\SellApp\Resource\CatalogVisibility` | No |
+| variantIds | `?array` | No |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkPublishProductResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->products()->publish(
+    product: 1,
+    variantIds: [2],
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## duplicate
+
+Duplicate a product
+
+[API reference](https://sell.app/docs/api/products/duplicate-a-product) · Effect: **write**
+
+```php
+public function duplicate(
+        int $product,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkDuplicateProductResponseValue201ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| product | `int` | Yes |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkDuplicateProductResponseValue201ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->products()->duplicate(product: 1);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 201, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## move
+
+Move a product
+
+[API reference](https://sell.app/docs/api/products/move-a-product) · Effect: **write**
+
+```php
+public function move(
+        int $product,
+        int $position,
+        ?int $expectedPosition = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkMoveProductResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| product | `int` | Yes |
+| position | `int` | Yes |
+| expectedPosition | `?int` | No |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkMoveProductResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->products()->move(
+    product: 1,
+    position: 1,
+    expectedPosition: 3,
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
 
 [Response access, transport controls, pagination, and typed errors](../usage.md)
 

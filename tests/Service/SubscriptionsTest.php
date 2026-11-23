@@ -32,7 +32,7 @@ class SubscriptionsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_sdk_list_subscriptions_response_value_200_application_json');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->subscriptions()->listSubscriptions(limit: 1, page: 1, pagination: true, status: []);
+        $result = $client->subscriptions()->listSubscriptions(limit: 1, page: 1, pagination: true, status: [], orderId: 1, productId: 1, renewsAfter: 'test_value', renewsBefore: 'test_value', cancelledAfter: 'test_value', cancelledBefore: 'test_value', scheduledToCancel: true, paused: true);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
@@ -41,13 +41,21 @@ class SubscriptionsTest extends TestCase
         $this->assertArrayHasKey('limit', $query);
         $this->assertArrayHasKey('page', $query);
         $this->assertArrayHasKey('pagination', $query);
+        $this->assertArrayHasKey('order_id', $query);
+        $this->assertArrayHasKey('product_id', $query);
+        $this->assertSame('test_value', $query['renews_after']);
+        $this->assertSame('test_value', $query['renews_before']);
+        $this->assertSame('test_value', $query['cancelled_after']);
+        $this->assertSame('test_value', $query['cancelled_before']);
+        $this->assertArrayHasKey('scheduled_to_cancel', $query);
+        $this->assertArrayHasKey('paused', $query);
     }
 
     public function testSearchSubscriptions(): void
     {
         $fixture = $this->loadFixture('list_sdk_search_subscriptions_response_value_200_application_json');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->subscriptions()->searchSubscriptions(filters: [], sort: [], search: \SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('search_subscriptions_request_application_json_property_search')), includes: [], limit: 1, page: 1, pagination: true);
+        $result = $client->subscriptions()->searchSubscriptions(filters: [], sort: [], search: \SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('search_subscriptions_request_application_json_property_search')), includes: [], orderId: 1, productId: 1, renewsAfter: 'test_value', renewsBefore: 'test_value', cancelledAfter: 'test_value', cancelledBefore: 'test_value', scheduledToCancel: true, paused: true, limit: 1, page: 1, pagination: true);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());

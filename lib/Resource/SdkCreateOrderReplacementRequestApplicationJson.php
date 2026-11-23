@@ -10,10 +10,10 @@ readonly class SdkCreateOrderReplacementRequestApplicationJson implements \JsonS
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkCreateOrderReplacementRequestApplicationJson', 'required' => ['product_variants'], 'properties' => ['product_variants' => ['kind' => 'model', 'class' => 'CreateOrderReplacementRequestApplicationJsonPropertyProductVariants']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkCreateOrderReplacementRequestApplicationJson', 'required' => ['product_variants'], 'properties' => ['product_variants' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'integer'], ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], ['kind' => 'model', 'class' => 'CreateOrderReplacementRequestApplicationJsonPropertyProductVariantsAnyOfValue3']], 'composition' => 'anyOf']], 'additionalProperties' => true];
 
     public function __construct(
-        public CreateOrderReplacementRequestApplicationJsonPropertyProductVariants $productVariants,
+        public int|array|CreateOrderReplacementRequestApplicationJsonPropertyProductVariantsAnyOfValue3 $productVariants,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -24,7 +24,7 @@ readonly class SdkCreateOrderReplacementRequestApplicationJson implements \JsonS
     {
         self::validate($data, 'response');
         return new self(
-            productVariants: CreateOrderReplacementRequestApplicationJsonPropertyProductVariants::fromArray($data['product_variants']),
+            productVariants: (is_array($data['product_variants']) && array_is_list($data['product_variants']) ? $data['product_variants'] : SchemaValidator::deserializeUnion($data['product_variants'], [CreateOrderReplacementRequestApplicationJsonPropertyProductVariantsAnyOfValue3::class])),
             additionalProperties: SchemaValidator::unknownFields($data, ['product_variants']),
             presentFields: array_keys($data),
         );
@@ -38,7 +38,7 @@ readonly class SdkCreateOrderReplacementRequestApplicationJson implements \JsonS
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'product_variants' => $this->productVariants->toArray(),
+            'product_variants' => SchemaValidator::wireValue($this->productVariants),
         ], ['product_variants'], $this->presentFields));
     }
 }

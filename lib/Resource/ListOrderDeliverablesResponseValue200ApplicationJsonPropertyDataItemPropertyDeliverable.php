@@ -10,12 +10,12 @@ readonly class ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataI
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverable', 'required' => ['types', 'data'], 'properties' => ['types' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string']], 'data' => ['kind' => 'model', 'class' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverablePropertyData']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverable', 'required' => ['types', 'data'], 'properties' => ['types' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string']], 'data' => ['kind' => 'union', 'variants' => [['kind' => 'model', 'class' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverablePropertyDataAnyOfValue1'], ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'unknown'], 'maxItems' => 0]], 'composition' => 'anyOf']], 'additionalProperties' => true];
 
     public function __construct(
         /** @var array<string> */
         public array $types,
-        public ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverablePropertyData $data,
+        public ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverablePropertyDataAnyOfValue1|array $data,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -27,7 +27,7 @@ readonly class ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataI
         self::validate($data, 'response');
         return new self(
             types: $data['types'],
-            data: ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverablePropertyData::fromArray($data['data']),
+            data: (is_array($data['data']) && array_is_list($data['data']) ? $data['data'] : SchemaValidator::deserializeUnion($data['data'], [ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverablePropertyDataAnyOfValue1::class])),
             additionalProperties: SchemaValidator::unknownFields($data, ['types', 'data']),
             presentFields: array_keys($data),
         );
@@ -42,7 +42,7 @@ readonly class ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataI
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'types' => $this->types,
-            'data' => $this->data->toArray(),
+            'data' => SchemaValidator::wireValue($this->data),
         ], ['types', 'data'], $this->presentFields));
     }
 }

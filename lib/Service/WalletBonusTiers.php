@@ -8,6 +8,7 @@ namespace SellApp\Service;
 
 use SellApp\Resource\SdkCreateWalletBonusTierResponseValue201ApplicationJson;
 use SellApp\Resource\SdkListWalletBonusTiersResponseValue200ApplicationJson;
+use SellApp\Resource\SdkQuoteWalletBonusTierResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceWalletBonusTierResponseValue200ApplicationJson;
 use SellApp\Resource\SdkRestoreWalletBonusTierResponseValue200ApplicationJson;
 use SellApp\Resource\SdkUpdateWalletBonusTierResponseValue200ApplicationJson;
@@ -27,7 +28,7 @@ class WalletBonusTiers
     /**
      * List wallet bonus tiers
      *
-     * List current and archived store records. Requires the `wallet` or `wallet:write` API ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List current and archived store records. Requires the `wallet` or `wallet:write` API-key ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @return \SellApp\Resource\SdkListWalletBonusTiersResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
@@ -46,7 +47,7 @@ class WalletBonusTiers
     /**
      * Create a wallet bonus tier
      *
-     * Create a wallet bonus tier. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Create a wallet bonus tier. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $minimumTopUpCents
      * @param \SellApp\Resource\SdkCreateWalletBonusTierRequestApplicationJsonBonusKind $bonusKind
      * @param int|null $fixedBonusCents
@@ -90,7 +91,7 @@ class WalletBonusTiers
     /**
      * Update a wallet bonus tier
      *
-     * Update a wallet bonus tier. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update a wallet bonus tier. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $bonusTier The bonusTier path parameter.
      * @param int $minimumTopUpCents
      * @param \SellApp\Resource\SdkCreateWalletBonusTierRequestApplicationJsonBonusKind $bonusKind
@@ -136,7 +137,7 @@ class WalletBonusTiers
     /**
      * Update a wallet bonus tier
      *
-     * Update a wallet bonus tier. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update a wallet bonus tier. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $bonusTier The bonusTier path parameter.
      * @param int|null $minimumTopUpCents
      * @param \SellApp\Resource\SdkCreateWalletBonusTierRequestApplicationJsonBonusKind|null $bonusKind
@@ -182,7 +183,7 @@ class WalletBonusTiers
     /**
      * Archive a wallet bonus tier
      *
-     * Archive a wallet bonus tier. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Archive a wallet bonus tier. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $bonusTier The bonusTier path parameter.
      * @return void
      * @throws \SellApp\Exception\SDKException
@@ -202,7 +203,7 @@ class WalletBonusTiers
     /**
      * Restore a wallet bonus tier
      *
-     * Restore a wallet bonus tier. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Restore a wallet bonus tier. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $bonusTier The bonusTier path parameter.
      * @return \SellApp\Resource\SdkRestoreWalletBonusTierResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -218,5 +219,30 @@ class WalletBonusTiers
             options: $options,
         );
         return SdkRestoreWalletBonusTierResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Quote a wallet bonus tier
+     *
+     * See which bonus tier a top-up of a given amount would earn right now, and how much bonus it would add, without creating anything. Amounts are integer USD cents: `top_up_cents=20000` asks about a $200.00 top-up. Requires the `wallet` or `wallet:write` API-key ability and the wallet permission in your team role. A missing amount, `0`, or an amount above 999999999999 returns `422` on `top_up_cents`. Only your store's active tiers are considered. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $topUpCents The top-up amount to quote, in integer USD cents.
+     * @return \SellApp\Resource\SdkQuoteWalletBonusTierResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function quote(
+        int $topUpCents,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkQuoteWalletBonusTierResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'quoteWalletBonusTier', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = [
+            'top_up_cents' => $topUpCents,
+        ];
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/wallet-bonus-tiers/quote',
+            query: $query,
+            options: $options,
+        );
+        return SdkQuoteWalletBonusTierResponseValue200ApplicationJson::fromArray($response);
     }
 }

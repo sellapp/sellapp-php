@@ -15,7 +15,7 @@ readonly class AdjustCustomerWalletResponseValue201ApplicationJsonPropertyData i
     public function __construct(
         public int $id,
         public int $walletId,
-        public AdjustCustomerWalletResponseValue200ApplicationJsonPropertyDataType|string $type,
+        public WalletType|string $type,
         /** Signed USD cents: positive credits increase the balance; negative debits decrease it. */
         public int $amountCents,
         public int $balanceAfterCents,
@@ -42,7 +42,7 @@ readonly class AdjustCustomerWalletResponseValue201ApplicationJsonPropertyData i
         return new self(
             id: $data['id'],
             walletId: $data['wallet_id'],
-            type: AdjustCustomerWalletResponseValue200ApplicationJsonPropertyDataType::tryFrom($data['type']) ?? $data['type'],
+            type: WalletType::tryFrom($data['type']) ?? $data['type'],
             amountCents: $data['amount_cents'],
             balanceAfterCents: $data['balance_after_cents'],
             currencyAtSource: $data['currency_at_source'] ?? null,

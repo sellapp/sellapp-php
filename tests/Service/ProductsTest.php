@@ -17,7 +17,7 @@ class ProductsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_list_products_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->products()->list(limit: 1, page: 1, withDrafts: true, onlyDrafts: true);
+        $result = $client->products()->list(limit: 1, page: 1, withDrafts: true, onlyDrafts: true, minPrice: 1, maxPrice: 1, stock: \SellApp\Resource\ProductsStock::InStock, visibility: [], hasSales: true);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
@@ -27,6 +27,10 @@ class ProductsTest extends TestCase
         $this->assertArrayHasKey('page', $query);
         $this->assertArrayHasKey('with_drafts', $query);
         $this->assertArrayHasKey('only_drafts', $query);
+        $this->assertArrayHasKey('min_price', $query);
+        $this->assertArrayHasKey('max_price', $query);
+        $this->assertSame('in_stock', $query['stock']);
+        $this->assertArrayHasKey('has_sales', $query);
     }
 
     public function testCreate(): void
@@ -93,7 +97,7 @@ class ProductsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_search_products_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->products()->search(filters: [], sort: [], search: \SellApp\Resource\SearchProductsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('search_products_request_application_json_property_search')), includes: [], limit: 1, page: 1);
+        $result = $client->products()->search(filters: [], sort: [], search: \SellApp\Resource\SearchProductsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('search_products_request_application_json_property_search')), includes: [], minPrice: 1, maxPrice: 1, stock: \SellApp\Resource\Stock::InStock, visibility: [\SellApp\Resource\CatalogVisibility::Public], hasSales: true, withDrafts: true, onlyDrafts: true, limit: 1, page: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
@@ -134,6 +138,44 @@ class ProductsTest extends TestCase
         $request = $this->getLastRequest();
         $this->assertSame('DELETE', $request->getMethod());
         $this->assertStringEndsWith('v2/products/batch', $request->getUri()->getPath());
+    }
+
+    public function testPublish(): void
+    {
+        $fixture = $this->loadFixture('sdk_publish_product_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->products()->publish(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkPublishProductResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/products/1/publish', $request->getUri()->getPath());
+    }
+
+    public function testDuplicate(): void
+    {
+        $fixture = $this->loadFixture('sdk_duplicate_product_response_value_201_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->products()->duplicate(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkDuplicateProductResponseValue201ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/products/1/duplicate', $request->getUri()->getPath());
+    }
+
+    public function testMove(): void
+    {
+        $fixture = $this->loadFixture('sdk_move_product_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->products()->move(1, position: 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkMoveProductResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PUT', $request->getMethod());
+        $this->assertStringEndsWith('v2/products/1/position', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame(1, $body['position']);
     }
 
     public function testPaginationBoundary(): void

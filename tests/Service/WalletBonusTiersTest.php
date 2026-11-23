@@ -89,4 +89,16 @@ class WalletBonusTiersTest extends TestCase
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/wallet-bonus-tiers/1/restore', $request->getUri()->getPath());
     }
+
+    public function testQuote(): void
+    {
+        $fixture = $this->loadFixture('sdk_quote_wallet_bonus_tier_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->walletBonusTiers()->quote(topUpCents: 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkQuoteWalletBonusTierResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/wallet-bonus-tiers/quote', $request->getUri()->getPath());
+    }
 }

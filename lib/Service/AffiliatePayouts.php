@@ -9,6 +9,7 @@ namespace SellApp\Service;
 use SellApp\Resource\ListAffiliatePayoutsResponseValue200ApplicationJsonPropertyDataItem;
 use SellApp\Resource\SdkCreateAffiliatePayoutResponseValue200ApplicationJson;
 use SellApp\Resource\SdkGetAffiliatePayoutResponseValue200ApplicationJson;
+use SellApp\Resource\SdkMarkAffiliatePayoutsPaidResponseValue200ApplicationJson;
 use SellApp\Resource\SdkUpdateAffiliatePayoutStatusResponseValue200ApplicationJson;
 
 class AffiliatePayouts
@@ -26,9 +27,11 @@ class AffiliatePayouts
     /**
      * List affiliate payouts
      *
-     * List merchant-managed affiliate payout records. These record commission payments arranged by the merchant; SellApp does not transfer or hold the funds. Requires the `affiliate` credential ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List merchant-managed affiliate payout records, newest first, 15 per page by default. These record commission payments arranged by the merchant; SellApp does not transfer or hold the funds. Requires the `affiliate` credential ability. A `status` or `payout_method` value the API does not know returns `422`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int|null $affiliateId Filter by affiliate ID.
      * @param \SellApp\Resource\AffiliatePayoutsStatus|null $status Filter by payout status.
+     * @param \SellApp\Resource\AffiliatesPayoutMethod|null $payoutMethod List only payouts recorded for this payout method. Uppercase, as returned in `payout_method`; `paypal` returns `422`.
+     * @param string|null $search The start of the affiliate's email address, such as `alex` or `alex.morgan@`. It matches from the first character only, and `%` and `_` match themselves.
      * @param int|null $limit Number of items to return per page. Defaults to 15.
      * @param int|null $page Page number to return. Defaults to 1.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\ListAffiliatePayoutsResponseValue200ApplicationJsonPropertyDataItem>
@@ -37,6 +40,8 @@ class AffiliatePayouts
     public function list(
         ?int $affiliateId = null,
         ?\SellApp\Resource\AffiliatePayoutsStatus $status = null,
+        ?\SellApp\Resource\AffiliatesPayoutMethod $payoutMethod = null,
+        ?string $search = null,
         ?int $limit = null,
         ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
@@ -45,6 +50,8 @@ class AffiliatePayouts
         $query = array_filter([
             'affiliate_id' => $affiliateId,
             'status' => $status?->value,
+            'payout_method' => $payoutMethod?->value,
+            'search' => $search,
             'limit' => $limit,
             'page' => $page,
         ], fn ($v) => $v !== null);
@@ -125,5 +132,34 @@ class AffiliatePayouts
             options: $options,
         );
         return SdkUpdateAffiliatePayoutStatusResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Mark affiliate payouts paid
+     *
+     * Record up to 20 due affiliate payouts as paid in one request, after you have paid the affiliates yourself. No money moves: SellApp only records the payment. Each payout marked paid also marks its referrals paid and emails that affiliate that the payout was paid. Send the payout IDs and `expected_total_usd_cents`, the sum of their `amount_usd_cents` as you read them, in integer USD cents (`4250` means $42.50). Every payout is checked first, and nothing changes when one of them is unknown in your store, is not `due`, or has referrals that no longer add up to it or can no longer be paid (`422` on `payout_ids`, one message per payout), or when the amounts add up to another total (`422` on `expected_total_usd_cents`). Then each payout is marked in the order sent, and `data` reports one `outcome` per payout: `paid`, `skipped`, or `failed`. A payout that changes between the check and its turn is skipped or fails without affecting the others. Requires the `affiliate` and `affiliate:payout` API-key abilities, and the staff member who owns the key needs the affiliate and affiliate payout permissions. There is no idempotency key, but sending the same batch again is refused with `422` on `payout_ids`, because those payouts are no longer due, so nobody is emailed twice. After a lost response, list the payouts with `GET /v2/affiliate-payouts?status=due` and send only those still due, with their new total. The emails cannot be taken back; to reopen a payout recorded by mistake, set it back to `due` with `PATCH /v2/affiliate-payouts/{payout}/status`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param array<int> $payoutIds The due payouts to record as paid, at most 20, each once. They are marked in this order.
+     * @param int $expectedTotalUsdCents The sum of the payouts' `amount_usd_cents`, in integer USD cents, as you read them. If they add up to anything else, nothing is marked.
+     * @return \SellApp\Resource\SdkMarkAffiliatePayoutsPaidResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function markPaid(
+        array $payoutIds,
+        int $expectedTotalUsdCents,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkMarkAffiliatePayoutsPaidResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'markAffiliatePayoutsPaid', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = [
+            'payout_ids' => $payoutIds,
+            'expected_total_usd_cents' => $expectedTotalUsdCents,
+        ];
+        \SellApp\Resource\SdkMarkAffiliatePayoutsPaidRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/affiliate-payouts/mark-paid',
+            body: $body,
+            options: $options,
+        );
+        return SdkMarkAffiliatePayoutsPaidResponseValue200ApplicationJson::fromArray($response);
     }
 }

@@ -10,11 +10,14 @@ readonly class SearchOrdersRequestApplicationJsonPropertyFiltersItem implements 
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SearchOrdersRequestApplicationJsonPropertyFiltersItem', 'required' => ['field', 'operator', 'value'], 'properties' => ['field' => ['kind' => 'primitive', 'type' => 'string'], 'operator' => ['kind' => 'enum', 'values' => ['eq', 'contains', 'in']], 'value' => ['kind' => 'primitive', 'type' => 'unknown']], 'additionalProperties' => false];
+    private const SCHEMA = ['name' => 'SearchOrdersRequestApplicationJsonPropertyFiltersItem', 'required' => ['field', 'operator', 'value'], 'properties' => ['field' => ['kind' => 'enum', 'values' => ['id', 'customer_email', 'transaction_id', 'serial_code', 'additional_information', 'line_item_title', 'discord_user_id', 'discord_username', 'blockchain_txid', 'crypto_address', 'coupon_code', 'status', 'payment_method', 'product_id', 'currency', 'created_at', 'total']], 'operator' => ['kind' => 'enum', 'values' => ['eq', 'contains', 'in', 'gte', 'lte']], 'value' => ['kind' => 'primitive', 'type' => 'unknown']], 'additionalProperties' => false];
 
     public function __construct(
-        public string $field,
+        /** The order field to compare. `id` and `product_id` take positive integers with `eq` or `in`; `product_id` keeps orders with at least one line item for that product. `status`, `payment_method`, and `currency` take their enum values (`currency` is the order's ISO 4217 code, such as `USD`) with `eq` or `in`. `created_at` takes a date-time with a time zone, such as `2026-11-01T00:00:00Z` or `2026-11-01T01:00:00+01:00`, with `gte` or `lte`; it is compared in UTC to the second and both bounds are inclusive. `total` takes the order total in integer minor units of each order's own currency (`5000` means $50.00 in USD; the same number as `totals.total_cents`) with `eq`, `gte`, or `lte`; add a `currency` filter to compare orders in one currency. `additional_information` takes text with `contains`; the other text fields take text of up to 255 characters with `eq` or `contains`. */
+        public SearchOrdersRequestApplicationJsonPropertyFiltersItemField|string $field,
+        /** `eq` matches exactly, `contains` matches part of the text, `in` matches any value in an array of up to 100, `gte` keeps values greater than or equal to `value`, and `lte` keeps values less than or equal to `value`. Each field accepts only the operators listed for it in `field`. */
         public SearchOrdersRequestApplicationJsonPropertyFiltersItemOperator|string $operator,
+        /** A scalar for `eq`, `contains`, `gte`, and `lte`; a non-empty array for `in`. */
         public mixed $value,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
@@ -26,7 +29,7 @@ readonly class SearchOrdersRequestApplicationJsonPropertyFiltersItem implements 
     {
         self::validate($data, 'response');
         return new self(
-            field: $data['field'],
+            field: SearchOrdersRequestApplicationJsonPropertyFiltersItemField::tryFrom($data['field']) ?? $data['field'],
             operator: SearchOrdersRequestApplicationJsonPropertyFiltersItemOperator::tryFrom($data['operator']) ?? $data['operator'],
             value: $data['value'],
             additionalProperties: SchemaValidator::unknownFields($data, ['field', 'operator', 'value']),
@@ -42,7 +45,7 @@ readonly class SearchOrdersRequestApplicationJsonPropertyFiltersItem implements 
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'field' => $this->field,
+            'field' => $this->field instanceof \BackedEnum ? $this->field->value : $this->field,
             'operator' => $this->operator instanceof \BackedEnum ? $this->operator->value : $this->operator,
             'value' => $this->value,
         ], ['field', 'operator', 'value'], $this->presentFields));

@@ -12,6 +12,9 @@ List affiliates
 public function list(
         ?\SellApp\Resource\AffiliatesStatus $status = null,
         ?string $search = null,
+        ?bool $customRatesOnly = null,
+        ?\SellApp\Resource\AffiliatesPayoutMethod $payoutMethod = null,
+        ?string $sort = null,
         ?int $limit = null,
         ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
@@ -22,6 +25,9 @@ public function list(
 | --- | --- | --- |
 | status | `?\SellApp\Resource\AffiliatesStatus` | No |
 | search | `?string` | No |
+| customRatesOnly | `?bool` | No |
+| payoutMethod | `?\SellApp\Resource\AffiliatesPayoutMethod` | No |
+| sort | `?string` | No |
 | limit | `?int` | No |
 | page | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |

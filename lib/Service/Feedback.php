@@ -135,21 +135,24 @@ class Feedback
     /**
      * List all feedback
      *
-     * List customer feedback for your store, 15 entries per page by default. This v2 route is store-scoped. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List customer feedback for your store, 15 entries per page by default. This v2 route is store-scoped. Use `reply_state` to list only feedback you have or have not replied to. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int|null $limit Number of items to return per page. Defaults to 15.
      * @param int|null $page Page number to return. Defaults to 1.
+     * @param \SellApp\Resource\FeedbackReplyState $replyState `replied`: feedback with a non-empty seller reply. `unreplied`: feedback without one. `all` (default): both. Any other value returns `422`. Defaults to "all".
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\V2ListFeedbackResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
     public function v2ListFeedback(
         ?int $limit = null,
         ?int $page = null,
+        \SellApp\Resource\FeedbackReplyState $replyState = \SellApp\Resource\FeedbackReplyState::All,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'v2ListFeedback', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $query = array_filter([
             'limit' => $limit,
             'page' => $page,
+            'reply_state' => $replyState->value,
         ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'GET',
@@ -163,11 +166,14 @@ class Feedback
     /**
      * Search feedback
      *
-     * Search feedback using JSON body filters, search terms, includes, and sort instructions. This v2 route is store-scoped. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Search feedback using JSON body filters, search terms, includes, and sort instructions. This v2 route is store-scoped. Use `reply_state` to find only feedback you have or have not replied to. Page through results with `limit` (1 to 100, default 15; a larger value returns `422`) and `page`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param array<\SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertyFiltersItem>|null $filters
      * @param array<\SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertySortItem>|null $sort
      * @param \SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertySearch|null $search
      * @param array<\SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertyIncludesItem>|null $includes
+     * @param \SellApp\Resource\ReplyState|null $replyState `replied`: feedback with a non-empty seller reply. `unreplied`: feedback without one. `all` (default): both. Any other value returns `422`.
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\V2SearchFeedbackResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
@@ -176,12 +182,20 @@ class Feedback
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?\SellApp\Resource\ReplyState $replyState = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'v2SearchFeedback', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'POST',
             path: 'v2/feedback/search',
+            query: $query,
             modelClass: V2SearchFeedbackResponseValue200ApplicationJsonPropertyDataItem::class,
             options: $options,
         );

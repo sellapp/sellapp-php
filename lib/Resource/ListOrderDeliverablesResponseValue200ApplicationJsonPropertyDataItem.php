@@ -10,13 +10,15 @@ readonly class ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataI
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['order_id', 'line_item_id', 'type', 'status', 'product_variant_id', 'quantity', 'deliverable', 'additional_information'], 'properties' => ['order_id' => ['kind' => 'primitive', 'type' => 'integer'], 'line_item_id' => ['kind' => 'primitive', 'type' => 'integer'], 'type' => ['kind' => 'primitive', 'type' => 'string'], 'status' => ['kind' => 'enum', 'values' => ['pending', 'delivered']], 'product_variant_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'quantity' => ['kind' => 'primitive', 'type' => 'integer'], 'deliverable' => ['kind' => 'model', 'class' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverable'], 'additional_information' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyAdditionalInformationItem']]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['order_id', 'line_item_id', 'type', 'status', 'delivered_product_id', 'product_variant_id', 'quantity', 'deliverable', 'additional_information'], 'properties' => ['order_id' => ['kind' => 'primitive', 'type' => 'integer'], 'line_item_id' => ['kind' => 'primitive', 'type' => 'integer'], 'type' => ['kind' => 'primitive', 'type' => 'string'], 'status' => ['kind' => 'enum', 'values' => ['pending', 'delivered']], 'delivered_product_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'product_variant_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'quantity' => ['kind' => 'primitive', 'type' => 'integer'], 'deliverable' => ['kind' => 'model', 'class' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverable'], 'additional_information' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyAdditionalInformationItem']]], 'additionalProperties' => true];
 
     public function __construct(
         public int $orderId,
         public int $lineItemId,
         public string $type,
         public ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemStatus|string $status,
+        /** The delivery record for this item, or null while `status` is `pending`. Send it to `POST /v2/orders/{order}/dynamic-delivery-retries` to retry a dynamic delivery. */
+        public ?int $deliveredProductId,
         public ?int $productVariantId,
         public int $quantity,
         public ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverable $deliverable,
@@ -36,11 +38,12 @@ readonly class ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataI
             lineItemId: $data['line_item_id'],
             type: $data['type'],
             status: ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemStatus::tryFrom($data['status']) ?? $data['status'],
+            deliveredProductId: $data['delivered_product_id'] ?? null,
             productVariantId: $data['product_variant_id'] ?? null,
             quantity: $data['quantity'],
             deliverable: ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyDeliverable::fromArray($data['deliverable']),
             additionalInformation: array_map(fn ($item) => ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataItemPropertyAdditionalInformationItem::fromArray($item), $data['additional_information']),
-            additionalProperties: SchemaValidator::unknownFields($data, ['order_id', 'line_item_id', 'type', 'status', 'product_variant_id', 'quantity', 'deliverable', 'additional_information']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['order_id', 'line_item_id', 'type', 'status', 'delivered_product_id', 'product_variant_id', 'quantity', 'deliverable', 'additional_information']),
             presentFields: array_keys($data),
         );
     }
@@ -57,10 +60,11 @@ readonly class ListOrderDeliverablesResponseValue200ApplicationJsonPropertyDataI
             'line_item_id' => $this->lineItemId,
             'type' => $this->type,
             'status' => $this->status instanceof \BackedEnum ? $this->status->value : $this->status,
+            'delivered_product_id' => $this->deliveredProductId,
             'product_variant_id' => $this->productVariantId,
             'quantity' => $this->quantity,
             'deliverable' => $this->deliverable->toArray(),
             'additional_information' => array_map(fn ($item) => $item->toArray(), $this->additionalInformation),
-        ], ['order_id', 'line_item_id', 'type', 'status', 'product_variant_id', 'quantity', 'deliverable', 'additional_information'], $this->presentFields));
+        ], ['order_id', 'line_item_id', 'type', 'status', 'delivered_product_id', 'product_variant_id', 'quantity', 'deliverable', 'additional_information'], $this->presentFields));
     }
 }

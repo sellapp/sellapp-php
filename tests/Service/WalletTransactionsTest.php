@@ -13,6 +13,20 @@ class WalletTransactionsTest extends TestCase
 {
     use TestHelper;
 
+    public function testReverse(): void
+    {
+        $fixture = $this->loadFixture('sdk_reverse_wallet_transaction_response_value_201_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->walletTransactions()->reverse(1, 1, note: 'test_value');
+        $this->assertInstanceOf(\SellApp\Resource\SdkReverseWalletTransactionResponseValue201ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/wallets/1/transactions/1/reverse', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame('test_value', $body['note']);
+    }
+
     public function testList(): void
     {
         $fixture = $this->loadFixture('list_list_wallet_transactions_response_value_200_application_json_property_data_item');

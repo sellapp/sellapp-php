@@ -17,11 +17,17 @@ class DisputesTest extends TestCase
     {
         $fixture = $this->loadFixture('list_list_disputes_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->disputes()->listDisputes();
+        $result = $client->disputes()->listDisputes(page: 1, status: \SellApp\Resource\DisputesStatus::Open, provider: 'test_value', openedAfter: 'test_value', openedBefore: 'test_value');
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
         $this->assertStringEndsWith('v2/disputes', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('page', $query);
+        $this->assertSame('open', $query['status']);
+        $this->assertSame('test_value', $query['provider']);
+        $this->assertSame('test_value', $query['opened_after']);
+        $this->assertSame('test_value', $query['opened_before']);
     }
 
     public function testGetDispute(): void

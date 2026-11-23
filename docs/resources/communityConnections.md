@@ -366,3 +366,117 @@ Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API r
 
 [Response access, transport controls, pagination, and typed errors](../usage.md)
 
+## listFailedGrantReasons
+
+List community failed grant reasons
+
+[API reference](https://sell.app/docs/api/community-connections/list-failed-grant-reasons) · Effect: **read**
+
+```php
+public function listFailedGrantReasons(
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkListCommunityFailedGrantReasonsResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkListCommunityFailedGrantReasonsResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->communityConnections()->listFailedGrantReasons();
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## syncDiscordRoles
+
+Sync Discord roles
+
+[API reference](https://sell.app/docs/api/community-connections/sync-discord-roles) · Effect: **consequential**
+
+```php
+public function syncDiscordRoles(
+        ?string $serverId = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkSyncDiscordRolesResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| serverId | `?string` | No |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkSyncDiscordRolesResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->communityConnections()->syncDiscordRoles();
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+

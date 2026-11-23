@@ -24,17 +24,35 @@ class Disputes
     /**
      * List disputes
      *
-     * Read-only, redacted, store-scoped disputes that may reference an Order or Charge. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List your store's payment disputes, most recently opened first, 50 per page. Each dispute is read-only and redacted, and may reference an order or a standalone charge. Filter by `status`, `provider`, or the day a dispute was opened; filters combine, and the date filters read whole days in the store's time zone and include both ends. An unknown `status`, a date that cannot be read, or an `opened_before` earlier than `opened_after` returns `422` on that parameter. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int|null $page Page number, starting at 1. Defaults to 1.
+     * @param \SellApp\Resource\DisputesStatus|null $status Keep disputes in this state: `open`, `under_review`, `won`, `lost`, or `closed`.
+     * @param string|null $provider Keep disputes raised through this payment provider, such as `stripe`. Any letter case works.
+     * @param string|null $openedAfter Keep disputes opened on or after this moment. A date such as `2026-08-01` starts at midnight of that day in the store's time zone; a date-time without an offset is also read in the store's time zone. Inclusive.
+     * @param string|null $openedBefore Keep disputes opened on or before this moment. A date such as `2026-08-31` runs to the last second of that day in the store's time zone; a date-time without an offset is also read in the store's time zone. Inclusive.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\ListDisputesResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
     public function listDisputes(
+        ?int $page = null,
+        ?\SellApp\Resource\DisputesStatus $status = null,
+        ?string $provider = null,
+        ?string $openedAfter = null,
+        ?string $openedBefore = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listDisputes', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'page' => $page,
+            'status' => $status?->value,
+            'provider' => $provider,
+            'opened_after' => $openedAfter,
+            'opened_before' => $openedBefore,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'GET',
             path: 'v2/disputes',
+            query: $query,
             modelClass: ListDisputesResponseValue200ApplicationJsonPropertyDataItem::class,
             options: $options,
         );

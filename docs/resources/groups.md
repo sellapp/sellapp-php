@@ -331,6 +331,8 @@ public function search(
         ?array $sort = null,
         ?\SellApp\Resource\SearchGroupsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -341,6 +343,8 @@ public function search(
 | sort | `?array` | No |
 | search | `?\SellApp\Resource\SearchGroupsRequestApplicationJsonPropertySearch` | No |
 | includes | `?array` | No |
+| limit | `?int` | No |
+| page | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

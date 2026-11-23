@@ -93,7 +93,7 @@ class OrdersTest extends TestCase
     {
         $fixture = $this->loadFixture('sdk_create_order_replacement_response_value_200_application_json');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->orders()->createReplacement(1, productVariants: \SellApp\Resource\CreateOrderReplacementRequestApplicationJsonPropertyProductVariants::fromArray($this->loadFixture('create_order_replacement_request_application_json_property_product_variants')));
+        $result = $client->orders()->createReplacement(1, productVariants: 1);
         $this->assertInstanceOf(\SellApp\Resource\SdkCreateOrderReplacementResponseValue200ApplicationJson::class, $result);
         $this->assertIsArray($result->toArray());
         $request = $this->getLastRequest();
@@ -149,6 +149,18 @@ class OrdersTest extends TestCase
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/orders/1/fulfillment-notifications', $request->getUri()->getPath());
+    }
+
+    public function testRegenerateTelegramInvite(): void
+    {
+        $fixture = $this->loadFixture('sdk_regenerate_order_telegram_invite_response_value_201_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->orders()->regenerateTelegramInvite(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkRegenerateOrderTelegramInviteResponseValue201ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/orders/1/telegram-invites', $request->getUri()->getPath());
     }
 
     public function testListDeliverables(): void

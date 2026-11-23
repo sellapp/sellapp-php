@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace SellApp\Service;
 
 use SellApp\Resource\SdkCreateUpsellOfferResponseValue201ApplicationJson;
+use SellApp\Resource\SdkGetUpsellOfferPerformanceResponseValue200ApplicationJson;
 use SellApp\Resource\SdkGetUpsellOfferResponseValue200ApplicationJson;
 use SellApp\Resource\SdkListUpsellOffersResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceUpsellOfferResponseValue200ApplicationJson;
@@ -28,7 +29,7 @@ class UpsellOffers
     /**
      * List upsell offers
      *
-     * List the authenticated store's ordered post-purchase offers. Requires a Sanctum token with the `upsell` ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List the authenticated store's ordered post-purchase offers. Requires the `upsell` API-key ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int|null $limit Number of items to return per page. Defaults to 15.
      * @param int|null $page Page number to return. Defaults to 1.
      * @param bool|null $pagination Set to false to return at most 100 matching items in one data array without pagination links or metadata. Defaults to true.
@@ -59,7 +60,7 @@ class UpsellOffers
     /**
      * Create an upsell offer
      *
-     * Create an ordered post-purchase offer. Every product and variant ID is checked against the selected store and expected parent product. Requires a Sanctum token with the `upsell` ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Create an ordered post-purchase offer. Every product and variant ID is checked against the selected store and expected parent product. Requires the `upsell` API-key ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param string $name
      * @param string|null $description
      * @param bool $isActive
@@ -121,7 +122,7 @@ class UpsellOffers
     /**
      * Search upsell offers
      *
-     * Search offer names and descriptions and compose supported filters and sort instructions. Requires a Sanctum token with the `upsell` ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Search offer names and descriptions and compose supported filters and sort instructions. Requires the `upsell` API-key ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param array<\SellApp\Resource\SearchUpsellOffersRequestApplicationJsonPropertyFiltersItem>|null $filters
      * @param array<\SellApp\Resource\SearchUpsellOffersRequestApplicationJsonPropertySortItem>|null $sort
      * @param \SellApp\Resource\SearchUpsellOffersRequestApplicationJsonPropertySearch|null $search
@@ -160,7 +161,7 @@ class UpsellOffers
     /**
      * Retrieve an upsell offer
      *
-     * Retrieve one store-scoped upsell offer and its ordered target items. Requires a Sanctum token with the `upsell` ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Retrieve one store-scoped upsell offer and its ordered target items. Requires the `upsell` API-key ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $upsellOffer The upsellOffer path parameter.
      * @return \SellApp\Resource\SdkGetUpsellOfferResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -181,7 +182,7 @@ class UpsellOffers
     /**
      * Update an upsell offer
      *
-     * Update supplied fields. When items are supplied, they replace the complete ordered target-item set. Requires a Sanctum token with the `upsell` ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update supplied fields. When items are supplied, they replace the complete ordered target-item set. Requires the `upsell` API-key ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $upsellOffer The upsellOffer path parameter.
      * @param string|null $name
      * @param string|null $description
@@ -245,7 +246,7 @@ class UpsellOffers
     /**
      * Update an upsell offer
      *
-     * Update supplied fields. When items are supplied, they replace the complete ordered target-item set. Requires a Sanctum token with the `upsell` ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update supplied fields. When items are supplied, they replace the complete ordered target-item set. Requires the `upsell` API-key ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $upsellOffer The upsellOffer path parameter.
      * @param string|null $name
      * @param string|null $description
@@ -309,7 +310,7 @@ class UpsellOffers
     /**
      * Delete an upsell offer
      *
-     * Soft-delete an upsell offer while preserving checkout and reporting attribution. Requires a Sanctum token with the `upsell` ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Soft-delete an upsell offer while preserving checkout and reporting attribution. Requires the `upsell` API-key ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $upsellOffer The upsellOffer path parameter.
      * @return void
      * @throws \SellApp\Exception\SDKException
@@ -324,5 +325,35 @@ class UpsellOffers
             path: 'v2/upsell-offers/' . rawurlencode((string) $upsellOffer),
             options: $options,
         );
+    }
+
+    /**
+     * Retrieve upsell offer performance
+     *
+     * Report how an upsell offer has performed over its whole life: how often customers saw it, started its checkout, and bought it, and the revenue those purchases brought. An offer from another store returns `404`, and so does a deleted one unless you send `with_trashed=true`. Requires the `upsell` API-key ability and the Upsells role for the store selected by `X-STORE`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $upsellOffer The upsell offer ID.
+     * @param bool|null $withTrashed Set to `true` to also find a deleted upsell offer. Defaults to false.
+     * @param bool|null $onlyTrashed Set to `true` to find only a deleted upsell offer. Ignored when `with_trashed` is `true`. Defaults to false.
+     * @return \SellApp\Resource\SdkGetUpsellOfferPerformanceResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getPerformance(
+        int $upsellOffer,
+        ?bool $withTrashed = null,
+        ?bool $onlyTrashed = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetUpsellOfferPerformanceResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getUpsellOfferPerformance', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'with_trashed' => $withTrashed,
+            'only_trashed' => $onlyTrashed,
+        ], fn ($v) => $v !== null);
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/upsell-offers/' . rawurlencode((string) $upsellOffer) . '/performance',
+            query: $query,
+            options: $options,
+        );
+        return SdkGetUpsellOfferPerformanceResponseValue200ApplicationJson::fromArray($response);
     }
 }

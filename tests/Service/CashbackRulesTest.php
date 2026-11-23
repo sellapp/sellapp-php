@@ -87,4 +87,16 @@ class CashbackRulesTest extends TestCase
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/cashback-rules/1/restore', $request->getUri()->getPath());
     }
+
+    public function testQuote(): void
+    {
+        $fixture = $this->loadFixture('sdk_quote_cashback_rule_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->cashbackRules()->quote();
+        $this->assertInstanceOf(\SellApp\Resource\SdkQuoteCashbackRuleResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/cashback-rules/quote', $request->getUri()->getPath());
+    }
 }

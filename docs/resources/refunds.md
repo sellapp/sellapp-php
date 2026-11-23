@@ -10,12 +10,26 @@ List refunds
 
 ```php
 public function listRefunds(
+        ?int $page = null,
+        ?int $limit = null,
+        ?\SellApp\Resource\RefundsStatus $status = null,
+        ?\SellApp\Resource\RefundsProvider $provider = null,
+        ?\SellApp\Resource\RefundsSource $source = null,
+        ?\SellApp\Resource\RefundsRefundableType $refundableType = null,
+        ?int $refundableId = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
 
 | Argument | Native type | Required |
 | --- | --- | --- |
+| page | `?int` | No |
+| limit | `?int` | No |
+| status | `?\SellApp\Resource\RefundsStatus` | No |
+| provider | `?\SellApp\Resource\RefundsProvider` | No |
+| source | `?\SellApp\Resource\RefundsSource` | No |
+| refundableType | `?\SellApp\Resource\RefundsRefundableType` | No |
+| refundableId | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

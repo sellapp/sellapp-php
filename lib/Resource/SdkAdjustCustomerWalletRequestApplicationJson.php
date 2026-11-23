@@ -10,14 +10,17 @@ readonly class SdkAdjustCustomerWalletRequestApplicationJson implements \JsonSer
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkAdjustCustomerWalletRequestApplicationJson', 'required' => ['amount_cents', 'idempotency_key', 'note'], 'properties' => ['amount_cents' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => -999999999999, 'maximum' => 999999999999], 'idempotency_key' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 128], 'note' => ['kind' => 'primitive', 'type' => 'string', 'minLength' => 1, 'maxLength' => 255, 'pattern' => '\\S']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkAdjustCustomerWalletRequestApplicationJson', 'required' => ['amount_cents', 'idempotency_key', 'note'], 'properties' => ['amount_cents' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => -999999999999, 'maximum' => 999999999999], 'idempotency_key' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 128], 'note' => ['kind' => 'primitive', 'type' => 'string', 'minLength' => 1, 'maxLength' => 255, 'pattern' => '\\S'], 'expected_balance_cents' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0, 'maximum' => 999999999999]], 'additionalProperties' => true];
 
     public function __construct(
-        /** The signed adjustment amount in cents. Must not be zero. */
+        /** The signed change in integer USD cents: positive adds money, negative takes it away. Must not be zero. */
         public int $amountCents,
-        /** Required body key, at most 128 characters. Keep the customer, amount, staff actor and trimmed note unchanged when retrying this intended adjustment. */
+        /** Your key for this one adjustment, in printable ASCII characters and unique across all stores. Reuse it only to retry the same customer, amount, and note as the same staff member. */
         public string $idempotencyKey,
+        /** Why the balance changed, with at least one character that is not a space. Leading and trailing spaces are removed. Saved on the entry and shown in the wallet history. */
         public string $note,
+        /** Optional. The wallet balance in integer USD cents that you read before deciding on this change. If the balance is different now, nothing is written and the request returns `422` on `expected_balance_cents`. Use `0` for a customer who has no wallet yet. */
+        public ?int $expectedBalanceCents = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -31,7 +34,8 @@ readonly class SdkAdjustCustomerWalletRequestApplicationJson implements \JsonSer
             amountCents: $data['amount_cents'],
             idempotencyKey: $data['idempotency_key'],
             note: $data['note'],
-            additionalProperties: SchemaValidator::unknownFields($data, ['amount_cents', 'idempotency_key', 'note']),
+            expectedBalanceCents: $data['expected_balance_cents'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['amount_cents', 'idempotency_key', 'note', 'expected_balance_cents']),
             presentFields: array_keys($data),
         );
     }
@@ -47,6 +51,7 @@ readonly class SdkAdjustCustomerWalletRequestApplicationJson implements \JsonSer
             'amount_cents' => $this->amountCents,
             'idempotency_key' => $this->idempotencyKey,
             'note' => $this->note,
+            'expected_balance_cents' => $this->expectedBalanceCents,
         ], ['amount_cents', 'idempotency_key', 'note'], $this->presentFields));
     }
 }

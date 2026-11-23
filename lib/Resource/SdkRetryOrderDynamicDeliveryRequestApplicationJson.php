@@ -13,7 +13,7 @@ readonly class SdkRetryOrderDynamicDeliveryRequestApplicationJson implements \Js
     private const SCHEMA = ['name' => 'SdkRetryOrderDynamicDeliveryRequestApplicationJson', 'required' => ['delivered_product_id'], 'properties' => ['delivered_product_id' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'additionalProperties' => true];
 
     public function __construct(
-        /** Delivered product record ID, not a catalog product or order line-item ID. The public order-deliverables response does not currently expose this ID; obtain it from an authorized integration context before requesting a retry. */
+        /** Delivered product record ID, not a catalog product or order line-item ID. Read it from `delivered_product_id` in `GET /v2/orders/{order}/deliverables`. */
         public int $deliveredProductId,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],

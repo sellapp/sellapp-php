@@ -10,12 +10,14 @@ readonly class SdkUpdateOrderStatusRequestApplicationJson implements \JsonSerial
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkUpdateOrderStatusRequestApplicationJson', 'required' => ['status'], 'properties' => ['status' => ['kind' => 'enum', 'values' => ['COMPLETED', 'VOIDED', 'REVIEW', 'DISPUTING']], 'expected_status' => ['kind' => 'nullable', 'inner' => ['kind' => 'enum', 'values' => ['PENDING', 'REVERSED', 'PARTIAL', 'VOIDED', 'REFUNDED', 'PAID', 'COMPLETED', 'DISPUTING', 'REVIEW', 'FAILED', 'null']]]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkUpdateOrderStatusRequestApplicationJson', 'required' => ['status'], 'properties' => ['status' => ['kind' => 'enum', 'values' => ['COMPLETED', 'VOIDED', 'REVIEW', 'DISPUTING']], 'expected_status' => ['kind' => 'nullable', 'inner' => ['kind' => 'enum', 'values' => ['PENDING', 'REVERSED', 'PARTIAL', 'VOIDED', 'REFUNDED', 'PAID', 'COMPLETED', 'DISPUTING', 'REVIEW', 'FAILED', 'null']]], 'payment_received' => ['kind' => 'primitive', 'type' => 'boolean']], 'additionalProperties' => true];
 
     public function __construct(
         public SdkUpdateOrderStatusRequestApplicationJsonStatus|string $status,
         /** Expected current status. A status update checks this under the order lock and returns 422 if the order has changed. */
         public ExpectedStatus|string|null $expectedStatus = null,
+        /** Send `true` to confirm that the store received the payment for this order outside SellApp, which can release purchased products to the customer. `true` is accepted only with `status: COMPLETED` (otherwise `422` on `payment_received`) and requires `expected_status` (otherwise `422` on `expected_status`). `false` is accepted with any status and changes nothing. */
+        public ?bool $paymentReceived = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -28,7 +30,8 @@ readonly class SdkUpdateOrderStatusRequestApplicationJson implements \JsonSerial
         return new self(
             status: SdkUpdateOrderStatusRequestApplicationJsonStatus::tryFrom($data['status']) ?? $data['status'],
             expectedStatus: isset($data['expected_status']) ? ExpectedStatus::tryFrom($data['expected_status']) ?? $data['expected_status'] : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['status', 'expected_status']),
+            paymentReceived: $data['payment_received'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['status', 'expected_status', 'payment_received']),
             presentFields: array_keys($data),
         );
     }
@@ -43,6 +46,7 @@ readonly class SdkUpdateOrderStatusRequestApplicationJson implements \JsonSerial
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'status' => $this->status instanceof \BackedEnum ? $this->status->value : $this->status,
             'expected_status' => $this->expectedStatus instanceof \BackedEnum ? $this->expectedStatus->value : $this->expectedStatus,
+            'payment_received' => $this->paymentReceived,
         ], ['status'], $this->presentFields));
     }
 }

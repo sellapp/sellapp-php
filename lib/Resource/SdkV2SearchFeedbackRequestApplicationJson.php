@@ -10,7 +10,7 @@ readonly class SdkV2SearchFeedbackRequestApplicationJson implements \JsonSeriali
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkV2SearchFeedbackRequestApplicationJson', 'required' => [], 'properties' => ['filters' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchFeedbackRequestApplicationJsonPropertyFiltersItem']], 'sort' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchFeedbackRequestApplicationJsonPropertySortItem']], 'search' => ['kind' => 'model', 'class' => 'V2SearchFeedbackRequestApplicationJsonPropertySearch'], 'includes' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchFeedbackRequestApplicationJsonPropertyIncludesItem']]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkV2SearchFeedbackRequestApplicationJson', 'required' => [], 'properties' => ['filters' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchFeedbackRequestApplicationJsonPropertyFiltersItem']], 'sort' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchFeedbackRequestApplicationJsonPropertySortItem']], 'search' => ['kind' => 'model', 'class' => 'V2SearchFeedbackRequestApplicationJsonPropertySearch'], 'includes' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchFeedbackRequestApplicationJsonPropertyIncludesItem']], 'reply_state' => ['kind' => 'nullable', 'inner' => ['kind' => 'enum', 'values' => ['all', 'replied', 'unreplied', 'null']]]], 'additionalProperties' => true];
 
     public function __construct(
         /** @var array<\SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertyFiltersItem>|null */
@@ -20,6 +20,8 @@ readonly class SdkV2SearchFeedbackRequestApplicationJson implements \JsonSeriali
         public ?V2SearchFeedbackRequestApplicationJsonPropertySearch $search = null,
         /** @var array<\SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertyIncludesItem>|null */
         public ?array $includes = null,
+        /** `replied`: feedback with a non-empty seller reply. `unreplied`: feedback without one. `all` (default): both. Any other value returns `422`. */
+        public ReplyState|string|null $replyState = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -34,7 +36,8 @@ readonly class SdkV2SearchFeedbackRequestApplicationJson implements \JsonSeriali
             sort: isset($data['sort']) ? array_map(fn ($item) => V2SearchFeedbackRequestApplicationJsonPropertySortItem::fromArray($item), $data['sort']) : null,
             search: isset($data['search']) ? V2SearchFeedbackRequestApplicationJsonPropertySearch::fromArray($data['search']) : null,
             includes: isset($data['includes']) ? array_map(fn ($item) => V2SearchFeedbackRequestApplicationJsonPropertyIncludesItem::fromArray($item), $data['includes']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['filters', 'sort', 'search', 'includes']),
+            replyState: isset($data['reply_state']) ? ReplyState::tryFrom($data['reply_state']) ?? $data['reply_state'] : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['filters', 'sort', 'search', 'includes', 'reply_state']),
             presentFields: array_keys($data),
         );
     }
@@ -51,6 +54,7 @@ readonly class SdkV2SearchFeedbackRequestApplicationJson implements \JsonSeriali
             'sort' => $this->sort !== null ? array_map(fn ($item) => $item->toArray(), $this->sort) : null,
             'search' => $this->search?->toArray(),
             'includes' => $this->includes !== null ? array_map(fn ($item) => $item->toArray(), $this->includes) : null,
+            'reply_state' => $this->replyState instanceof \BackedEnum ? $this->replyState->value : $this->replyState,
         ], [], $this->presentFields));
     }
 }

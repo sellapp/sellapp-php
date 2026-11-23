@@ -171,12 +171,14 @@ class CouponsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_v_2_search_coupons_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->coupons()->v2SearchCoupons(filters: [], sort: [], search: \SellApp\Resource\V2SearchCouponsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('v_2_search_coupons_request_application_json_property_search')), includes: [], withTrashed: true, onlyTrashed: true);
+        $result = $client->coupons()->v2SearchCoupons(filters: [], sort: [], search: \SellApp\Resource\V2SearchCouponsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('v_2_search_coupons_request_application_json_property_search')), includes: [], limit: 1, page: 1, withTrashed: true, onlyTrashed: true);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/coupons/search', $request->getUri()->getPath());
         parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertArrayHasKey('page', $query);
         $this->assertArrayHasKey('with_trashed', $query);
         $this->assertArrayHasKey('only_trashed', $query);
     }
@@ -257,6 +259,18 @@ class CouponsTest extends TestCase
         $request = $this->getLastRequest();
         $this->assertSame('DELETE', $request->getMethod());
         $this->assertStringEndsWith('v2/coupons/batch', $request->getUri()->getPath());
+    }
+
+    public function testV2GetCouponUsage(): void
+    {
+        $fixture = $this->loadFixture('sdk_v_2_get_coupon_usage_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->coupons()->v2GetCouponUsage(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkV2GetCouponUsageResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/coupons/1/usage', $request->getUri()->getPath());
     }
 
     public function testPaginationBoundary(): void

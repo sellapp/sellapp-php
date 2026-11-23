@@ -96,11 +96,14 @@ class TicketsMessagesTest extends TestCase
     {
         $fixture = $this->loadFixture('list_v_2_search_ticket_messages_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->ticketsMessages()->v2SearchTicketMessages(1, filters: [], sort: [], search: \SellApp\Resource\V2SearchTicketMessagesRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('v_2_search_ticket_messages_request_application_json_property_search')), includes: []);
+        $result = $client->ticketsMessages()->v2SearchTicketMessages(1, filters: [], sort: [], search: \SellApp\Resource\V2SearchTicketMessagesRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('v_2_search_ticket_messages_request_application_json_property_search')), includes: [], limit: 1, page: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/tickets/1/messages/search', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertArrayHasKey('page', $query);
     }
 
     public function testV2GetTicketMessage(): void

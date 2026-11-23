@@ -182,10 +182,17 @@ $client = new Client(
 $result = $client->orders()->search(
     filters: [
         [
-            'field' => 'transaction_id',
-            'operator' => 'contains',
-            'value' => 'pi_3Example',
+            'field' => 'created_at',
+            'operator' => 'gte',
+            'value' => '2026-07-01T00:00:00Z',
         ],
+        [
+            'field' => 'created_at',
+            'operator' => 'lte',
+            'value' => '2026-07-31T23:59:59Z',
+        ],
+        ['field' => 'total', 'operator' => 'gte', 'value' => 1000],
+        ['field' => 'currency', 'operator' => 'eq', 'value' => 'USD'],
         ['field' => 'status', 'operator' => 'in', 'value' => ['COMPLETED']],
     ],
     sort: [['field' => 'created_at', 'direction' => 'desc']],
@@ -285,6 +292,7 @@ public function updateStatus(
         int $order,
         \SellApp\Resource\SdkUpdateOrderStatusRequestApplicationJsonStatus $status,
         ?\SellApp\Resource\ExpectedStatus $expectedStatus = null,
+        ?bool $paymentReceived = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateOrderStatusResponseValue200ApplicationJson
 ```
@@ -294,6 +302,7 @@ public function updateStatus(
 | order | `int` | Yes |
 | status | `\SellApp\Resource\SdkUpdateOrderStatusRequestApplicationJsonStatus` | Yes |
 | expectedStatus | `?\SellApp\Resource\ExpectedStatus` | No |
+| paymentReceived | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkUpdateOrderStatusResponseValue200ApplicationJson`.
@@ -413,7 +422,7 @@ Issue replacements
 ```php
 public function createReplacement(
         int $order,
-        \SellApp\Resource\CreateOrderReplacementRequestApplicationJsonPropertyProductVariants $productVariants,
+        int|array|\SellApp\Resource\CreateOrderReplacementRequestApplicationJsonPropertyProductVariantsAnyOfValue3 $productVariants,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCreateOrderReplacementResponseValue200ApplicationJson
 ```
@@ -421,7 +430,7 @@ public function createReplacement(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | order | `int` | Yes |
-| productVariants | `\SellApp\Resource\CreateOrderReplacementRequestApplicationJsonPropertyProductVariants` | Yes |
+| productVariants | `int\|array\|\SellApp\Resource\CreateOrderReplacementRequestApplicationJsonPropertyProductVariantsAnyOfValue3` | Yes |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkCreateOrderReplacementResponseValue200ApplicationJson`.
@@ -478,6 +487,7 @@ Refund an order
 public function createRefund(
         int $order,
         ?string $amount = null,
+        ?int $expectedRefundedTotalCents = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCreateOrderRefundResponseValue200ApplicationJson
 ```
@@ -486,6 +496,7 @@ public function createRefund(
 | --- | --- | --- |
 | order | `int` | Yes |
 | amount | `?string` | No |
+| expectedRefundedTotalCents | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkCreateOrderRefundResponseValue200ApplicationJson`.
@@ -505,6 +516,7 @@ $client = new Client(
 $result = $client->orders()->createRefund(
     order: 9001,
     amount: '5.00',
+    expectedRefundedTotalCents: 0,
     options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
@@ -724,6 +736,70 @@ Supported credential alternatives (each object is one alternative):
 ```
 
 Documented HTTP responses: 200, 400, 401, 403, 404, 409, 410, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## regenerateTelegramInvite
+
+Create a Telegram invite link
+
+[API reference](https://sell.app/docs/api/orders/create-a-telegram-invite-link) · Effect: **consequential**
+
+```php
+public function regenerateTelegramInvite(
+        int $order,
+        ?int $variantId = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkRegenerateOrderTelegramInviteResponseValue201ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| order | `int` | Yes |
+| variantId | `?int` | No |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkRegenerateOrderTelegramInviteResponseValue201ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->orders()->regenerateTelegramInvite(
+    order: 9001,
+    variantId: 4321,
+    options: new \SellApp\RequestOptions(idempotencyKey: "example-mutation-001"),
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 201, 400, 401, 403, 404, 409, 410, 422, 429, 500. See the API reference for field-level validation and consequences.
 
 [Response access, transport controls, pagination, and typed errors](../usage.md)
 

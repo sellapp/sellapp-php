@@ -29,11 +29,16 @@ class WebhookPlatformTest extends TestCase
     {
         $fixture = $this->loadFixture('list_list_webhook_deliveries_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->webhookPlatform()->listWebhookDeliveries();
+        $result = $client->webhookPlatform()->listWebhookDeliveries(page: 1, limit: 1, eventType: 'test_value', status: \SellApp\Resource\WebhookPlatformStatus::Pending);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
         $this->assertStringEndsWith('v2/webhook-deliveries', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('page', $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertSame('test_value', $query['event_type']);
+        $this->assertSame('pending', $query['status']);
     }
 
     public function testGetWebhookDelivery(): void

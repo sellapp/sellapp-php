@@ -68,7 +68,7 @@ class FeedbackTest extends TestCase
     {
         $fixture = $this->loadFixture('list_v_2_list_feedback_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->feedback()->v2ListFeedback(limit: 1, page: 1);
+        $result = $client->feedback()->v2ListFeedback(limit: 1, page: 1, replyState: \SellApp\Resource\FeedbackReplyState::All);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
@@ -76,17 +76,21 @@ class FeedbackTest extends TestCase
         parse_str($request->getUri()->getQuery(), $query);
         $this->assertArrayHasKey('limit', $query);
         $this->assertArrayHasKey('page', $query);
+        $this->assertSame('all', $query['reply_state']);
     }
 
     public function testV2SearchFeedback(): void
     {
         $fixture = $this->loadFixture('list_v_2_search_feedback_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->feedback()->v2SearchFeedback(filters: [], sort: [], search: \SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('v_2_search_feedback_request_application_json_property_search')), includes: []);
+        $result = $client->feedback()->v2SearchFeedback(filters: [], sort: [], search: \SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('v_2_search_feedback_request_application_json_property_search')), includes: [], replyState: \SellApp\Resource\ReplyState::All, limit: 1, page: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/feedback/search', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertArrayHasKey('page', $query);
     }
 
     public function testV2GetFeedback(): void

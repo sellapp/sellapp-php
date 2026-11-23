@@ -10,16 +10,42 @@ readonly class SdkSearchProductsRequestApplicationJson implements \JsonSerializa
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkSearchProductsRequestApplicationJson', 'required' => [], 'properties' => ['filters' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsRequestApplicationJsonPropertyFiltersItem']], 'sort' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsRequestApplicationJsonPropertySortItem']], 'search' => ['kind' => 'model', 'class' => 'SearchProductsRequestApplicationJsonPropertySearch'], 'includes' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsRequestApplicationJsonPropertyIncludesItem']]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkSearchProductsRequestApplicationJson', 'required' => [], 'properties' => ['filters' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsRequestApplicationJsonPropertyFiltersItem']], 'sort' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsRequestApplicationJsonPropertySortItem']], 'search' => ['kind' => 'model', 'class' => 'SearchProductsRequestApplicationJsonPropertySearch'], 'includes' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsRequestApplicationJsonPropertyIncludesItem']], 'min_price' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0]], 'max_price' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0]], 'stock' => ['kind' => 'nullable', 'inner' => ['kind' => 'enum', 'values' => ['in_stock', 'sold_out', 'any_variant_sold_out', 'limited', 'unlimited', 'null']]], 'visibility' => ['kind' => 'array', 'items' => ['kind' => 'enum', 'values' => ['PUBLIC', 'ON_HOLD', 'HIDDEN', 'PRIVATE']], 'minItems' => 1, 'uniqueItems' => true], 'has_sales' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'boolean']], 'with_drafts' => ['kind' => 'primitive', 'type' => 'boolean'], 'only_drafts' => ['kind' => 'primitive', 'type' => 'boolean']], 'additionalProperties' => true];
 
     public function __construct(
-        /** @var array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertyFiltersItem>|null */
+        /**
+         * Not supported for products: no field can be filtered this way, so any entry returns `422` on `filters`. Use the price, stock, visibility, and sales fields instead.
+         * @var array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertyFiltersItem>|null
+         */
         public ?array $filters = null,
-        /** @var array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertySortItem>|null */
+        /**
+         * Not supported for products: any entry returns `422` on `sort`.
+         * @var array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertySortItem>|null
+         */
         public ?array $sort = null,
         public ?SearchProductsRequestApplicationJsonPropertySearch $search = null,
-        /** @var array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertyIncludesItem>|null */
+        /**
+         * Only `variants` is accepted, and variants are always included.
+         * @var array<\SellApp\Resource\SearchProductsRequestApplicationJsonPropertyIncludesItem>|null
+         */
         public ?array $includes = null,
+        /** Only products whose every priced variant costs at least this much, in integer minor units of that variant's own currency: `999` means $9.99 for a USD variant. Draft variants count. A product without a priced variant never matches a price filter. Must not be greater than `max_price`. */
+        public ?int $minPrice = null,
+        /** Only products whose every priced variant costs at most this much, in integer minor units of that variant's own currency: `2500` means $25.00 for a USD variant. Draft variants count. A product without a priced variant never matches a price filter. */
+        public ?int $maxPrice = null,
+        /** Filter by stock, draft variants included. `in_stock`: at least one variant can be bought (unlimited stock, or at least its minimum purchase quantity left). `sold_out`: no variant can be bought. `any_variant_sold_out`: at least one variant with a stock count is sold out. `limited`: at least one variant has a stock count. `unlimited`: no variant has a stock count. */
+        public Stock|string|null $stock = null,
+        /**
+         * Only products with one of these visibilities. A single string such as `"HIDDEN"` is also accepted.
+         * @var array<\SellApp\Resource\CatalogVisibility>|null
+         */
+        public ?array $visibility = null,
+        /** `true` for products with at least one completed sale, `false` for products without one. Only purchase line items with status `COMPLETED` count, so pending or refunded ones do not. */
+        public ?bool $hasSales = null,
+        /** Include draft products alongside published products. */
+        public ?bool $withDrafts = null,
+        /** Return only draft products. */
+        public ?bool $onlyDrafts = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -34,7 +60,14 @@ readonly class SdkSearchProductsRequestApplicationJson implements \JsonSerializa
             sort: isset($data['sort']) ? array_map(fn ($item) => SearchProductsRequestApplicationJsonPropertySortItem::fromArray($item), $data['sort']) : null,
             search: isset($data['search']) ? SearchProductsRequestApplicationJsonPropertySearch::fromArray($data['search']) : null,
             includes: isset($data['includes']) ? array_map(fn ($item) => SearchProductsRequestApplicationJsonPropertyIncludesItem::fromArray($item), $data['includes']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['filters', 'sort', 'search', 'includes']),
+            minPrice: $data['min_price'] ?? null,
+            maxPrice: $data['max_price'] ?? null,
+            stock: isset($data['stock']) ? Stock::tryFrom($data['stock']) ?? $data['stock'] : null,
+            visibility: isset($data['visibility']) ? array_map(fn ($item) => CatalogVisibility::tryFrom($item) ?? $item, $data['visibility']) : null,
+            hasSales: $data['has_sales'] ?? null,
+            withDrafts: $data['with_drafts'] ?? null,
+            onlyDrafts: $data['only_drafts'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['filters', 'sort', 'search', 'includes', 'min_price', 'max_price', 'stock', 'visibility', 'has_sales', 'with_drafts', 'only_drafts']),
             presentFields: array_keys($data),
         );
     }
@@ -51,6 +84,13 @@ readonly class SdkSearchProductsRequestApplicationJson implements \JsonSerializa
             'sort' => $this->sort !== null ? array_map(fn ($item) => $item->toArray(), $this->sort) : null,
             'search' => $this->search?->toArray(),
             'includes' => $this->includes !== null ? array_map(fn ($item) => $item->toArray(), $this->includes) : null,
+            'min_price' => $this->minPrice,
+            'max_price' => $this->maxPrice,
+            'stock' => $this->stock instanceof \BackedEnum ? $this->stock->value : $this->stock,
+            'visibility' => $this->visibility !== null ? array_map(fn ($item) => $item instanceof \BackedEnum ? $item->value : $item, $this->visibility) : null,
+            'has_sales' => $this->hasSales,
+            'with_drafts' => $this->withDrafts,
+            'only_drafts' => $this->onlyDrafts,
         ], [], $this->presentFields));
     }
 }

@@ -45,7 +45,7 @@ final class ConnectedWorkflowTest extends TestCase
                     case 'GET /api/v2/products':
                         parse_str($request->getUri()->getQuery(), $query);
                         $page = (int) ($query['page'] ?? 1);
-                        $response = ['data' => $page === 2 ? [] : [$fixture['product']['data']], 'meta' => ['current_page' => $page, 'last_page' => 3], 'links' => ['next' => $page < 3 ? '?page=' . ($page + 1) : null]];
+                        $response = ['data' => $page === 2 ? [] : [array_replace($fixture['product']['data'], ['price_range' => null, 'stock' => 0, 'sales' => 0, 'sold_out' => true])], 'meta' => ['current_page' => $page, 'last_page' => 3], 'links' => ['next' => $page < 3 ? '?page=' . ($page + 1) : null]];
                         break;
                     case 'POST /api/v2/products':
                         $this->assertArrayNotHasKey('section', $body);

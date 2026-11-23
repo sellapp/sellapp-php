@@ -10,13 +10,13 @@ readonly class SdkSearchProductsResponseValue200ApplicationJson implements \Json
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkSearchProductsResponseValue200ApplicationJson', 'required' => ['data', 'links', 'meta'], 'properties' => ['data' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItem']], 'links' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyLinks'], 'meta' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyMeta']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkSearchProductsResponseValue200ApplicationJson', 'required' => ['data', 'links', 'meta'], 'properties' => ['data' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItem']], 'links' => ['kind' => 'model', 'class' => 'PaginationLinks'], 'meta' => ['kind' => 'model', 'class' => 'PaginationMeta']], 'additionalProperties' => true];
 
     public function __construct(
         /** @var array<\SellApp\Resource\SearchProductsResponseValue200ApplicationJsonPropertyDataItem> */
         public array $data,
-        public SearchProductsResponseValue200ApplicationJsonPropertyLinks $links,
-        public SearchProductsResponseValue200ApplicationJsonPropertyMeta $meta,
+        public PaginationLinks $links,
+        public PaginationMeta $meta,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -28,8 +28,8 @@ readonly class SdkSearchProductsResponseValue200ApplicationJson implements \Json
         self::validate($data, 'response');
         return new self(
             data: array_map(fn ($item) => SearchProductsResponseValue200ApplicationJsonPropertyDataItem::fromArray($item), $data['data']),
-            links: SearchProductsResponseValue200ApplicationJsonPropertyLinks::fromArray($data['links']),
-            meta: SearchProductsResponseValue200ApplicationJsonPropertyMeta::fromArray($data['meta']),
+            links: PaginationLinks::fromArray($data['links']),
+            meta: PaginationMeta::fromArray($data['meta']),
             additionalProperties: SchemaValidator::unknownFields($data, ['data', 'links', 'meta']),
             presentFields: array_keys($data),
         );

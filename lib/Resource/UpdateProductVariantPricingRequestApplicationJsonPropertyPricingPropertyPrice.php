@@ -15,7 +15,7 @@ readonly class UpdateProductVariantPricingRequestApplicationJsonPropertyPricingP
 
     public function __construct(
         public ?int $price = null,
-        public UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyPriceCurrency|string|null $currency = null,
+        public SdkCreateBookingProductRequestApplicationJsonCurrency|string|null $currency = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -27,7 +27,7 @@ readonly class UpdateProductVariantPricingRequestApplicationJsonPropertyPricingP
         self::validate($data, 'response');
         return new self(
             price: $data['price'] ?? null,
-            currency: isset($data['currency']) ? UpdateProductVariantPricingRequestApplicationJsonPropertyPricingPropertyPriceCurrency::tryFrom($data['currency']) ?? $data['currency'] : null,
+            currency: isset($data['currency']) ? SdkCreateBookingProductRequestApplicationJsonCurrency::tryFrom($data['currency']) ?? $data['currency'] : null,
             additionalProperties: SchemaValidator::unknownFields($data, ['price', 'currency']),
             presentFields: array_keys($data),
         );

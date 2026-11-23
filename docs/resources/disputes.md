@@ -10,12 +10,22 @@ List disputes
 
 ```php
 public function listDisputes(
+        ?int $page = null,
+        ?\SellApp\Resource\DisputesStatus $status = null,
+        ?string $provider = null,
+        ?string $openedAfter = null,
+        ?string $openedBefore = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
 
 | Argument | Native type | Required |
 | --- | --- | --- |
+| page | `?int` | No |
+| status | `?\SellApp\Resource\DisputesStatus` | No |
+| provider | `?string` | No |
+| openedAfter | `?string` | No |
+| openedBefore | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

@@ -240,6 +240,7 @@ List all feedback
 public function v2ListFeedback(
         ?int $limit = null,
         ?int $page = null,
+        \SellApp\Resource\FeedbackReplyState $replyState = \SellApp\Resource\FeedbackReplyState::All,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -248,6 +249,7 @@ public function v2ListFeedback(
 | --- | --- | --- |
 | limit | `?int` | No |
 | page | `?int` | No |
+| replyState | `\SellApp\Resource\FeedbackReplyState` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.
@@ -302,6 +304,9 @@ public function v2SearchFeedback(
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?\SellApp\Resource\ReplyState $replyState = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -312,6 +317,9 @@ public function v2SearchFeedback(
 | sort | `?array` | No |
 | search | `?\SellApp\Resource\V2SearchFeedbackRequestApplicationJsonPropertySearch` | No |
 | includes | `?array` | No |
+| replyState | `?\SellApp\Resource\ReplyState` | No |
+| limit | `?int` | No |
+| page | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

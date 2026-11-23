@@ -6,13 +6,30 @@ declare(strict_types=1);
 
 namespace SellApp\Service;
 
+use SellApp\Resource\SdkGetCheckoutSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkGetCustomerEmailSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkGetPersonalizationSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkGetStoreAlertSettingsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkGetStoreSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkGetTaxSettingsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceAnalyticsSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkReplaceCheckoutSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkReplaceCryptoCheckoutSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkReplaceCustomerEmailSettingsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceGeneralStoreSettingsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceMarketingSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkReplacePersonalizationSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkReplaceStoreAlertSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkReplaceTaxSettingsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkUpdateAnalyticsSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkUpdateCheckoutSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkUpdateCryptoCheckoutSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkUpdateCustomerEmailSettingsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkUpdateGeneralStoreSettingsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkUpdateMarketingSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkUpdatePersonalizationSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkUpdateStoreAlertSettingsResponseValue200ApplicationJson;
+use SellApp\Resource\SdkUpdateTaxSettingsResponseValue200ApplicationJson;
 
 class StoreSettings
 {
@@ -253,5 +270,568 @@ class StoreSettings
             options: $options,
         );
         return SdkUpdateMarketingSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Retrieve checkout settings
+     *
+     * Get your store's checkout settings: the shopping cart, whether checkout asks for an email, fraud controls, the minimum order total, the billing descriptor, the checkout rate limits, and the crypto checkout values when the store takes crypto through SellApp's crypto processor. The response body can be sent back to `PUT /v2/store/settings/checkout` unchanged. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @return \SellApp\Resource\SdkGetCheckoutSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getCheckout(
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetCheckoutSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getCheckoutSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/store/settings/checkout',
+            options: $options,
+        );
+        return SdkGetCheckoutSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update checkout settings
+     *
+     * Replace all eleven checkout settings. Every field except `crypto` is required; send `null` to remove a nullable one. A missing field returns `422` and nothing is saved. The body of `GET /v2/store/settings/checkout`, including `crypto`, can be sent back unchanged. Sending the same body again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param bool $shoppingCartEnabled Whether customers can add several products to a cart and buy them in one checkout. `false` turns the storefront cart off.
+     * @param bool $customerEmailRequired Whether checkout asks customers for an email address. With `false`, checkout does not ask, and delivery and payment emails cannot reach a customer who left none.
+     * @param bool $allowVpnPurchases Whether customers who use a VPN or a proxy can buy.
+     * @param bool $blacklistOnDispute Whether a customer's email address and IP address are added to your blacklist when they open a payment dispute.
+     * @param string|null $minimumSpend The smallest order total, VAT included, that customers can check out with, as a decimal string in the order's currency: `"12.50"` on a USD order means $12.50. At least `1`; digits with an optional decimal part, no sign or exponent. Send `null` or `"0"` to remove the minimum; it then reads `null`.
+     * @param string|null $billingDescriptor The purchase name customers see while they check out, up to 20 characters. `null` uses the default, `SellApp Order`.
+     * @param int $attemptsPerCustomer How many checkout attempts one customer can make within the window, counted per IP address and email pair, or per checkout session fingerprint when checkout does not ask for an email. 1 to 100000; the default is `5`. This limit cannot be removed.
+     * @param int|null $attemptsPerIp How many checkout attempts can come from one IP address within the window. 1 to 100000; `null` turns this limit off.
+     * @param int|null $attemptsPerEmail How many checkout attempts can use one customer email address within the window. 1 to 100000; `null` turns this limit off.
+     * @param int|null $attemptsPerFingerprint How many checkout attempts can come from one checkout session fingerprint (a browser identifier) within the window. 1 to 100000; `null` turns this limit off.
+     * @param int $rateLimitWindowSeconds How long each checkout limit counts attempts before allowing them again, in seconds: 60 (one minute) to 604800 (seven days). The default is `3600` (one hour). Attempts are counted per store.
+     * @param \SellApp\Resource\ReplaceCheckoutSettingsRequestApplicationJsonPropertyCrypto|null $crypto
+     * @return \SellApp\Resource\SdkReplaceCheckoutSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function replaceCheckout(
+        bool $shoppingCartEnabled,
+        bool $customerEmailRequired,
+        bool $allowVpnPurchases,
+        bool $blacklistOnDispute,
+        ?string $minimumSpend,
+        ?string $billingDescriptor,
+        int $attemptsPerCustomer,
+        ?int $attemptsPerIp,
+        ?int $attemptsPerEmail,
+        ?int $attemptsPerFingerprint,
+        int $rateLimitWindowSeconds,
+        ?\SellApp\Resource\ReplaceCheckoutSettingsRequestApplicationJsonPropertyCrypto $crypto = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkReplaceCheckoutSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'replaceCheckoutSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'shopping_cart_enabled' => $shoppingCartEnabled,
+            'customer_email_required' => $customerEmailRequired,
+            'allow_vpn_purchases' => $allowVpnPurchases,
+            'blacklist_on_dispute' => $blacklistOnDispute,
+            'minimum_spend' => $minimumSpend,
+            'billing_descriptor' => $billingDescriptor,
+            'attempts_per_customer' => $attemptsPerCustomer,
+            'attempts_per_ip' => $attemptsPerIp,
+            'attempts_per_email' => $attemptsPerEmail,
+            'attempts_per_fingerprint' => $attemptsPerFingerprint,
+            'rate_limit_window_seconds' => $rateLimitWindowSeconds,
+            'crypto' => $crypto,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkReplaceCheckoutSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PUT',
+            path: 'v2/store/settings/checkout',
+            body: $body,
+            options: $options,
+        );
+        return SdkReplaceCheckoutSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update checkout settings
+     *
+     * Change only the checkout settings you send and keep the others, including one someone else saved while your request was in flight. Send `null` to remove `minimum_spend`, `billing_descriptor`, `attempts_per_ip`, `attempts_per_email` or `attempts_per_fingerprint`. `crypto` is read-only here; change it with `PATCH /v2/store/settings/checkout/crypto`. A refused value returns `422` on the field name of this endpoint, such as `rate_limit_window_seconds`, and nothing is saved. Sending the same change again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param bool|null $shoppingCartEnabled Whether customers can add several products to a cart and buy them in one checkout. `false` turns the storefront cart off.
+     * @param bool|null $customerEmailRequired Whether checkout asks customers for an email address. With `false`, checkout does not ask, and delivery and payment emails cannot reach a customer who left none.
+     * @param bool|null $allowVpnPurchases Whether customers who use a VPN or a proxy can buy.
+     * @param bool|null $blacklistOnDispute Whether a customer's email address and IP address are added to your blacklist when they open a payment dispute.
+     * @param string|null $minimumSpend The smallest order total, VAT included, that customers can check out with, as a decimal string in the order's currency: `"12.50"` on a USD order means $12.50. At least `1`; digits with an optional decimal part, no sign or exponent. Send `null` or `"0"` to remove the minimum; it then reads `null`.
+     * @param string|null $billingDescriptor The purchase name customers see while they check out, up to 20 characters. `null` uses the default, `SellApp Order`.
+     * @param int|null $attemptsPerCustomer How many checkout attempts one customer can make within the window, counted per IP address and email pair, or per checkout session fingerprint when checkout does not ask for an email. 1 to 100000; the default is `5`. This limit cannot be removed.
+     * @param int|null $attemptsPerIp How many checkout attempts can come from one IP address within the window. 1 to 100000; `null` turns this limit off.
+     * @param int|null $attemptsPerEmail How many checkout attempts can use one customer email address within the window. 1 to 100000; `null` turns this limit off.
+     * @param int|null $attemptsPerFingerprint How many checkout attempts can come from one checkout session fingerprint (a browser identifier) within the window. 1 to 100000; `null` turns this limit off.
+     * @param int|null $rateLimitWindowSeconds How long each checkout limit counts attempts before allowing them again, in seconds: 60 (one minute) to 604800 (seven days). The default is `3600` (one hour). Attempts are counted per store.
+     * @param \SellApp\Resource\UpdateCheckoutSettingsRequestApplicationJsonPropertyCrypto|null $crypto
+     * @return \SellApp\Resource\SdkUpdateCheckoutSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function updateCheckout(
+        ?bool $shoppingCartEnabled = null,
+        ?bool $customerEmailRequired = null,
+        ?bool $allowVpnPurchases = null,
+        ?bool $blacklistOnDispute = null,
+        ?string $minimumSpend = null,
+        ?string $billingDescriptor = null,
+        ?int $attemptsPerCustomer = null,
+        ?int $attemptsPerIp = null,
+        ?int $attemptsPerEmail = null,
+        ?int $attemptsPerFingerprint = null,
+        ?int $rateLimitWindowSeconds = null,
+        ?\SellApp\Resource\UpdateCheckoutSettingsRequestApplicationJsonPropertyCrypto $crypto = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkUpdateCheckoutSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'updateCheckoutSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'shopping_cart_enabled' => $shoppingCartEnabled,
+            'customer_email_required' => $customerEmailRequired,
+            'allow_vpn_purchases' => $allowVpnPurchases,
+            'blacklist_on_dispute' => $blacklistOnDispute,
+            'minimum_spend' => $minimumSpend,
+            'billing_descriptor' => $billingDescriptor,
+            'attempts_per_customer' => $attemptsPerCustomer,
+            'attempts_per_ip' => $attemptsPerIp,
+            'attempts_per_email' => $attemptsPerEmail,
+            'attempts_per_fingerprint' => $attemptsPerFingerprint,
+            'rate_limit_window_seconds' => $rateLimitWindowSeconds,
+            'crypto' => $crypto,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkUpdateCheckoutSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PATCH',
+            path: 'v2/store/settings/checkout',
+            body: $body,
+            options: $options,
+        );
+        return SdkUpdateCheckoutSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Retrieve tax settings
+     *
+     * Get whether checkout collects VAT, whether your prices include it, and whether checkout asks for billing details. The response body can be sent back to `PUT /v2/store/settings/taxes` unchanged. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @return \SellApp\Resource\SdkGetTaxSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getTaxes(
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetTaxSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getTaxSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/store/settings/taxes',
+            options: $options,
+        );
+        return SdkGetTaxSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update tax settings
+     *
+     * Replace all three tax settings; every field is required. A missing field returns `422` and nothing is saved. `vat_enabled: true` while Stripe Tax is on returns `422` on `vat_enabled` and saves nothing: turn Stripe Tax off in the dashboard first. When Stripe Tax was turned on but Stripe is now turned off as a payment method, turning VAT on also turns Stripe Tax off. Sending the same body again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param bool $vatEnabled Whether checkout collects VAT from customers. VAT and Stripe Tax cannot both be on: turning VAT on while Stripe Tax is on returns `422` on `vat_enabled` with `Disable Stripe Tax before enabling Sell VAT.` and saves nothing. Turn Stripe Tax off in **Settings > Taxes** in the dashboard first. If Stripe Tax was turned on but Stripe is now turned off as a payment method, turning VAT on succeeds and turns Stripe Tax off as well.
+     * @param bool $vatInclusivePricing Whether your product prices already include VAT instead of VAT being added on top. Always `false` while VAT is off, and turning `vat_enabled` off turns it off too. `true` while VAT stays off returns `422` on `vat_inclusive_pricing`: send `"vat_enabled": true` in the same request.
+     * @param bool $collectBillingDetails Whether checkout asks customers for their billing details.
+     * @return \SellApp\Resource\SdkReplaceTaxSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function replaceTaxes(
+        bool $vatEnabled,
+        bool $vatInclusivePricing,
+        bool $collectBillingDetails,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkReplaceTaxSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'replaceTaxSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = [
+            'vat_enabled' => $vatEnabled,
+            'vat_inclusive_pricing' => $vatInclusivePricing,
+            'collect_billing_details' => $collectBillingDetails,
+        ];
+        \SellApp\Resource\SdkReplaceTaxSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PUT',
+            path: 'v2/store/settings/taxes',
+            body: $body,
+            options: $options,
+        );
+        return SdkReplaceTaxSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update tax settings
+     *
+     * Change only the tax settings you send and keep the others. Turning VAT off also turns VAT-inclusive pricing off. Asking for VAT-inclusive pricing while VAT stays off returns `422` on `vat_inclusive_pricing` and saves nothing. Turning VAT on while Stripe Tax is on returns `422` on `vat_enabled` and saves nothing: turn Stripe Tax off in the dashboard first. When Stripe Tax was turned on but Stripe is now turned off as a payment method, turning VAT on also turns Stripe Tax off. Sending the same change again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param bool|null $vatEnabled Whether checkout collects VAT from customers. VAT and Stripe Tax cannot both be on: turning VAT on while Stripe Tax is on returns `422` on `vat_enabled` with `Disable Stripe Tax before enabling Sell VAT.` and saves nothing. Turn Stripe Tax off in **Settings > Taxes** in the dashboard first. If Stripe Tax was turned on but Stripe is now turned off as a payment method, turning VAT on succeeds and turns Stripe Tax off as well.
+     * @param bool|null $vatInclusivePricing Whether your product prices already include VAT instead of VAT being added on top. Always `false` while VAT is off, and turning `vat_enabled` off turns it off too. `true` while VAT stays off returns `422` on `vat_inclusive_pricing`: send `"vat_enabled": true` in the same request.
+     * @param bool|null $collectBillingDetails Whether checkout asks customers for their billing details.
+     * @return \SellApp\Resource\SdkUpdateTaxSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function updateTaxes(
+        ?bool $vatEnabled = null,
+        ?bool $vatInclusivePricing = null,
+        ?bool $collectBillingDetails = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkUpdateTaxSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'updateTaxSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'vat_enabled' => $vatEnabled,
+            'vat_inclusive_pricing' => $vatInclusivePricing,
+            'collect_billing_details' => $collectBillingDetails,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkUpdateTaxSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PATCH',
+            path: 'v2/store/settings/taxes',
+            body: $body,
+            options: $options,
+        );
+        return SdkUpdateTaxSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Retrieve customer email settings
+     *
+     * Get which automatic emails your customers get: the delivery email after they pay, and the email asking them to pay when a subscription payment cannot be collected. The address these emails come from is managed with `/v2/store/settings/sender-email`. The response body can be sent back to `PUT /v2/store/settings/customer-emails` unchanged. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @return \SellApp\Resource\SdkGetCustomerEmailSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getCustomerEmails(
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetCustomerEmailSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getCustomerEmailSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/store/settings/customer-emails',
+            options: $options,
+        );
+        return SdkGetCustomerEmailSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update customer email settings
+     *
+     * Set both customer emails; both fields are required. A missing field returns `422` and nothing is saved. Sending the same body again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param bool $sendDeliveryEmail Whether customers automatically get an email with what they bought after paying. Turn it off when you deliver to customers yourself.
+     * @param bool $sendPaymentFailureEmail Whether customers get an email with a way to pay when your payment processor cannot collect a subscription payment. Turn it off when your processor already emails them.
+     * @return \SellApp\Resource\SdkReplaceCustomerEmailSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function replaceCustomerEmails(
+        bool $sendDeliveryEmail,
+        bool $sendPaymentFailureEmail,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkReplaceCustomerEmailSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'replaceCustomerEmailSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = [
+            'send_delivery_email' => $sendDeliveryEmail,
+            'send_payment_failure_email' => $sendPaymentFailureEmail,
+        ];
+        \SellApp\Resource\SdkReplaceCustomerEmailSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PUT',
+            path: 'v2/store/settings/customer-emails',
+            body: $body,
+            options: $options,
+        );
+        return SdkReplaceCustomerEmailSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update customer email settings
+     *
+     * Turn the customer emails you send on or off and keep the other one. Takes effect for emails sent after the change. Sending the same change again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param bool|null $sendDeliveryEmail Whether customers automatically get an email with what they bought after paying. Turn it off when you deliver to customers yourself.
+     * @param bool|null $sendPaymentFailureEmail Whether customers get an email with a way to pay when your payment processor cannot collect a subscription payment. Turn it off when your processor already emails them.
+     * @return \SellApp\Resource\SdkUpdateCustomerEmailSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function updateCustomerEmails(
+        ?bool $sendDeliveryEmail = null,
+        ?bool $sendPaymentFailureEmail = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkUpdateCustomerEmailSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'updateCustomerEmailSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'send_delivery_email' => $sendDeliveryEmail,
+            'send_payment_failure_email' => $sendPaymentFailureEmail,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkUpdateCustomerEmailSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PATCH',
+            path: 'v2/store/settings/customer-emails',
+            body: $body,
+            options: $options,
+        );
+        return SdkUpdateCustomerEmailSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Retrieve store alert settings
+     *
+     * Get whether the store owner gets an email for each sale. Other alerts go to notification channels (`/v2/store/notification-channels`) and to the dashboard notifications (`/v2/notifications`). The response body can be sent back to `PUT /v2/store/settings/store-alerts` unchanged. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @return \SellApp\Resource\SdkGetStoreAlertSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getStoreAlerts(
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetStoreAlertSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getStoreAlertSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/store/settings/store-alerts',
+            options: $options,
+        );
+        return SdkGetStoreAlertSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update store alert settings
+     *
+     * Set the sale emails to the store owner; `sale_emails_enabled` is required. Sending the same body again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param bool $saleEmailsEnabled Whether the store owner gets an email for each sale.
+     * @return \SellApp\Resource\SdkReplaceStoreAlertSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function replaceStoreAlerts(
+        bool $saleEmailsEnabled,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkReplaceStoreAlertSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'replaceStoreAlertSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = [
+            'sale_emails_enabled' => $saleEmailsEnabled,
+        ];
+        \SellApp\Resource\SdkReplaceStoreAlertSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PUT',
+            path: 'v2/store/settings/store-alerts',
+            body: $body,
+            options: $options,
+        );
+        return SdkReplaceStoreAlertSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update store alert settings
+     *
+     * Turn the sale emails to the store owner on or off. Sending the same change again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param bool|null $saleEmailsEnabled Whether the store owner gets an email for each sale.
+     * @return \SellApp\Resource\SdkUpdateStoreAlertSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function updateStoreAlerts(
+        ?bool $saleEmailsEnabled = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkUpdateStoreAlertSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'updateStoreAlertSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'sale_emails_enabled' => $saleEmailsEnabled,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkUpdateStoreAlertSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PATCH',
+            path: 'v2/store/settings/store-alerts',
+            body: $body,
+            options: $options,
+        );
+        return SdkUpdateStoreAlertSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Retrieve personalization settings
+     *
+     * Get the details customers see from your store: the support and Trustpilot addresses, the sender name and custom sender email of customer emails, the business details printed on invoices, and the Back button link of product and checkout pages. The response body can be sent back to `PUT /v2/store/settings/personalization` unchanged. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @return \SellApp\Resource\SdkGetPersonalizationSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getPersonalization(
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetPersonalizationSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getPersonalizationSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/store/settings/personalization',
+            options: $options,
+        );
+        return SdkGetPersonalizationSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update personalization settings
+     *
+     * Replace every personalization setting. All fields except `sender_email` are required; send `null` to remove one. A missing field returns `422` and nothing is saved. The body of `GET /v2/store/settings/personalization`, including `sender_email`, can be sent back unchanged. Sending the same body again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param string|null $supportEmail The address customers can write to for support.
+     * @param string|null $trustpilotEmail Your Trustpilot invitation address. It receives a blind copy of every delivery email, including the link to what the customer bought, so Trustpilot can invite the customer to leave a review.
+     * @param string|null $senderName The name customer emails are sent from: letters, digits, spaces and `. - _ +`, up to 75 characters. It is used only while the store sends from its own verified sender email. A store without a custom sender email cannot keep one: sent with other changes it is ignored, and sent alone it returns `422` on `sender_name`.
+     * @param string|null $senderEmail The store's custom sender email, or `null` when it has none. Read-only here: send it back unchanged or leave it out. A different value returns `422` on `sender_email`; set it up or remove it with `/v2/store/settings/sender-email`.
+     * @param string|null $storeAddress Street address printed on invoices.
+     * @param string|null $storeCity City printed on invoices.
+     * @param string|null $storeState State or region printed on invoices.
+     * @param string|null $storeZip Postal code printed on invoices.
+     * @param string|null $storeCountry Country printed on invoices, as text.
+     * @param string|null $storeTax Tax or VAT details printed on invoices, such as `VAT GB123456789`.
+     * @param string|null $backLinkLabel Text of the Back button on product and checkout pages. A return link needs both a label and a URL: a change that leaves one of them empty returns `422` on the empty one. Send `null` for both to remove the link; the Back button then goes to the store's home page.
+     * @param string|null $backLinkUrl Where the Back button on product and checkout pages goes, as a full URL. Needs `back_link_label`.
+     * @return \SellApp\Resource\SdkReplacePersonalizationSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function replacePersonalization(
+        ?string $supportEmail,
+        ?string $trustpilotEmail,
+        ?string $senderName,
+        ?string $storeAddress,
+        ?string $storeCity,
+        ?string $storeState,
+        ?string $storeZip,
+        ?string $storeCountry,
+        ?string $storeTax,
+        ?string $backLinkLabel,
+        ?string $backLinkUrl,
+        ?string $senderEmail = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkReplacePersonalizationSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'replacePersonalizationSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'support_email' => $supportEmail,
+            'trustpilot_email' => $trustpilotEmail,
+            'sender_name' => $senderName,
+            'sender_email' => $senderEmail,
+            'store_address' => $storeAddress,
+            'store_city' => $storeCity,
+            'store_state' => $storeState,
+            'store_zip' => $storeZip,
+            'store_country' => $storeCountry,
+            'store_tax' => $storeTax,
+            'back_link_label' => $backLinkLabel,
+            'back_link_url' => $backLinkUrl,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkReplacePersonalizationSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PUT',
+            path: 'v2/store/settings/personalization',
+            body: $body,
+            options: $options,
+        );
+        return SdkReplacePersonalizationSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update personalization settings
+     *
+     * Change only the personalization settings you send and keep the others. Send `null` to remove one. A request with no field this endpoint knows returns `200` with the current settings and saves nothing. A return link needs both `back_link_label` and `back_link_url`: a change that leaves one empty returns `422` on that field. `sender_email` is read-only here. Sending the same change again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param string|null $supportEmail The address customers can write to for support.
+     * @param string|null $trustpilotEmail Your Trustpilot invitation address. It receives a blind copy of every delivery email, including the link to what the customer bought, so Trustpilot can invite the customer to leave a review.
+     * @param string|null $senderName The name customer emails are sent from: letters, digits, spaces and `. - _ +`, up to 75 characters. It is used only while the store sends from its own verified sender email. A store without a custom sender email cannot keep one: sent with other changes it is ignored, and sent alone it returns `422` on `sender_name`.
+     * @param string|null $senderEmail The store's custom sender email, or `null` when it has none. Read-only here: send it back unchanged or leave it out. A different value returns `422` on `sender_email`; set it up or remove it with `/v2/store/settings/sender-email`.
+     * @param string|null $storeAddress Street address printed on invoices.
+     * @param string|null $storeCity City printed on invoices.
+     * @param string|null $storeState State or region printed on invoices.
+     * @param string|null $storeZip Postal code printed on invoices.
+     * @param string|null $storeCountry Country printed on invoices, as text.
+     * @param string|null $storeTax Tax or VAT details printed on invoices, such as `VAT GB123456789`.
+     * @param string|null $backLinkLabel Text of the Back button on product and checkout pages. A return link needs both a label and a URL: a change that leaves one of them empty returns `422` on the empty one. Send `null` for both to remove the link; the Back button then goes to the store's home page.
+     * @param string|null $backLinkUrl Where the Back button on product and checkout pages goes, as a full URL. Needs `back_link_label`.
+     * @return \SellApp\Resource\SdkUpdatePersonalizationSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function updatePersonalization(
+        ?string $supportEmail = null,
+        ?string $trustpilotEmail = null,
+        ?string $senderName = null,
+        ?string $senderEmail = null,
+        ?string $storeAddress = null,
+        ?string $storeCity = null,
+        ?string $storeState = null,
+        ?string $storeZip = null,
+        ?string $storeCountry = null,
+        ?string $storeTax = null,
+        ?string $backLinkLabel = null,
+        ?string $backLinkUrl = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkUpdatePersonalizationSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'updatePersonalizationSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'support_email' => $supportEmail,
+            'trustpilot_email' => $trustpilotEmail,
+            'sender_name' => $senderName,
+            'sender_email' => $senderEmail,
+            'store_address' => $storeAddress,
+            'store_city' => $storeCity,
+            'store_state' => $storeState,
+            'store_zip' => $storeZip,
+            'store_country' => $storeCountry,
+            'store_tax' => $storeTax,
+            'back_link_label' => $backLinkLabel,
+            'back_link_url' => $backLinkUrl,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkUpdatePersonalizationSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PATCH',
+            path: 'v2/store/settings/personalization',
+            body: $body,
+            options: $options,
+        );
+        return SdkUpdatePersonalizationSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update crypto checkout settings
+     *
+     * Replace both crypto checkout values, for a store that takes crypto through SellApp's crypto processor; `underpaid_percentage` and `minimum_confirmations` are required. SellApp sends the changed values to the crypto processor and saves them only once it accepts them; an unchanged value is not sent. Returns the checkout settings with the new `crypto` values. `422` on `crypto` when the store does not take crypto through SellApp's crypto processor, or when the processor refuses the values; nothing is saved then. `422` on `underpaid_percentage` or `minimum_confirmations` for a value out of range. Sending the same change again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $underpaidPercentage How far short of the amount due, in percent, a crypto payment can be and still count as paid: `2` accepts a payment up to 2% short. 0 to 100.
+     * @param int $minimumConfirmations How many blockchain confirmations a crypto payment needs before the order is processed. 1 to 25.
+     * @return \SellApp\Resource\SdkReplaceCryptoCheckoutSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function replaceCryptoCheckout(
+        int $underpaidPercentage,
+        int $minimumConfirmations,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkReplaceCryptoCheckoutSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'replaceCryptoCheckoutSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = [
+            'underpaid_percentage' => $underpaidPercentage,
+            'minimum_confirmations' => $minimumConfirmations,
+        ];
+        \SellApp\Resource\SdkReplaceCryptoCheckoutSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PUT',
+            path: 'v2/store/settings/checkout/crypto',
+            body: $body,
+            options: $options,
+        );
+        return SdkReplaceCryptoCheckoutSettingsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update crypto checkout settings
+     *
+     * Change the crypto checkout values you send, for a store that takes crypto through SellApp's crypto processor. SellApp sends the changed values to the crypto processor and saves them only once it accepts them; an unchanged value is not sent. Returns the checkout settings with the new `crypto` values. `422` on `crypto` when the store does not take crypto through SellApp's crypto processor, or when the processor refuses the values; nothing is saved then. `422` on `underpaid_percentage` or `minimum_confirmations` for a value out of range. Sending the same change again is safe. Requires the `store` API-key ability and the `store` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int|null $underpaidPercentage How far short of the amount due, in percent, a crypto payment can be and still count as paid: `2` accepts a payment up to 2% short. 0 to 100.
+     * @param int|null $minimumConfirmations How many blockchain confirmations a crypto payment needs before the order is processed. 1 to 25.
+     * @return \SellApp\Resource\SdkUpdateCryptoCheckoutSettingsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function updateCryptoCheckout(
+        ?int $underpaidPercentage = null,
+        ?int $minimumConfirmations = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkUpdateCryptoCheckoutSettingsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'updateCryptoCheckoutSettings', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'underpaid_percentage' => $underpaidPercentage,
+            'minimum_confirmations' => $minimumConfirmations,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkUpdateCryptoCheckoutSettingsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PATCH',
+            path: 'v2/store/settings/checkout/crypto',
+            body: $body,
+            options: $options,
+        );
+        return SdkUpdateCryptoCheckoutSettingsResponseValue200ApplicationJson::fromArray($response);
     }
 }

@@ -329,13 +329,13 @@ class Invoices
      *
      * Issue replacement deliverables for a completed purchase. This creates a new invoice and marks it completed, then starts the normal delivery and sales-notification flow. It is not just an edit to the old delivery. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $invoice The invoice path parameter.
-     * @param \SellApp\Resource\IssueReplacementForCompletedInvoiceRequestApplicationJsonPropertyProductVariants $productVariants
+     * @param int|array<int> $productVariants
      * @return \SellApp\Resource\SdkIssueReplacementForCompletedInvoiceResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function issueReplacement(
         int $invoice,
-        \SellApp\Resource\IssueReplacementForCompletedInvoiceRequestApplicationJsonPropertyProductVariants $productVariants,
+        int|array $productVariants,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkIssueReplacementForCompletedInvoiceResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'issueReplacementForCompletedInvoice', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
@@ -386,20 +386,23 @@ class Invoices
     /**
      * Create invoice refund
      *
-     * Request a full or partial provider refund using the same idempotent refund ledger as the dashboard. Amounts are decimal currency strings, never floating-point numbers. Requires the `invoice` token ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Request a full or partial provider refund using the same idempotent refund ledger as the dashboard. This sends real money back to the customer. Amounts are decimal currency strings, never floating-point numbers. Send the invoice's `payment.refunded_total_cents` unchanged as `expected_refunded_total_cents` so that a repeated or concurrent request is refused instead of refunding twice: the refund goes out only while the refunded total is still the amount you sent. A changed total returns `422` on `expected_refunded_total_cents`; read the invoice again before deciding whether to refund. Other refusals return `422` on `refund`, including, when you send `expected_refunded_total_cents`, a refund still pending on the order. Requires the `invoice` token ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $invoice The invoice path parameter.
-     * @param string|null $amount Optional partial refund amount in major currency units. Omit for the full remaining refundable amount.
+     * @param string|null $amount Optional partial refund amount in major units of the invoice's `payment.refund_currency`. Omit for the full remaining refundable amount.
+     * @param int|null $expectedRefundedTotalCents The refunded total you expect, in integer minor units of the invoice's `payment.refund_currency`, which can differ from the invoice currency: `500` means $5.00 in USD. Read it from `payment.refunded_total_cents` on the invoice and send it unchanged; it is `0` before the first refund. After a refund, `data.invoice.payment.refunded_total_cents` in the response is the value to send with the next one. With this field, the refund goes out only while the refunded total still equals it and no other refund on the order is pending. Omit it or send null to refund without the check.
      * @return \SellApp\Resource\SdkCreateInvoiceRefundResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function createRefund(
         int $invoice,
         ?string $amount = null,
+        ?int $expectedRefundedTotalCents = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCreateInvoiceRefundResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'createInvoiceRefund', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
             'amount' => $amount,
+            'expected_refunded_total_cents' => $expectedRefundedTotalCents,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkCreateInvoiceRefundRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(

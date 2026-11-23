@@ -258,3 +258,61 @@ Documented HTTP responses: 201, 400, 401, 403, 422, 429, 500. See the API refere
 
 [Response access, transport controls, pagination, and typed errors](../usage.md)
 
+## resend
+
+Resend an affiliate invitation
+
+[API reference](https://sell.app/docs/api/affiliate-program/resend-an-affiliate-invitation) · Effect: **consequential**
+
+```php
+public function resend(
+        int $invitation,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkResendAffiliateInvitationResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| invitation | `int` | Yes |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkResendAffiliateInvitationResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->affiliateProgram()->resend(invitation: 77);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+

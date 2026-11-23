@@ -10,7 +10,7 @@ readonly class CancelSubscriptionResponseValue200ApplicationJsonPropertyDataProp
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'CancelSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer', 'required' => ['id', 'email', 'external_id', 'name', 'locale', 'metadata'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'email' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'email'], 'external_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'name' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'locale' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'pattern' => '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$']], 'metadata' => ['kind' => 'map', 'values' => ['kind' => 'model', 'class' => 'ScalarMetadataValue'], 'maxProperties' => 50]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'CancelSubscriptionResponseValue200ApplicationJsonPropertyDataPropertyCustomer', 'required' => ['id', 'email', 'external_id', 'name', 'locale', 'metadata'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'email' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'email'], 'external_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'name' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'locale' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'pattern' => '^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$']], 'metadata' => ['kind' => 'map', 'values' => ['kind' => 'nullable', 'inner' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'string', 'maxLength' => 500], ['kind' => 'primitive', 'type' => 'number'], ['kind' => 'primitive', 'type' => 'boolean']], 'composition' => 'oneOf']], 'maxProperties' => 50]], 'additionalProperties' => true];
 
     public function __construct(
         public int $id,
@@ -18,7 +18,7 @@ readonly class CancelSubscriptionResponseValue200ApplicationJsonPropertyDataProp
         public ?string $externalId,
         public ?string $name,
         public ?string $locale,
-        /** @var array<string, \SellApp\Resource\ScalarMetadataValue> */
+        /** @var array<string, string|float|bool|null> */
         public array $metadata,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],

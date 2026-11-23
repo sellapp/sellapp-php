@@ -159,17 +159,32 @@ class Blacklists
     /**
      * List blacklist rules
      *
-     * List store-scoped blacklist rules. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List your store's blacklist rules, oldest first, 15 per page by default. Narrow the list with `type` and with `search`, which matches part of the blocked value or of the description. An unknown `type`, a `search` longer than 255 characters or a `limit` over 100 returns `422`. An empty `data` array means no rule matches. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
+     * @param string|null $search Text to look for in the blocked value or the description, matched literally and anywhere in the text, up to 255 characters.
+     * @param \SellApp\Resource\BlacklistType|null $type Return only rules of this type.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\Blacklist>
      * @throws \SellApp\Exception\SDKException
      */
     public function v2ListBlacklists(
+        ?int $limit = null,
+        ?int $page = null,
+        ?string $search = null,
+        ?\SellApp\Resource\BlacklistType $type = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'v2ListBlacklists', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
+            'search' => $search,
+            'type' => $type?->value,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'GET',
             path: 'v2/blacklists',
+            query: $query,
             modelClass: Blacklist::class,
             options: $options,
         );

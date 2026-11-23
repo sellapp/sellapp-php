@@ -10,7 +10,7 @@ readonly class CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPro
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPayment', 'required' => ['fee', 'gateway', 'subtotal', 'expires_at', 'full_price', 'original_amount'], 'properties' => ['fee' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyFee'], 'gateway' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyGateway'], 'subtotal' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertySubtotal'], 'expires_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'full_price' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyFullPrice'], 'original_amount' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyOriginalAmount']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPayment', 'required' => ['fee', 'gateway', 'subtotal', 'expires_at', 'full_price', 'original_amount', 'refund_currency', 'refunded_total_cents'], 'properties' => ['fee' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyFee'], 'gateway' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyGateway'], 'subtotal' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertySubtotal'], 'expires_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'full_price' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyFullPrice'], 'original_amount' => ['kind' => 'model', 'class' => 'CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyOriginalAmount'], 'refund_currency' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'refunded_total_cents' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0]], 'additionalProperties' => true];
 
     public function __construct(
         public CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyFee $fee,
@@ -19,6 +19,10 @@ readonly class CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPro
         public \DateTimeImmutable $expiresAt,
         public CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyFullPrice $fullPrice,
         public CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyOriginalAmount $originalAmount,
+        /** The currency refunds on this invoice are made and counted in: the currency the payment was charged in, which can differ from the invoice currency. `null` when the payment method cannot be refunded through the API. */
+        public ?string $refundCurrency,
+        /** The amount already refunded on this invoice, in integer minor units of `refund_currency`: `500` means $5.00 in USD. It is the exact figure a refund request compares `expected_refunded_total_cents` with, so send it back unchanged when you refund. `0` when nothing has been refunded. */
+        public int $refundedTotalCents,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -35,7 +39,9 @@ readonly class CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPro
             expiresAt: new \DateTimeImmutable($data['expires_at']),
             fullPrice: CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyFullPrice::fromArray($data['full_price']),
             originalAmount: CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPropertyInvoicePropertyPaymentPropertyOriginalAmount::fromArray($data['original_amount']),
-            additionalProperties: SchemaValidator::unknownFields($data, ['fee', 'gateway', 'subtotal', 'expires_at', 'full_price', 'original_amount']),
+            refundCurrency: $data['refund_currency'] ?? null,
+            refundedTotalCents: $data['refunded_total_cents'],
+            additionalProperties: SchemaValidator::unknownFields($data, ['fee', 'gateway', 'subtotal', 'expires_at', 'full_price', 'original_amount', 'refund_currency', 'refunded_total_cents']),
             presentFields: array_keys($data),
         );
     }
@@ -54,6 +60,8 @@ readonly class CreateInvoiceRefundResponseValue200ApplicationJsonPropertyDataPro
             'expires_at' => $this->expiresAt->format(\DateTimeInterface::RFC3339_EXTENDED),
             'full_price' => $this->fullPrice->toArray(),
             'original_amount' => $this->originalAmount->toArray(),
-        ], ['fee', 'gateway', 'subtotal', 'expires_at', 'full_price', 'original_amount'], $this->presentFields));
+            'refund_currency' => $this->refundCurrency,
+            'refunded_total_cents' => $this->refundedTotalCents,
+        ], ['fee', 'gateway', 'subtotal', 'expires_at', 'full_price', 'original_amount', 'refund_currency', 'refunded_total_cents'], $this->presentFields));
     }
 }

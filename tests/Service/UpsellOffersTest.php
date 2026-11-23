@@ -108,6 +108,18 @@ class UpsellOffersTest extends TestCase
         $this->assertStringEndsWith('v2/upsell-offers/1', $request->getUri()->getPath());
     }
 
+    public function testGetPerformance(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_upsell_offer_performance_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->upsellOffers()->getPerformance(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetUpsellOfferPerformanceResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/upsell-offers/1/performance', $request->getUri()->getPath());
+    }
+
     public function testPaginationBoundary(): void
     {
         $fixture = $this->loadFixture('list_sdk_list_upsell_offers_response_value_200_application_json');

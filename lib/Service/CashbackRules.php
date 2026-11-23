@@ -8,6 +8,7 @@ namespace SellApp\Service;
 
 use SellApp\Resource\SdkCreateCashbackRuleResponseValue201ApplicationJson;
 use SellApp\Resource\SdkListCashbackRulesResponseValue200ApplicationJson;
+use SellApp\Resource\SdkQuoteCashbackRuleResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceCashbackRuleResponseValue200ApplicationJson;
 use SellApp\Resource\SdkRestoreCashbackRuleResponseValue200ApplicationJson;
 use SellApp\Resource\SdkUpdateCashbackRuleResponseValue200ApplicationJson;
@@ -27,7 +28,7 @@ class CashbackRules
     /**
      * List cashback rules
      *
-     * List current and archived store records. Requires the `wallet` or `wallet:write` API ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List current and archived store records. Requires the `wallet` or `wallet:write` API-key ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @return \SellApp\Resource\SdkListCashbackRulesResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
@@ -46,7 +47,7 @@ class CashbackRules
     /**
      * Create a cashback rule
      *
-     * Create a cashback rule. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Create a cashback rule. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $percentBasis
      * @param int|null $maximumCashbackCents
      * @param bool $isActive
@@ -81,7 +82,7 @@ class CashbackRules
     /**
      * Update a cashback rule
      *
-     * Update a cashback rule. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update a cashback rule. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $cashbackRule The cashbackRule path parameter.
      * @param int $percentBasis
      * @param int|null $maximumCashbackCents
@@ -118,7 +119,7 @@ class CashbackRules
     /**
      * Update a cashback rule
      *
-     * Update a cashback rule. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update a cashback rule. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $cashbackRule The cashbackRule path parameter.
      * @param int|null $percentBasis
      * @param int|null $maximumCashbackCents
@@ -155,7 +156,7 @@ class CashbackRules
     /**
      * Archive a cashback rule
      *
-     * Archive a cashback rule. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Archive a cashback rule. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $cashbackRule The cashbackRule path parameter.
      * @return void
      * @throws \SellApp\Exception\SDKException
@@ -175,7 +176,7 @@ class CashbackRules
     /**
      * Restore a cashback rule
      *
-     * Restore a cashback rule. Requires the `wallet:write` API ability and the store wallet permission. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Restore a cashback rule. Requires the `wallet:write` API-key ability and the wallet permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $cashbackRule The cashbackRule path parameter.
      * @return \SellApp\Resource\SdkRestoreCashbackRuleResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -191,5 +192,33 @@ class CashbackRules
             options: $options,
         );
         return SdkRestoreCashbackRuleResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Quote a cashback rule
+     *
+     * See which cashback rule a purchase would earn right now, and how much it would add to the customer's wallet, without creating anything. Send `product_id` to check one product (a rule naming the product wins over the store-wide rule); leave it out to check only the store-wide rule. Add `purchase_cents` to get the cashback amount. Amounts are integer USD cents: `purchase_cents=10000` asks about a $100.00 purchase. Requires the `wallet` or `wallet:write` API-key ability and the wallet permission in your team role. A product that is not in your store returns `422` on `product_id`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int|null $productId The product to quote. Leave it out to quote the store-wide rule.
+     * @param int|null $purchaseCents The purchase amount to quote, in integer USD cents.
+     * @return \SellApp\Resource\SdkQuoteCashbackRuleResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function quote(
+        ?int $productId = null,
+        ?int $purchaseCents = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkQuoteCashbackRuleResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'quoteCashbackRule', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'product_id' => $productId,
+            'purchase_cents' => $purchaseCents,
+        ], fn ($v) => $v !== null);
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/cashback-rules/quote',
+            query: $query,
+            options: $options,
+        );
+        return SdkQuoteCashbackRuleResponseValue200ApplicationJson::fromArray($response);
     }
 }

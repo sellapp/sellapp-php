@@ -481,6 +481,10 @@ public function search(
         ?array $sort = null,
         ?\SellApp\Resource\SearchProductVariantsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
+        ?bool $withDrafts = null,
+        ?bool $onlyDrafts = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -492,6 +496,10 @@ public function search(
 | sort | `?array` | No |
 | search | `?\SellApp\Resource\SearchProductVariantsRequestApplicationJsonPropertySearch` | No |
 | includes | `?array` | No |
+| limit | `?int` | No |
+| page | `?int` | No |
+| withDrafts | `?bool` | No |
+| onlyDrafts | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.
@@ -716,6 +724,195 @@ $client = new Client(
 $result = $client->productVariants()->batchDelete(
     product: 1,
     resources: [1, 2],
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## publish
+
+Publish a product variant
+
+[API reference](https://sell.app/docs/api/product-variants/publish-a-product-variant) · Effect: **consequential**
+
+```php
+public function publish(
+        int $product,
+        int $variant,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkPublishProductVariantResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| product | `int` | Yes |
+| variant | `int` | Yes |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkPublishProductVariantResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->productVariants()->publish(
+    product: 11,
+    variant: 12,
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## duplicate
+
+Duplicate a product variant
+
+[API reference](https://sell.app/docs/api/product-variants/duplicate-a-product-variant) · Effect: **write**
+
+```php
+public function duplicate(
+        int $product,
+        int $variant,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkDuplicateProductVariantResponseValue201ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| product | `int` | Yes |
+| variant | `int` | Yes |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkDuplicateProductVariantResponseValue201ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->productVariants()->duplicate(
+    product: 1,
+    variant: 2,
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 201, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## reorder
+
+Reorder product variants
+
+[API reference](https://sell.app/docs/api/product-variants/reorder-product-variants) · Effect: **consequential**
+
+```php
+public function reorder(
+        int $product,
+        array $variantIds,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkReorderProductVariantsResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| product | `int` | Yes |
+| variantIds | `array` | Yes |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkReorderProductVariantsResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->productVariants()->reorder(
+    product: 1,
+    variantIds: [2, 1],
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```

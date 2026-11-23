@@ -17,6 +17,7 @@ use SellApp\Resource\SdkV2BatchCreateCouponsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkV2BatchUpdateCouponsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkV2CreateCouponResponseValue201ApplicationJson;
 use SellApp\Resource\SdkV2GetCouponResponseValue200ApplicationJson;
+use SellApp\Resource\SdkV2GetCouponUsageResponseValue200ApplicationJson;
 use SellApp\Resource\SdkV2ReplaceCouponResponseValue200ApplicationJson;
 use SellApp\Resource\SdkV2UpdateCouponResponseValue200ApplicationJson;
 use SellApp\Resource\SearchCouponsResponseValue200ApplicationJsonPropertyDataItem;
@@ -476,13 +477,14 @@ class Coupons
      * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonType $type
      * @param float|string $discount A decimal discount value of at least 1. Percentage discounts cannot exceed 100; amount discounts use the store currency's major unit. A `subscriptions` coupon cannot take 100% off: that returns `422` on `discount`, so offer a free trial instead.
      * @param bool $storeWide
-     * @param array<int>|null $products Product IDs the coupon applies to when store_wide is false. Each product you add must sell a variant of the coupon's kind: a subscription plan for a `subscriptions` coupon, or a one-time variant for a `one_time` one. Another product returns `422` on `products`.
+     * @param array<int>|null $products Product IDs the coupon applies to when store_wide is false. Each product you add must sell a variant of the coupon's kind: a subscription plan for a `subscriptions` coupon, or a one-time variant for a `one_time` one. Another product returns `422` on `products`. It may be an empty list when the same request sends `store_wide: true`, so a store-wide coupon you read can be sent back unchanged. Otherwise an empty list returns `422` on `products`.
      * @param array<int>|null $productVariants Optional variant restrictions. Every variant must belong to a selected product. Products without listed variants remain eligible on all variants. Each variant you add must be of the coupon's kind, a subscription plan or a one-time variant; another returns `422` on `product_variants`.
      * @param int|null $limit
      * @param \DateTimeImmutable|null $expiresAt A future date and time, or null for no expiry.
      * @param float|string|null $minimumAmount A decimal minimum amount in the store currency's major unit that the order lines of the coupon's kind must reach, or null for no minimum.
      * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo|null $appliesTo What the coupon discounts: `one_time` for one-time purchases, or `subscriptions` for the first payments of a subscription plan. A new coupon defaults to `one_time`, and an update that leaves this out keeps the current kind. The coupon only discounts order lines of its kind.
      * @param int|null $subscriptionPayments How many payments a `subscriptions` coupon discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` coupon needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` coupon, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` coupon always stores null here.
+     * @param float|string|null $maximumDiscountAmount The most a percentage coupon takes off one order, as a decimal amount of at least 1 in the major unit of the order's currency, with at most two decimals: `15.50` caps the discount at 15.50. Send null to remove the cap. Only a `PERCENTAGE` coupon can have a cap: sending one for an `AMOUNT` coupon returns `422` on `maximum_discount_amount`, and changing a coupon to `AMOUNT` removes its cap.
      * @return \SellApp\Resource\SdkV2CreateCouponResponseValue201ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
@@ -498,6 +500,7 @@ class Coupons
         float|string|null $minimumAmount = null,
         ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
         ?int $subscriptionPayments = null,
+        float|string|null $maximumDiscountAmount = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkV2CreateCouponResponseValue201ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'v2CreateCoupon', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
@@ -513,6 +516,7 @@ class Coupons
             'minimum_amount' => $minimumAmount,
             'applies_to' => $appliesTo?->value,
             'subscription_payments' => $subscriptionPayments,
+            'maximum_discount_amount' => $maximumDiscountAmount,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkV2CreateCouponRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -532,6 +536,8 @@ class Coupons
      * @param array<\SellApp\Resource\V2SearchCouponsRequestApplicationJsonPropertySortItem>|null $sort
      * @param \SellApp\Resource\V2SearchCouponsRequestApplicationJsonPropertySearch|null $search
      * @param array<\SellApp\Resource\V2SearchCouponsRequestApplicationJsonPropertyIncludesItem>|null $includes
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
      * @param bool|null $withTrashed Include soft-deleted resources in the result. Defaults to false.
      * @param bool|null $onlyTrashed Return only soft-deleted resources. Ignored when with_trashed is true. Defaults to false.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\V2SearchCouponsResponseValue200ApplicationJsonPropertyDataItem>
@@ -542,12 +548,16 @@ class Coupons
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchCouponsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'v2SearchCoupons', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
             'with_trashed' => $withTrashed,
             'only_trashed' => $onlyTrashed,
         ], fn ($v) => $v !== null);
@@ -599,13 +609,14 @@ class Coupons
      * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonType|null $type
      * @param float|string|null $discount A decimal discount value of at least 1. Percentage discounts cannot exceed 100; amount discounts use the store currency's major unit. A `subscriptions` coupon cannot take 100% off: that returns `422` on `discount`, so offer a free trial instead.
      * @param bool|null $storeWide
-     * @param array<int>|null $products Product IDs the coupon applies to when store_wide is false. Each product you add must sell a variant of the coupon's kind: a subscription plan for a `subscriptions` coupon, or a one-time variant for a `one_time` one. Another product returns `422` on `products`.
+     * @param array<int>|null $products Product IDs the coupon applies to when store_wide is false. Each product you add must sell a variant of the coupon's kind: a subscription plan for a `subscriptions` coupon, or a one-time variant for a `one_time` one. Another product returns `422` on `products`. It may be an empty list when the same request sends `store_wide: true`, so a store-wide coupon you read can be sent back unchanged. Otherwise an empty list returns `422` on `products`.
      * @param array<int>|null $productVariants Optional variant restrictions. Omit to preserve existing restrictions or send an empty array to allow every variant of the selected products. Each variant you add must be of the coupon's kind, a subscription plan or a one-time variant; another returns `422` on `product_variants`.
      * @param int|null $limit
      * @param \DateTimeImmutable|null $expiresAt A future date and time, or null for no expiry.
      * @param float|string|null $minimumAmount A decimal minimum amount in the store currency's major unit that the order lines of the coupon's kind must reach, or null for no minimum.
      * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo|null $appliesTo What the coupon discounts: `one_time` for one-time purchases, or `subscriptions` for the first payments of a subscription plan. A new coupon defaults to `one_time`, and an update that leaves this out keeps the current kind. The coupon only discounts order lines of its kind.
      * @param int|null $subscriptionPayments How many payments a `subscriptions` coupon discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` coupon needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` coupon, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` coupon always stores null here.
+     * @param float|string|null $maximumDiscountAmount The most a percentage coupon takes off one order, as a decimal amount of at least 1 in the major unit of the order's currency, with at most two decimals: `15.50` caps the discount at 15.50. Send null to remove the cap. Only a `PERCENTAGE` coupon can have a cap: sending one for an `AMOUNT` coupon returns `422` on `maximum_discount_amount`, and changing a coupon to `AMOUNT` removes its cap.
      * @param bool|null $withTrashed Include soft-deleted resources in the result. Defaults to false.
      * @param bool|null $onlyTrashed Return only soft-deleted resources. Ignored when with_trashed is true. Defaults to false.
      * @return \SellApp\Resource\SdkV2ReplaceCouponResponseValue200ApplicationJson
@@ -624,6 +635,7 @@ class Coupons
         float|string|null $minimumAmount = null,
         ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
         ?int $subscriptionPayments = null,
+        float|string|null $maximumDiscountAmount = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
@@ -641,6 +653,7 @@ class Coupons
             'minimum_amount' => $minimumAmount,
             'applies_to' => $appliesTo?->value,
             'subscription_payments' => $subscriptionPayments,
+            'maximum_discount_amount' => $maximumDiscountAmount,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkV2ReplaceCouponRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -661,13 +674,14 @@ class Coupons
      * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonType|null $type
      * @param float|string|null $discount A decimal discount value of at least 1. Percentage discounts cannot exceed 100; amount discounts use the store currency's major unit. A `subscriptions` coupon cannot take 100% off: that returns `422` on `discount`, so offer a free trial instead.
      * @param bool|null $storeWide
-     * @param array<int>|null $products Product IDs the coupon applies to when store_wide is false. Each product you add must sell a variant of the coupon's kind: a subscription plan for a `subscriptions` coupon, or a one-time variant for a `one_time` one. Another product returns `422` on `products`.
+     * @param array<int>|null $products Product IDs the coupon applies to when store_wide is false. Each product you add must sell a variant of the coupon's kind: a subscription plan for a `subscriptions` coupon, or a one-time variant for a `one_time` one. Another product returns `422` on `products`. It may be an empty list when the same request sends `store_wide: true`, so a store-wide coupon you read can be sent back unchanged. Otherwise an empty list returns `422` on `products`.
      * @param array<int>|null $productVariants Optional variant restrictions. Omit to preserve existing restrictions or send an empty array to allow every variant of the selected products. Each variant you add must be of the coupon's kind, a subscription plan or a one-time variant; another returns `422` on `product_variants`.
      * @param int|null $limit
      * @param \DateTimeImmutable|null $expiresAt A future date and time, or null for no expiry.
      * @param float|string|null $minimumAmount A decimal minimum amount in the store currency's major unit that the order lines of the coupon's kind must reach, or null for no minimum.
      * @param \SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo|null $appliesTo What the coupon discounts: `one_time` for one-time purchases, or `subscriptions` for the first payments of a subscription plan. A new coupon defaults to `one_time`, and an update that leaves this out keeps the current kind. The coupon only discounts order lines of its kind.
      * @param int|null $subscriptionPayments How many payments a `subscriptions` coupon discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` coupon needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` coupon, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` coupon always stores null here.
+     * @param float|string|null $maximumDiscountAmount The most a percentage coupon takes off one order, as a decimal amount of at least 1 in the major unit of the order's currency, with at most two decimals: `15.50` caps the discount at 15.50. Send null to remove the cap. Only a `PERCENTAGE` coupon can have a cap: sending one for an `AMOUNT` coupon returns `422` on `maximum_discount_amount`, and changing a coupon to `AMOUNT` removes its cap.
      * @param bool|null $withTrashed Include soft-deleted resources in the result. Defaults to false.
      * @param bool|null $onlyTrashed Return only soft-deleted resources. Ignored when with_trashed is true. Defaults to false.
      * @return \SellApp\Resource\SdkV2UpdateCouponResponseValue200ApplicationJson
@@ -686,6 +700,7 @@ class Coupons
         float|string|null $minimumAmount = null,
         ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
         ?int $subscriptionPayments = null,
+        float|string|null $maximumDiscountAmount = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
@@ -703,6 +718,7 @@ class Coupons
             'minimum_amount' => $minimumAmount,
             'applies_to' => $appliesTo?->value,
             'subscription_payments' => $subscriptionPayments,
+            'maximum_discount_amount' => $maximumDiscountAmount,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkV2UpdateCouponRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -831,5 +847,26 @@ class Coupons
             query: $query,
             options: $options,
         );
+    }
+
+    /**
+     * Retrieve coupon usage
+     *
+     * Count the completed orders that used a coupon, over the coupon's whole life. Only orders whose status is `COMPLETED` count; pending, failed, and refunded orders do not. A coupon from another store, a deleted coupon, and a coupon issued by a reward return `404`. Requires the `coupon` API-key ability and the coupon permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $coupon The coupon ID.
+     * @return \SellApp\Resource\SdkV2GetCouponUsageResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function v2GetCouponUsage(
+        int $coupon,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkV2GetCouponUsageResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'v2GetCouponUsage', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/coupons/' . rawurlencode((string) $coupon) . '/usage',
+            options: $options,
+        );
+        return SdkV2GetCouponUsageResponseValue200ApplicationJson::fromArray($response);
     }
 }

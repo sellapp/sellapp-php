@@ -13,7 +13,7 @@ readonly class CreateOrderRefundResponseValue200ApplicationJsonPropertyDataPrope
     private const SCHEMA = ['name' => 'CreateOrderRefundResponseValue200ApplicationJsonPropertyDataPropertyRefund', 'required' => ['status', 'provider', 'provider_refund_id', 'amount_cents', 'currency'], 'properties' => ['status' => ['kind' => 'enum', 'values' => ['pending', 'effective', 'failed', 'cancelled']], 'provider' => ['kind' => 'nullable', 'inner' => ['kind' => 'enum', 'values' => ['manual', 'mercado_pago', 'nmi', 'mollie', 'paypal', 'razorpay', 'square', 'stripe', 'null']]], 'provider_refund_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'amount_cents' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'currency' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']]], 'additionalProperties' => true];
 
     public function __construct(
-        public CreateOrderRefundResponseValue200ApplicationJsonPropertyDataPropertyRefundStatus|string $status,
+        public RefundsStatus|string $status,
         public Provider|string|null $provider,
         public ?string $providerRefundId,
         /** Refund amount in integer minor units; 500 means $5.00 in USD. */
@@ -29,7 +29,7 @@ readonly class CreateOrderRefundResponseValue200ApplicationJsonPropertyDataPrope
     {
         self::validate($data, 'response');
         return new self(
-            status: CreateOrderRefundResponseValue200ApplicationJsonPropertyDataPropertyRefundStatus::tryFrom($data['status']) ?? $data['status'],
+            status: RefundsStatus::tryFrom($data['status']) ?? $data['status'],
             provider: isset($data['provider']) ? Provider::tryFrom($data['provider']) ?? $data['provider'] : null,
             providerRefundId: $data['provider_refund_id'] ?? null,
             amountCents: $data['amount_cents'] ?? null,

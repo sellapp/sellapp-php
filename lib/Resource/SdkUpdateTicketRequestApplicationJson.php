@@ -10,11 +10,13 @@ readonly class SdkUpdateTicketRequestApplicationJson implements \JsonSerializabl
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkUpdateTicketRequestApplicationJson', 'required' => [], 'properties' => ['status' => ['kind' => 'enum', 'values' => ['OPEN', 'CLOSED']], 'archived' => ['kind' => 'primitive', 'type' => 'boolean']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkUpdateTicketRequestApplicationJson', 'required' => [], 'properties' => ['status' => ['kind' => 'enum', 'values' => ['OPEN', 'CLOSED']], 'archived' => ['kind' => 'primitive', 'type' => 'boolean'], 'outcome' => ['kind' => 'enum', 'values' => ['refunded', 'refunded_partial', 'delivered', 'no_action', 'duplicate', 'other']]], 'additionalProperties' => true];
 
     public function __construct(
         public SdkUpdateTicketRequestApplicationJsonStatus|string|null $status = null,
         public ?bool $archived = null,
+        /** Why the ticket was closed: `refunded`, `refunded_partial` (partly refunded), `delivered`, `no_action`, `duplicate` or `other`. Only with `status` `CLOSED`. */
+        public SdkUpdateTicketRequestApplicationJsonOutcome|string|null $outcome = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -27,7 +29,8 @@ readonly class SdkUpdateTicketRequestApplicationJson implements \JsonSerializabl
         return new self(
             status: isset($data['status']) ? SdkUpdateTicketRequestApplicationJsonStatus::tryFrom($data['status']) ?? $data['status'] : null,
             archived: $data['archived'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['status', 'archived']),
+            outcome: isset($data['outcome']) ? SdkUpdateTicketRequestApplicationJsonOutcome::tryFrom($data['outcome']) ?? $data['outcome'] : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['status', 'archived', 'outcome']),
             presentFields: array_keys($data),
         );
     }
@@ -42,6 +45,7 @@ readonly class SdkUpdateTicketRequestApplicationJson implements \JsonSerializabl
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'status' => $this->status instanceof \BackedEnum ? $this->status->value : $this->status,
             'archived' => $this->archived,
+            'outcome' => $this->outcome instanceof \BackedEnum ? $this->outcome->value : $this->outcome,
         ], [], $this->presentFields));
     }
 }

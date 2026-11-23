@@ -12,6 +12,10 @@ List all charges
 public function list(
         ?int $limit = null,
         ?int $page = null,
+        ?\SellApp\Resource\ChargesStatus $status = null,
+        ?string $customerEmail = null,
+        ?string $createdAfter = null,
+        ?string $createdBefore = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -20,6 +24,10 @@ public function list(
 | --- | --- | --- |
 | limit | `?int` | No |
 | page | `?int` | No |
+| status | `?\SellApp\Resource\ChargesStatus` | No |
+| customerEmail | `?string` | No |
+| createdAfter | `?string` | No |
+| createdBefore | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.
@@ -328,6 +336,68 @@ Supported credential alternatives (each object is one alternative):
 ```
 
 Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## getSummary
+
+Retrieve the charge summary
+
+[API reference](https://sell.app/docs/api/charges/retrieve-the-charge-summary) · Effect: **read**
+
+```php
+public function getSummary(
+        \SellApp\Resource\ChargesPreset $preset = \SellApp\Resource\ChargesPreset::Last30Days,
+        ?string $startDate = null,
+        ?string $endDate = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetChargeSummaryResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| preset | `\SellApp\Resource\ChargesPreset` | No |
+| startDate | `?string` | No |
+| endDate | `?string` | No |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkGetChargeSummaryResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->charges()->getSummary();
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 422, 429, 500. See the API reference for field-level validation and consequences.
 
 [Response access, transport controls, pagination, and typed errors](../usage.md)
 

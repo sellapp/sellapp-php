@@ -12,6 +12,8 @@ List affiliate payouts
 public function list(
         ?int $affiliateId = null,
         ?\SellApp\Resource\AffiliatePayoutsStatus $status = null,
+        ?\SellApp\Resource\AffiliatesPayoutMethod $payoutMethod = null,
+        ?string $search = null,
         ?int $limit = null,
         ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
@@ -22,6 +24,8 @@ public function list(
 | --- | --- | --- |
 | affiliateId | `?int` | No |
 | status | `?\SellApp\Resource\AffiliatePayoutsStatus` | No |
+| payoutMethod | `?\SellApp\Resource\AffiliatesPayoutMethod` | No |
+| search | `?string` | No |
 | limit | `?int` | No |
 | page | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
@@ -245,6 +249,69 @@ Supported credential alternatives (each object is one alternative):
 ```
 
 Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## markPaid
+
+Mark affiliate payouts paid
+
+[API reference](https://sell.app/docs/api/affiliates/mark-payouts-paid) · Effect: **consequential**
+
+```php
+public function markPaid(
+        array $payoutIds,
+        int $expectedTotalUsdCents,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkMarkAffiliatePayoutsPaidResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| payoutIds | `array` | Yes |
+| expectedTotalUsdCents | `int` | Yes |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkMarkAffiliatePayoutsPaidResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->affiliatePayouts()->markPaid(
+    payoutIds: [91, 92],
+    expectedTotalUsdCents: 4250,
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 422, 429, 500. See the API reference for field-level validation and consequences.
 
 [Response access, transport controls, pagination, and typed errors](../usage.md)
 

@@ -10,7 +10,7 @@ readonly class ListOrderEventsResponseValue200ApplicationJsonPropertyDataItemPro
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'ListOrderEventsResponseValue200ApplicationJsonPropertyDataItemPropertyData', 'required' => [], 'properties' => [], 'additionalProperties' => ['kind' => 'model', 'class' => 'ScalarMetadataValue'], 'maxProperties' => 100];
+    private const SCHEMA = ['name' => 'ListOrderEventsResponseValue200ApplicationJsonPropertyDataItemPropertyData', 'required' => [], 'properties' => [], 'additionalProperties' => ['kind' => 'nullable', 'inner' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'string', 'maxLength' => 500], ['kind' => 'primitive', 'type' => 'number'], ['kind' => 'primitive', 'type' => 'boolean']], 'composition' => 'oneOf']], 'maxProperties' => 100];
 
     public function __construct(
         /** @var array<string, mixed> */

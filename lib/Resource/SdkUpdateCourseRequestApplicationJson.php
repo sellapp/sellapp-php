@@ -10,11 +10,11 @@ readonly class SdkUpdateCourseRequestApplicationJson implements \JsonSerializabl
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkUpdateCourseRequestApplicationJson', 'required' => [], 'properties' => ['category' => ['kind' => 'nullable', 'inner' => ['kind' => 'enum', 'values' => ['development', 'business', 'marketing', 'design', 'finance', 'it-software', 'personal-development', 'productivity', 'other', 'null']]], 'level' => ['kind' => 'enum', 'values' => ['all_levels', 'beginner', 'intermediate', 'advanced']], 'language' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'subtitle' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 120]], 'author' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 120]], 'subcategory' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'what_you_learn' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'maxItems' => 50], 'requirements' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'maxItems' => 50], 'certificate_enabled' => ['kind' => 'primitive', 'type' => 'boolean'], 'access_type' => ['kind' => 'enum', 'values' => ['lifetime', 'limited']], 'access_duration_days' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1, 'maximum' => 3650]], 'enrollment_limit' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'delivery_text' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 65535]], 'visibility' => ['kind' => 'enum', 'values' => ['PUBLIC', 'ON_HOLD', 'HIDDEN', 'PRIVATE']], 'expected_updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkUpdateCourseRequestApplicationJson', 'required' => [], 'properties' => ['category' => ['kind' => 'nullable', 'inner' => ['kind' => 'enum', 'values' => ['development', 'business', 'marketing', 'design', 'finance', 'it-software', 'personal-development', 'productivity', 'other', 'null']]], 'level' => ['kind' => 'enum', 'values' => ['all_levels', 'beginner', 'intermediate', 'advanced']], 'language' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'subtitle' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 120]], 'author' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 120]], 'subcategory' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]], 'what_you_learn' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'maxItems' => 50], 'requirements' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'maxItems' => 50], 'certificate_enabled' => ['kind' => 'primitive', 'type' => 'boolean'], 'access_type' => ['kind' => 'enum', 'values' => ['lifetime', 'limited']], 'access_duration_days' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1, 'maximum' => 3650]], 'enrollment_limit' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'delivery_text' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 65535]], 'visibility' => ['kind' => 'enum', 'values' => ['PUBLIC', 'ON_HOLD', 'HIDDEN', 'PRIVATE']], 'expected_updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'title' => ['kind' => 'primitive', 'type' => 'string', 'minLength' => 1, 'maxLength' => 255], 'slug' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255, 'pattern' => '^[a-z0-9]+(?:-[a-z0-9]+)*$'], 'description' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'minLength' => 5]]], 'additionalProperties' => true];
 
     public function __construct(
         public Category|string|null $category = null,
-        public SdkUpdateCourseRequestApplicationJsonLevel|string|null $level = null,
+        public SdkCreateCourseRequestApplicationJsonLevel|string|null $level = null,
         public ?string $language = null,
         public ?string $subtitle = null,
         public ?string $author = null,
@@ -24,13 +24,20 @@ readonly class SdkUpdateCourseRequestApplicationJson implements \JsonSerializabl
         /** @var array<string>|null */
         public ?array $requirements = null,
         public ?bool $certificateEnabled = null,
-        public SdkUpdateCourseRequestApplicationJsonAccessType|string|null $accessType = null,
+        public SdkCreateCourseRequestApplicationJsonAccessType|string|null $accessType = null,
         /** Required when access_type is limited; cleared otherwise. */
         public ?int $accessDurationDays = null,
         public ?int $enrollmentLimit = null,
         public ?string $deliveryText = null,
         public CatalogVisibility|string|null $visibility = null,
+        /** The `updated_at` you last read. If the course changed since, the request returns `422` on `expected_updated_at` and changes nothing. It is checked even when the request changes nothing else. */
         public ?\DateTimeImmutable $expectedUpdatedAt = null,
+        /** The course name customers see. */
+        public ?string $title = null,
+        /** The last part of the course's storefront URL: lowercase letters and numbers in words joined by single hyphens, such as `design-foundations`. It must be unused by every other product in the store, or the request returns `422` on `slug`. */
+        public ?string $slug = null,
+        /** The course description as HTML, at least 5 characters long and at most 2000 characters of visible text. `null` keeps the current description. To clear the description of a draft course, send an empty element such as `<p></p>`; a published course must keep one, so clearing it returns `422` on `description`. */
+        public ?string $description = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -42,7 +49,7 @@ readonly class SdkUpdateCourseRequestApplicationJson implements \JsonSerializabl
         self::validate($data, 'response');
         return new self(
             category: isset($data['category']) ? Category::tryFrom($data['category']) ?? $data['category'] : null,
-            level: isset($data['level']) ? SdkUpdateCourseRequestApplicationJsonLevel::tryFrom($data['level']) ?? $data['level'] : null,
+            level: isset($data['level']) ? SdkCreateCourseRequestApplicationJsonLevel::tryFrom($data['level']) ?? $data['level'] : null,
             language: $data['language'] ?? null,
             subtitle: $data['subtitle'] ?? null,
             author: $data['author'] ?? null,
@@ -50,13 +57,16 @@ readonly class SdkUpdateCourseRequestApplicationJson implements \JsonSerializabl
             whatYouLearn: $data['what_you_learn'] ?? null,
             requirements: $data['requirements'] ?? null,
             certificateEnabled: $data['certificate_enabled'] ?? null,
-            accessType: isset($data['access_type']) ? SdkUpdateCourseRequestApplicationJsonAccessType::tryFrom($data['access_type']) ?? $data['access_type'] : null,
+            accessType: isset($data['access_type']) ? SdkCreateCourseRequestApplicationJsonAccessType::tryFrom($data['access_type']) ?? $data['access_type'] : null,
             accessDurationDays: $data['access_duration_days'] ?? null,
             enrollmentLimit: $data['enrollment_limit'] ?? null,
             deliveryText: $data['delivery_text'] ?? null,
             visibility: isset($data['visibility']) ? CatalogVisibility::tryFrom($data['visibility']) ?? $data['visibility'] : null,
             expectedUpdatedAt: isset($data['expected_updated_at']) ? new \DateTimeImmutable($data['expected_updated_at']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['category', 'level', 'language', 'subtitle', 'author', 'subcategory', 'what_you_learn', 'requirements', 'certificate_enabled', 'access_type', 'access_duration_days', 'enrollment_limit', 'delivery_text', 'visibility', 'expected_updated_at']),
+            title: $data['title'] ?? null,
+            slug: $data['slug'] ?? null,
+            description: $data['description'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['category', 'level', 'language', 'subtitle', 'author', 'subcategory', 'what_you_learn', 'requirements', 'certificate_enabled', 'access_type', 'access_duration_days', 'enrollment_limit', 'delivery_text', 'visibility', 'expected_updated_at', 'title', 'slug', 'description']),
             presentFields: array_keys($data),
         );
     }
@@ -84,6 +94,9 @@ readonly class SdkUpdateCourseRequestApplicationJson implements \JsonSerializabl
             'delivery_text' => $this->deliveryText,
             'visibility' => $this->visibility instanceof \BackedEnum ? $this->visibility->value : $this->visibility,
             'expected_updated_at' => $this->expectedUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'description' => $this->description,
         ], [], $this->presentFields));
     }
 }

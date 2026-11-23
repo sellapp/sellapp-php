@@ -8,7 +8,16 @@ namespace SellApp\Resource;
 
 enum Type: string
 {
-    case Product = 'product';
-    case Order = 'order';
+    case TopUp = 'TOP_UP';
+    case TopUpBonus = 'TOP_UP_BONUS';
+    case Cashback = 'CASHBACK';
+    case CashbackClawback = 'CASHBACK_CLAWBACK';
+    case TopUpClawback = 'TOP_UP_CLAWBACK';
+    case Reward = 'REWARD';
+    case Refund = 'REFUND';
+    case PurchaseDebit = 'PURCHASE_DEBIT';
+    case ManualAdjustment = 'MANUAL_ADJUSTMENT';
+    case Reversal = 'REVERSAL';
+    case Expiration = 'EXPIRATION';
     case Null = 'null';
 }

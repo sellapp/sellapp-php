@@ -25,9 +25,12 @@ class Affiliates
     /**
      * List affiliates
      *
-     * List store affiliate memberships, approved profile details, referral counts, and integer USD-cent balances. Requires the `affiliate` ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List store affiliate memberships, approved profile details, referral counts, and integer USD-cent balances, newest first, 15 per page by default. Requires the `affiliate` ability. Filter by `status`, `search`, `custom_rates_only`, and `payout_method`, and send `sort=-earnings` to list the top earners first. A `status`, `custom_rates_only`, or `payout_method` value the API does not know returns `422`; an unknown `sort` value is ignored. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param \SellApp\Resource\AffiliatesStatus|null $status Filter by affiliate program status.
      * @param string|null $search Search affiliate email addresses and profile identifiers.
+     * @param bool|null $customRatesOnly Send `true` to list only affiliates with custom per-product commission rates (see `GET /v2/affiliates/{affiliate}/products`). `false` lists everyone. Accepts `true`, `false`, `1`, or `0`.
+     * @param \SellApp\Resource\AffiliatesPayoutMethod|null $payoutMethod List only affiliates who chose this payout method. Uppercase, as returned in `payout_method`.
+     * @param string|null $sort Send `-earnings` to list the affiliates who earned the most first: available, pending, and paid balances added together, largest first. Without it, or with any other value, the newest affiliates come first.
      * @param int|null $limit Number of items to return per page. Defaults to 15.
      * @param int|null $page Page number to return. Defaults to 1.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\ListAffiliatesResponseValue200ApplicationJsonPropertyDataItem>
@@ -36,6 +39,9 @@ class Affiliates
     public function list(
         ?\SellApp\Resource\AffiliatesStatus $status = null,
         ?string $search = null,
+        ?bool $customRatesOnly = null,
+        ?\SellApp\Resource\AffiliatesPayoutMethod $payoutMethod = null,
+        ?string $sort = null,
         ?int $limit = null,
         ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
@@ -44,6 +50,9 @@ class Affiliates
         $query = array_filter([
             'status' => $status?->value,
             'search' => $search,
+            'custom_rates_only' => $customRatesOnly,
+            'payout_method' => $payoutMethod?->value,
+            'sort' => $sort,
             'limit' => $limit,
             'page' => $page,
         ], fn ($v) => $v !== null);

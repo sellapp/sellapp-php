@@ -6,12 +6,12 @@ declare(strict_types=1);
 
 namespace SellApp\Resource;
 
-/** A seller-configured outbound webhook destination. IDs are stable UUIDs and are not reused when another channel is deleted. */
+/** A seller-configured outbound webhook destination. IDs are stable UUIDs and are not reused when another channel is deleted. List and search results also report how deliveries to the destination are going. */
 readonly class SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataItem implements \JsonSerializable
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['id', 'name', 'url', 'allowed_notifications', 'signing_secret_configured'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uuid'], 'name' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'url' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri'], 'allowed_notifications' => ['kind' => 'array', 'items' => ['kind' => 'enum', 'values' => ['booking.cancelled', 'booking.rescheduled', 'cash_app.payment_requires_attention', 'charge.completed', 'charge.created', 'charge.disputed', 'charge.partial_paid', 'charge.review', 'feedback.created', 'order.completed', 'order.created', 'order.disputed', 'order.manual_payment_completed', 'order.paid', 'order.partial_paid', 'product.created', 'product.trashed', 'product.updated', 'subscription.action', 'subscription.cancelled', 'subscription.created', 'subscription.plan_change_needs_attention', 'subscription.renewal_needs_attention', 'subscription.renewed', 'subscription.signup_needs_attention', 'ticket_message.created', 'variant.created', 'variant.sold_out', 'variant.updated']], 'uniqueItems' => true], 'signing_secret_configured' => ['kind' => 'primitive', 'type' => 'boolean']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['id', 'name', 'url', 'allowed_notifications', 'signing_secret_configured', 'health', 'last_delivery'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uuid'], 'name' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'url' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'uri'], 'allowed_notifications' => ['kind' => 'array', 'items' => ['kind' => 'enum', 'values' => ['booking.cancelled', 'booking.rescheduled', 'cash_app.payment_requires_attention', 'charge.completed', 'charge.created', 'charge.disputed', 'charge.partial_paid', 'charge.review', 'feedback.created', 'order.completed', 'order.created', 'order.disputed', 'order.manual_payment_completed', 'order.paid', 'order.partial_paid', 'product.created', 'product.trashed', 'product.updated', 'subscription.action', 'subscription.cancelled', 'subscription.created', 'subscription.plan_change_needs_attention', 'subscription.renewal_needs_attention', 'subscription.renewed', 'subscription.signup_needs_attention', 'ticket_message.created', 'variant.created', 'variant.sold_out', 'variant.updated']], 'uniqueItems' => true], 'signing_secret_configured' => ['kind' => 'primitive', 'type' => 'boolean'], 'health' => ['kind' => 'model', 'class' => 'SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataItemPropertyHealth'], 'last_delivery' => ['kind' => 'nullable', 'inner' => ['kind' => 'model', 'class' => 'SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataItemPropertyLastDelivery']]], 'additionalProperties' => true];
 
     public function __construct(
         /** Stable identifier for this webhook channel. */
@@ -27,6 +27,8 @@ readonly class SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataI
         public array $allowedNotifications,
         /** Whether the store has an outbound webhook signing secret. The stored secret is never returned. */
         public bool $signingSecretConfigured,
+        public SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataItemPropertyHealth $health,
+        public ?SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataItemPropertyLastDelivery $lastDelivery,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -42,7 +44,9 @@ readonly class SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataI
             url: $data['url'],
             allowedNotifications: array_map(fn ($item) => Event::tryFrom($item) ?? $item, $data['allowed_notifications']),
             signingSecretConfigured: $data['signing_secret_configured'],
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'name', 'url', 'allowed_notifications', 'signing_secret_configured']),
+            health: SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataItemPropertyHealth::fromArray($data['health']),
+            lastDelivery: isset($data['last_delivery']) ? SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataItemPropertyLastDelivery::fromArray($data['last_delivery']) : null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'name', 'url', 'allowed_notifications', 'signing_secret_configured', 'health', 'last_delivery']),
             presentFields: array_keys($data),
         );
     }
@@ -60,6 +64,8 @@ readonly class SearchWebhookChannelsResponseValue200ApplicationJsonPropertyDataI
             'url' => $this->url,
             'allowed_notifications' => array_map(fn ($item) => $item instanceof \BackedEnum ? $item->value : $item, $this->allowedNotifications),
             'signing_secret_configured' => $this->signingSecretConfigured,
-        ], ['id', 'name', 'url', 'allowed_notifications', 'signing_secret_configured'], $this->presentFields));
+            'health' => $this->health->toArray(),
+            'last_delivery' => $this->lastDelivery?->toArray(),
+        ], ['id', 'name', 'url', 'allowed_notifications', 'signing_secret_configured', 'health', 'last_delivery'], $this->presentFields));
     }
 }

@@ -13,7 +13,7 @@ readonly class GetRefundResponseValue200ApplicationJsonPropertyDataPropertyRefun
     private const SCHEMA = ['name' => 'GetRefundResponseValue200ApplicationJsonPropertyDataPropertyRefundable', 'required' => ['type', 'id'], 'properties' => ['type' => ['kind' => 'enum', 'values' => ['order', 'charge']], 'id' => ['kind' => 'primitive', 'type' => 'integer']], 'additionalProperties' => true];
 
     public function __construct(
-        public GetRefundResponseValue200ApplicationJsonPropertyDataPropertyRefundableType|string $type,
+        public RefundsRefundableType|string $type,
         public int $id,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
@@ -25,7 +25,7 @@ readonly class GetRefundResponseValue200ApplicationJsonPropertyDataPropertyRefun
     {
         self::validate($data, 'response');
         return new self(
-            type: GetRefundResponseValue200ApplicationJsonPropertyDataPropertyRefundableType::tryFrom($data['type']) ?? $data['type'],
+            type: RefundsRefundableType::tryFrom($data['type']) ?? $data['type'],
             id: $data['id'],
             additionalProperties: SchemaValidator::unknownFields($data, ['type', 'id']),
             presentFields: array_keys($data),

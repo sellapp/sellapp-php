@@ -93,11 +93,16 @@ class ProductVariantsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_search_product_variants_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->productVariants()->search(1, filters: [], sort: [], search: \SellApp\Resource\SearchProductVariantsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('search_product_variants_request_application_json_property_search')), includes: []);
+        $result = $client->productVariants()->search(1, filters: [], sort: [], search: \SellApp\Resource\SearchProductVariantsRequestApplicationJsonPropertySearch::fromArray($this->loadFixture('search_product_variants_request_application_json_property_search')), includes: [], limit: 1, page: 1, withDrafts: true, onlyDrafts: true);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('POST', $request->getMethod());
         $this->assertStringEndsWith('v2/products/1/variants/search', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertArrayHasKey('page', $query);
+        $this->assertArrayHasKey('with_drafts', $query);
+        $this->assertArrayHasKey('only_drafts', $query);
     }
 
     public function testBatchCreate(): void
@@ -131,6 +136,42 @@ class ProductVariantsTest extends TestCase
         $request = $this->getLastRequest();
         $this->assertSame('DELETE', $request->getMethod());
         $this->assertStringEndsWith('v2/products/1/variants/batch', $request->getUri()->getPath());
+    }
+
+    public function testPublish(): void
+    {
+        $fixture = $this->loadFixture('sdk_publish_product_variant_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->productVariants()->publish(1, 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkPublishProductVariantResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/products/1/variants/1/publish', $request->getUri()->getPath());
+    }
+
+    public function testDuplicate(): void
+    {
+        $fixture = $this->loadFixture('sdk_duplicate_product_variant_response_value_201_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->productVariants()->duplicate(1, 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkDuplicateProductVariantResponseValue201ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/products/1/variants/1/duplicate', $request->getUri()->getPath());
+    }
+
+    public function testReorder(): void
+    {
+        $fixture = $this->loadFixture('sdk_reorder_product_variants_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->productVariants()->reorder(1, variantIds: [1]);
+        $this->assertInstanceOf(\SellApp\Resource\SdkReorderProductVariantsResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('PUT', $request->getMethod());
+        $this->assertStringEndsWith('v2/products/1/variants/order', $request->getUri()->getPath());
     }
 
     public function testPaginationBoundary(): void

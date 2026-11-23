@@ -6,15 +6,15 @@ declare(strict_types=1);
 
 namespace SellApp\Resource;
 
+/** Matches products whose title contains `value`. */
 readonly class SearchProductsRequestApplicationJsonPropertySearch implements \JsonSerializable
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SearchProductsRequestApplicationJsonPropertySearch', 'required' => [], 'properties' => ['value' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'case_sensitive' => ['kind' => 'primitive', 'type' => 'boolean']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SearchProductsRequestApplicationJsonPropertySearch', 'required' => [], 'properties' => ['value' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']]], 'additionalProperties' => true];
 
     public function __construct(
         public ?string $value = null,
-        public ?bool $caseSensitive = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -26,8 +26,7 @@ readonly class SearchProductsRequestApplicationJsonPropertySearch implements \Js
         self::validate($data, 'response');
         return new self(
             value: $data['value'] ?? null,
-            caseSensitive: $data['case_sensitive'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['value', 'case_sensitive']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['value']),
             presentFields: array_keys($data),
         );
     }
@@ -41,7 +40,6 @@ readonly class SearchProductsRequestApplicationJsonPropertySearch implements \Js
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'value' => $this->value,
-            'case_sensitive' => $this->caseSensitive,
         ], [], $this->presentFields));
     }
 }

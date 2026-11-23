@@ -86,21 +86,36 @@ class Licenses
     /**
      * List all license keys
      *
-     * List your store's license keys. Use `limit` and `page` to read one page at a time. The response schema describes each license. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List your store's license keys, one page at a time with `limit` and `page`. Filter by part of the key, the customer's email, the product, the order, or `validity`; several filters combine, and a key must match all of them. A filter value in the wrong shape returns `422` on that parameter. Requires the `license` API-key ability. The response schema describes each license. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int|null $limit Number of items to return per page. Defaults to 15.
      * @param int|null $page Page number to return. Defaults to 1.
+     * @param string|null $key Keep keys that contain this text: letters, digits, and hyphens, up to 100 characters. A full key as the customer sees it, including the store's key prefix, also finds its key.
+     * @param string|null $customerEmail Keep keys of the store customer with exactly this email address.
+     * @param int|null $productId Keep keys issued for this product.
+     * @param int|null $orderId Keep keys issued by this order.
+     * @param \SellApp\Resource\LicensesValidity|null $validity Keep keys by whether they validate now, decided the way license validation decides it: `active` keys are switched on and not past their expiry, `inactive` keys are switched off but not expired, and `expired` keys are past `expires_at`.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\SdkListLicenseKeysResponseValue200ApplicationJson>
      * @throws \SellApp\Exception\SDKException
      */
     public function list(
         ?int $limit = null,
         ?int $page = null,
+        ?string $key = null,
+        ?string $customerEmail = null,
+        ?int $productId = null,
+        ?int $orderId = null,
+        ?\SellApp\Resource\LicensesValidity $validity = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listLicenseKeys', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $query = array_filter([
             'limit' => $limit,
             'page' => $page,
+            'key' => $key,
+            'customer_email' => $customerEmail,
+            'product_id' => $productId,
+            'order_id' => $orderId,
+            'validity' => $validity?->value,
         ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'GET',

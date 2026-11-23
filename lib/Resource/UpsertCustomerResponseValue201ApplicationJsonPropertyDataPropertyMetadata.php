@@ -10,7 +10,7 @@ readonly class UpsertCustomerResponseValue201ApplicationJsonPropertyDataProperty
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'UpsertCustomerResponseValue201ApplicationJsonPropertyDataPropertyMetadata', 'required' => [], 'properties' => [], 'additionalProperties' => ['kind' => 'model', 'class' => 'ScalarMetadataValue'], 'maxProperties' => 50];
+    private const SCHEMA = ['name' => 'UpsertCustomerResponseValue201ApplicationJsonPropertyDataPropertyMetadata', 'required' => [], 'properties' => [], 'additionalProperties' => ['kind' => 'nullable', 'inner' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'string', 'maxLength' => 500], ['kind' => 'primitive', 'type' => 'number'], ['kind' => 'primitive', 'type' => 'boolean']], 'composition' => 'oneOf']], 'maxProperties' => 50];
 
     public function __construct(
         /** @var array<string, mixed> */

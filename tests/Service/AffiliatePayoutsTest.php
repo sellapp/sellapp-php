@@ -17,7 +17,7 @@ class AffiliatePayoutsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_list_affiliate_payouts_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->affiliatePayouts()->list(affiliateId: 1, status: \SellApp\Resource\AffiliatePayoutsStatus::Due, limit: 1, page: 1);
+        $result = $client->affiliatePayouts()->list(affiliateId: 1, status: \SellApp\Resource\AffiliatePayoutsStatus::Due, payoutMethod: \SellApp\Resource\AffiliatesPayoutMethod::Paypal, search: 'test_value', limit: 1, page: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
@@ -25,6 +25,8 @@ class AffiliatePayoutsTest extends TestCase
         parse_str($request->getUri()->getQuery(), $query);
         $this->assertArrayHasKey('affiliate_id', $query);
         $this->assertSame('due', $query['status']);
+        $this->assertSame('PAYPAL', $query['payout_method']);
+        $this->assertSame('test_value', $query['search']);
         $this->assertArrayHasKey('limit', $query);
         $this->assertArrayHasKey('page', $query);
     }
@@ -63,6 +65,20 @@ class AffiliatePayoutsTest extends TestCase
         $request = $this->getLastRequest();
         $this->assertSame('PATCH', $request->getMethod());
         $this->assertStringEndsWith('v2/affiliate-payouts/1/status', $request->getUri()->getPath());
+    }
+
+    public function testMarkPaid(): void
+    {
+        $fixture = $this->loadFixture('sdk_mark_affiliate_payouts_paid_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->affiliatePayouts()->markPaid(payoutIds: [1], expectedTotalUsdCents: 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkMarkAffiliatePayoutsPaidResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/affiliate-payouts/mark-paid', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame(1, $body['expected_total_usd_cents']);
     }
 
     public function testPaginationBoundary(): void

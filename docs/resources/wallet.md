@@ -132,6 +132,7 @@ public function adjust(
         int $amountCents,
         string $idempotencyKey,
         string $note,
+        ?int $expectedBalanceCents = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkAdjustCustomerWalletResponseValue200ApplicationJson
 ```
@@ -142,6 +143,7 @@ public function adjust(
 | amountCents | `int` | Yes |
 | idempotencyKey | `string` | Yes |
 | note | `string` | Yes |
+| expectedBalanceCents | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkAdjustCustomerWalletResponseValue200ApplicationJson`.
@@ -163,6 +165,7 @@ $result = $client->wallet()->adjust(
     amountCents: 2500,
     idempotencyKey: 'wallet-adjustment-01992a65',
     note: 'Launch-day account credit',
+    expectedBalanceCents: 0,
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```

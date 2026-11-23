@@ -10,7 +10,7 @@ readonly class SdkV2UpdateCouponRequestApplicationJson implements \JsonSerializa
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkV2UpdateCouponRequestApplicationJson', 'required' => [], 'properties' => ['code' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'type' => ['kind' => 'enum', 'values' => ['PERCENTAGE', 'AMOUNT']], 'discount' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'number', 'minimum' => 1, 'maxLength' => 255], ['kind' => 'primitive', 'type' => 'string', 'minimum' => 1, 'maxLength' => 255]]], 'store_wide' => ['kind' => 'primitive', 'type' => 'boolean'], 'products' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer'], 'minItems' => 1], 'product_variants' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'limit' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'expires_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'minimum_amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'number', 'minimum' => 1, 'maxLength' => 255], ['kind' => 'primitive', 'type' => 'string', 'minimum' => 1, 'maxLength' => 255]]]], 'applies_to' => ['kind' => 'enum', 'values' => ['one_time', 'subscriptions']], 'subscription_payments' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1, 'maximum' => 36]]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkV2UpdateCouponRequestApplicationJson', 'required' => [], 'properties' => ['code' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255], 'type' => ['kind' => 'enum', 'values' => ['PERCENTAGE', 'AMOUNT']], 'discount' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'number', 'minimum' => 1, 'maxLength' => 255], ['kind' => 'primitive', 'type' => 'string', 'minimum' => 1, 'maxLength' => 255]]], 'store_wide' => ['kind' => 'primitive', 'type' => 'boolean'], 'products' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'product_variants' => ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']], 'limit' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1]], 'expires_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'minimum_amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'number', 'minimum' => 1, 'maxLength' => 255], ['kind' => 'primitive', 'type' => 'string', 'minimum' => 1, 'maxLength' => 255]]]], 'applies_to' => ['kind' => 'enum', 'values' => ['one_time', 'subscriptions']], 'subscription_payments' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 1, 'maximum' => 36]], 'maximum_discount_amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'number', 'minimum' => 1, 'maxLength' => 255], ['kind' => 'primitive', 'type' => 'string', 'minimum' => 1, 'maxLength' => 255]]]]], 'additionalProperties' => true];
 
     public function __construct(
         public ?string $code = null,
@@ -19,7 +19,7 @@ readonly class SdkV2UpdateCouponRequestApplicationJson implements \JsonSerializa
         public float|string|null $discount = null,
         public ?bool $storeWide = null,
         /**
-         * Product IDs the coupon applies to when store_wide is false. Each product you add must sell a variant of the coupon's kind: a subscription plan for a `subscriptions` coupon, or a one-time variant for a `one_time` one. Another product returns `422` on `products`.
+         * Product IDs the coupon applies to when store_wide is false. Each product you add must sell a variant of the coupon's kind: a subscription plan for a `subscriptions` coupon, or a one-time variant for a `one_time` one. Another product returns `422` on `products`. It may be an empty list when the same request sends `store_wide: true`, so a store-wide coupon you read can be sent back unchanged. Otherwise an empty list returns `422` on `products`.
          * @var array<int>|null
          */
         public ?array $products = null,
@@ -37,6 +37,8 @@ readonly class SdkV2UpdateCouponRequestApplicationJson implements \JsonSerializa
         public SdkCreateCouponRequestApplicationJsonAppliesTo|string|null $appliesTo = null,
         /** How many payments a `subscriptions` coupon discounts, counting the signup payment as the first, so `3` discounts the signup and the next two renewals. A `subscriptions` coupon needs one, and an update that leaves it out keeps the stored number. Missing on a `subscriptions` coupon, or outside 1 to 36, it returns `422` on `subscription_payments` with `The number of discounted payments must be between 1 and 36.` A `one_time` coupon always stores null here. */
         public ?int $subscriptionPayments = null,
+        /** The most a percentage coupon takes off one order, as a decimal amount of at least 1 in the major unit of the order's currency, with at most two decimals: `15.50` caps the discount at 15.50. Send null to remove the cap. Only a `PERCENTAGE` coupon can have a cap: sending one for an `AMOUNT` coupon returns `422` on `maximum_discount_amount`, and changing a coupon to `AMOUNT` removes its cap. */
+        public float|string|null $maximumDiscountAmount = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -58,7 +60,8 @@ readonly class SdkV2UpdateCouponRequestApplicationJson implements \JsonSerializa
             minimumAmount: $data['minimum_amount'] ?? null,
             appliesTo: isset($data['applies_to']) ? SdkCreateCouponRequestApplicationJsonAppliesTo::tryFrom($data['applies_to']) ?? $data['applies_to'] : null,
             subscriptionPayments: $data['subscription_payments'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['code', 'type', 'discount', 'store_wide', 'products', 'product_variants', 'limit', 'expires_at', 'minimum_amount', 'applies_to', 'subscription_payments']),
+            maximumDiscountAmount: $data['maximum_discount_amount'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['code', 'type', 'discount', 'store_wide', 'products', 'product_variants', 'limit', 'expires_at', 'minimum_amount', 'applies_to', 'subscription_payments', 'maximum_discount_amount']),
             presentFields: array_keys($data),
         );
     }
@@ -82,6 +85,7 @@ readonly class SdkV2UpdateCouponRequestApplicationJson implements \JsonSerializa
             'minimum_amount' => $this->minimumAmount,
             'applies_to' => $this->appliesTo instanceof \BackedEnum ? $this->appliesTo->value : $this->appliesTo,
             'subscription_payments' => $this->subscriptionPayments,
+            'maximum_discount_amount' => $this->maximumDiscountAmount,
         ], [], $this->presentFields));
     }
 }

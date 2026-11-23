@@ -66,12 +66,20 @@ List webhook deliveries
 
 ```php
 public function listWebhookDeliveries(
+        ?int $page = null,
+        ?int $limit = null,
+        ?string $eventType = null,
+        ?\SellApp\Resource\WebhookPlatformStatus $status = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
 
 | Argument | Native type | Required |
 | --- | --- | --- |
+| page | `?int` | No |
+| limit | `?int` | No |
+| eventType | `?string` | No |
+| status | `?\SellApp\Resource\WebhookPlatformStatus` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

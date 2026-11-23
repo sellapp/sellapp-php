@@ -17,7 +17,7 @@ class AffiliatesTest extends TestCase
     {
         $fixture = $this->loadFixture('list_list_affiliates_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->affiliates()->list(status: \SellApp\Resource\AffiliatesStatus::Pending, search: 'test_value', limit: 1, page: 1);
+        $result = $client->affiliates()->list(status: \SellApp\Resource\AffiliatesStatus::Pending, search: 'test_value', customRatesOnly: true, payoutMethod: \SellApp\Resource\AffiliatesPayoutMethod::Paypal, sort: "-earnings", limit: 1, page: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
@@ -25,6 +25,8 @@ class AffiliatesTest extends TestCase
         parse_str($request->getUri()->getQuery(), $query);
         $this->assertSame('pending', $query['status']);
         $this->assertSame('test_value', $query['search']);
+        $this->assertArrayHasKey('custom_rates_only', $query);
+        $this->assertSame('PAYPAL', $query['payout_method']);
         $this->assertArrayHasKey('limit', $query);
         $this->assertArrayHasKey('page', $query);
     }

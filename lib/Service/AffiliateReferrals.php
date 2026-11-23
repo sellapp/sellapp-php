@@ -25,7 +25,8 @@ class AffiliateReferrals
     /**
      * List affiliate referrals
      *
-     * List store referrals with their attributed order and purchase line item. Requires the `affiliate` credential ability. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List store referrals with their attributed order and purchase line item, newest first, 15 per page by default. Requires the `affiliate` credential ability. Use `search` to find referrals by affiliate email, product or variant title, or an exact referral or order ID. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param string|null $search Text to look for in the affiliate's email address and the product and variant titles. A number also matches the referral ID or the order ID exactly. `%` and `_` match themselves.
      * @param int|null $affiliateId Filter by store affiliate ID.
      * @param int|null $orderId Filter by attributed Order ID.
      * @param \SellApp\Resource\AffiliateReferralsStatus|null $status Filter by referral status.
@@ -35,6 +36,7 @@ class AffiliateReferrals
      * @throws \SellApp\Exception\SDKException
      */
     public function list(
+        ?string $search = null,
         ?int $affiliateId = null,
         ?int $orderId = null,
         ?\SellApp\Resource\AffiliateReferralsStatus $status = null,
@@ -44,6 +46,7 @@ class AffiliateReferrals
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listAffiliateReferrals', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $query = array_filter([
+            'search' => $search,
             'affiliate_id' => $affiliateId,
             'order_id' => $orderId,
             'status' => $status?->value,

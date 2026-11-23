@@ -17,11 +17,19 @@ class RefundsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_list_refunds_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->refunds()->listRefunds();
+        $result = $client->refunds()->listRefunds(page: 1, limit: 1, status: \SellApp\Resource\RefundsStatus::Pending, provider: \SellApp\Resource\RefundsProvider::Manual, source: \SellApp\Resource\RefundsSource::Manual, refundableType: \SellApp\Resource\RefundsRefundableType::Order, refundableId: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
         $this->assertStringEndsWith('v2/refunds', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('page', $query);
+        $this->assertArrayHasKey('limit', $query);
+        $this->assertSame('pending', $query['status']);
+        $this->assertSame('manual', $query['provider']);
+        $this->assertSame('manual', $query['source']);
+        $this->assertSame('order', $query['refundable_type']);
+        $this->assertArrayHasKey('refundable_id', $query);
     }
 
     public function testGetRefund(): void

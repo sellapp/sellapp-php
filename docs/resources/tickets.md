@@ -182,6 +182,9 @@ List all tickets
 public function v2ListTickets(
         ?int $limit = null,
         ?int $page = null,
+        ?\SellApp\Resource\TicketsWaitingOn $waitingOn = null,
+        ?string $reason = null,
+        ?string $customerEmail = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -190,6 +193,9 @@ public function v2ListTickets(
 | --- | --- | --- |
 | limit | `?int` | No |
 | page | `?int` | No |
+| waitingOn | `?\SellApp\Resource\TicketsWaitingOn` | No |
+| reason | `?string` | No |
+| customerEmail | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.
@@ -244,6 +250,11 @@ public function v2SearchTickets(
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?\SellApp\Resource\WaitingOn $waitingOn = null,
+        ?string $reason = null,
+        ?string $customerEmail = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -254,6 +265,11 @@ public function v2SearchTickets(
 | sort | `?array` | No |
 | search | `?\SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertySearch` | No |
 | includes | `?array` | No |
+| waitingOn | `?\SellApp\Resource\WaitingOn` | No |
+| reason | `?string` | No |
+| customerEmail | `?string` | No |
+| limit | `?int` | No |
+| page | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.
@@ -368,6 +384,7 @@ public function update(
         int $ticket,
         ?\SellApp\Resource\SdkUpdateTicketRequestApplicationJsonStatus $status = null,
         ?bool $archived = null,
+        ?\SellApp\Resource\SdkUpdateTicketRequestApplicationJsonOutcome $outcome = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateTicketResponseValue200ApplicationJson
 ```
@@ -377,6 +394,7 @@ public function update(
 | ticket | `int` | Yes |
 | status | `?\SellApp\Resource\SdkUpdateTicketRequestApplicationJsonStatus` | No |
 | archived | `?bool` | No |
+| outcome | `?\SellApp\Resource\SdkUpdateTicketRequestApplicationJsonOutcome` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkUpdateTicketResponseValue200ApplicationJson`.
@@ -397,7 +415,132 @@ $result = $client->tickets()->update(
     ticket: 42,
     status: 'CLOSED',
     archived: true,
+    outcome: 'delivered',
 );
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## batchUpdate
+
+Update several tickets
+
+[API reference](https://sell.app/docs/api/tickets/update-several-tickets) · Effect: **consequential**
+
+```php
+public function batchUpdate(
+        \SellApp\Resource\SdkBatchUpdateTicketsRequestApplicationJsonAction $action,
+        array $resources,
+        ?\SellApp\Resource\SdkUpdateTicketRequestApplicationJsonOutcome $outcome = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkBatchUpdateTicketsResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| action | `\SellApp\Resource\SdkBatchUpdateTicketsRequestApplicationJsonAction` | Yes |
+| resources | `array` | Yes |
+| outcome | `?\SellApp\Resource\SdkUpdateTicketRequestApplicationJsonOutcome` | No |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkBatchUpdateTicketsResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->tickets()->batchUpdate(
+    action: 'close',
+    outcome: 'delivered',
+    resources: [311, 313],
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 404, 409, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## getContext
+
+Retrieve a ticket's customer and refund context
+
+[API reference](https://sell.app/docs/api/tickets/retrieve-ticket-context) · Effect: **read**
+
+```php
+public function getContext(
+        int $ticket,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkV2GetTicketContextResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| ticket | `int` | Yes |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkV2GetTicketContextResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->tickets()->getContext(ticket: 312);
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```
 

@@ -8,6 +8,7 @@ namespace SellApp\Service;
 
 use SellApp\Resource\SdkCreatePromotionResponseValue201ApplicationJson;
 use SellApp\Resource\SdkGetPromotionResponseValue200ApplicationJson;
+use SellApp\Resource\SdkGetPromotionUsageResponseValue200ApplicationJson;
 use SellApp\Resource\SdkListPromotionsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplacePromotionResponseValue200ApplicationJson;
 use SellApp\Resource\SdkRestorePromotionResponseValue200ApplicationJson;
@@ -389,5 +390,35 @@ class Promotions
             options: $options,
         );
         return SdkRestorePromotionResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Retrieve promotion usage
+     *
+     * Count the completed orders that used a promotion, across all of its phases and its whole life, and list the newest of them. Only orders whose status is `COMPLETED` count; pending and refunded orders do not. A promotion from another store returns `404`, and so does a deleted one unless you send `with_trashed=true`. Requires the `promotion` API-key ability and the promotion permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $promotion The promotion ID.
+     * @param bool|null $withTrashed Set to `true` to also find a deleted promotion. Defaults to false.
+     * @param bool|null $onlyTrashed Set to `true` to find only a deleted promotion. Ignored when `with_trashed` is `true`. Defaults to false.
+     * @return \SellApp\Resource\SdkGetPromotionUsageResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getUsage(
+        int $promotion,
+        ?bool $withTrashed = null,
+        ?bool $onlyTrashed = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetPromotionUsageResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getPromotionUsage', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'with_trashed' => $withTrashed,
+            'only_trashed' => $onlyTrashed,
+        ], fn ($v) => $v !== null);
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/promotions/' . rawurlencode((string) $promotion) . '/usage',
+            query: $query,
+            options: $options,
+        );
+        return SdkGetPromotionUsageResponseValue200ApplicationJson::fromArray($response);
     }
 }

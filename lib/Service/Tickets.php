@@ -7,8 +7,10 @@ declare(strict_types=1);
 namespace SellApp\Service;
 
 use SellApp\Resource\ListTicketsResponseValue200ApplicationJsonPropertyDataItem;
+use SellApp\Resource\SdkBatchUpdateTicketsResponseValue200ApplicationJson;
 use SellApp\Resource\SdkGetTicketResponseValue200ApplicationJson;
 use SellApp\Resource\SdkUpdateTicketResponseValue200ApplicationJson;
+use SellApp\Resource\SdkV2GetTicketContextResponseValue200ApplicationJson;
 use SellApp\Resource\SdkV2GetTicketResponseValue200ApplicationJson;
 use SellApp\Resource\SearchTicketsResponseValue200ApplicationJsonPropertyDataItem;
 use SellApp\Resource\V2ListTicketsResponseValue200ApplicationJsonPropertyDataItem;
@@ -105,21 +107,30 @@ class Tickets
     /**
      * List all tickets
      *
-     * List your store's support tickets, 15 per page by default. This v2 route is store-scoped. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List your store's support tickets, 15 per page by default. This v2 route is store-scoped. Narrow the results with `waiting_on`, `reason` and `customer_email`; they combine with each other and with any other filters. An unknown `waiting_on` or `reason`, or a `customer_email` longer than 255 characters, returns `422`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int|null $limit Number of items to return per page. Defaults to 15.
      * @param int|null $page Page number to return. Defaults to 1.
+     * @param \SellApp\Resource\TicketsWaitingOn|null $waitingOn `store`: the latest message is from the customer, so the ticket waits on you. `customer`: the latest message is yours. A ticket without messages matches neither.
+     * @param string|null $reason A ticket reason by its label (as tickets show it in `reason`), its key such as `platform:refund_request`, or its code; case does not matter. A reason the store does not have returns `422` on `reason`, listing the store's reasons.
+     * @param string|null $customerEmail Part of the customer's email, case-insensitive. `%` and `_` match those characters literally.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\V2ListTicketsResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
     public function v2ListTickets(
         ?int $limit = null,
         ?int $page = null,
+        ?\SellApp\Resource\TicketsWaitingOn $waitingOn = null,
+        ?string $reason = null,
+        ?string $customerEmail = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'v2ListTickets', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $query = array_filter([
             'limit' => $limit,
             'page' => $page,
+            'waiting_on' => $waitingOn?->value,
+            'reason' => $reason,
+            'customer_email' => $customerEmail,
         ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'GET',
@@ -133,11 +144,16 @@ class Tickets
     /**
      * Search tickets
      *
-     * Search tickets using JSON body filters, search terms, includes, and sort instructions. This v2 route is store-scoped. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Search tickets using JSON body filters, search terms, includes, and sort instructions. This v2 route is store-scoped. Narrow the results with `waiting_on`, `reason` and `customer_email`; they combine with each other and with any other filters. An unknown `waiting_on` or `reason`, or a `customer_email` longer than 255 characters, returns `422`. Page through results with `limit` (1 to 100, default 15; a larger value returns `422`) and `page`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param array<\SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertyFiltersItem>|null $filters
      * @param array<\SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertySortItem>|null $sort
      * @param \SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertySearch|null $search
      * @param array<\SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertyIncludesItem>|null $includes
+     * @param \SellApp\Resource\WaitingOn|null $waitingOn `store`: the latest message is from the customer, so the ticket waits on you. `customer`: the latest message is yours. A ticket without messages matches neither.
+     * @param string|null $reason A ticket reason by its label (as tickets show it in `reason`), its key such as `platform:refund_request`, or its code; case does not matter. A reason the store does not have returns `422` on `reason`, listing the store's reasons.
+     * @param string|null $customerEmail Part of the customer's email, case-insensitive. `%` and `_` match those characters literally.
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\V2SearchTicketsResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
@@ -146,12 +162,22 @@ class Tickets
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?\SellApp\Resource\WaitingOn $waitingOn = null,
+        ?string $reason = null,
+        ?string $customerEmail = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'v2SearchTickets', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'POST',
             path: 'v2/tickets/search',
+            query: $query,
             modelClass: V2SearchTicketsResponseValue200ApplicationJsonPropertyDataItem::class,
             options: $options,
         );
@@ -181,10 +207,11 @@ class Tickets
     /**
      * Close, reopen, or archive a ticket
      *
-     * Change ticket status or archive state in the selected store. Requires the ticket API-key ability and store ticket permission. Send status OPEN to reopen or CLOSED to close; closing sends the existing customer notification only when the status changes. Send archived true to archive or false to restore. You may send both fields together; omitted fields stay unchanged. Use the same optional Idempotency-Key and identical body after a lost response. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Close, reopen, archive or restore a ticket in the selected store. Send `status` `CLOSED` to close or `OPEN` to reopen, and `archived` `true` to archive or `false` to restore; you may send both, and omitted fields stay unchanged. When you close a ticket you can record why with `outcome`, which is accepted only together with `status` `CLOSED`. Closing emails the customer that the ticket was closed, at most once an hour per ticket: reopening and closing again within the hour sends no second email. A closed ticket keeps its outcome. Sending the outcome it already has changes nothing; a different outcome, or an outcome for a ticket that was closed without one, returns `422` on `outcome` and nothing in the request is applied, so reopen the ticket first. Requires the `ticket` API-key ability and the ticket permission in your team role. Use the same optional Idempotency-Key and identical body after a lost response. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int $ticket
      * @param \SellApp\Resource\SdkUpdateTicketRequestApplicationJsonStatus|null $status
      * @param bool|null $archived
+     * @param \SellApp\Resource\SdkUpdateTicketRequestApplicationJsonOutcome|null $outcome Why the ticket was closed: `refunded`, `refunded_partial` (partly refunded), `delivered`, `no_action`, `duplicate` or `other`. Only with `status` `CLOSED`.
      * @return \SellApp\Resource\SdkUpdateTicketResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
@@ -192,12 +219,14 @@ class Tickets
         int $ticket,
         ?\SellApp\Resource\SdkUpdateTicketRequestApplicationJsonStatus $status = null,
         ?bool $archived = null,
+        ?\SellApp\Resource\SdkUpdateTicketRequestApplicationJsonOutcome $outcome = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateTicketResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'updateTicket', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
         $body = array_filter([
             'status' => $status?->value,
             'archived' => $archived,
+            'outcome' => $outcome?->value,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkUpdateTicketRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -207,5 +236,58 @@ class Tickets
             options: $options,
         );
         return SdkUpdateTicketResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Update several tickets
+     *
+     * Close, reopen, archive, restore or mark as unread up to 50 tickets in one request, and get one result per ticket in the order you sent them. Every ID must be a ticket of the selected store: one unknown ID returns `404` and changes nothing. Each ticket is then changed on its own, so one refusal does not undo the others. `close` needs an `outcome`, which is recorded on every ticket it closes, and emails each customer that the ticket was closed, at most once an hour per ticket. `mark_unread` marks the ticket unread for your store (`read_status.store` becomes `false`). Requires the `ticket` API-key ability and the ticket permission in your team role. Repeating the same request is safe: a ticket already in the requested state comes back as `skipped`. Send an optional `Idempotency-Key` with an identical body to get the original response back after a lost connection. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param \SellApp\Resource\SdkBatchUpdateTicketsRequestApplicationJsonAction $action What to do with every listed ticket. `restore` takes a ticket out of the archive.
+     * @param \SellApp\Resource\SdkUpdateTicketRequestApplicationJsonOutcome|null $outcome Why the ticket was closed: `refunded`, `refunded_partial` (partly refunded), `delivered`, `no_action`, `duplicate` or `other`. Required for `close` and refused for every other action.
+     * @param array<int> $resources Between 1 and 50 different ticket IDs.
+     * @return \SellApp\Resource\SdkBatchUpdateTicketsResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function batchUpdate(
+        \SellApp\Resource\SdkBatchUpdateTicketsRequestApplicationJsonAction $action,
+        array $resources,
+        ?\SellApp\Resource\SdkUpdateTicketRequestApplicationJsonOutcome $outcome = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkBatchUpdateTicketsResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'batchUpdateTickets', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'action' => $action->value,
+            'outcome' => $outcome?->value,
+            'resources' => $resources,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkBatchUpdateTicketsRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'PATCH',
+            path: 'v2/tickets/batch',
+            body: $body,
+            options: $options,
+        );
+        return SdkBatchUpdateTicketsResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Retrieve a ticket's customer and refund context
+     *
+     * Read what you need beside a ticket's conversation in one call: the resolution, the customer's order history in this store, the linked order, what can still be refunded to the customer's wallet, and the latest 20 support activity entries, newest first. `refund_options` has the same items as the ticket's wallet refund options. The customer figures count the store's completed orders whose customer or order email is the ticket's email. Requires the `ticket` API-key ability and the ticket permission in your team role. The response includes the customer's email, order count and lifetime spend, so give a key with this ability only to people and tools that may see them. Amounts are integer USD cents: `1999` means $19.99. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $ticket The ticket ID in the selected store.
+     * @return \SellApp\Resource\SdkV2GetTicketContextResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getContext(
+        int $ticket,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkV2GetTicketContextResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'v2GetTicketContext', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/tickets/' . rawurlencode((string) $ticket) . '/context',
+            options: $options,
+        );
+        return SdkV2GetTicketContextResponseValue200ApplicationJson::fromArray($response);
     }
 }

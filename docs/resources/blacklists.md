@@ -291,12 +291,20 @@ List blacklist rules
 
 ```php
 public function v2ListBlacklists(
+        ?int $limit = null,
+        ?int $page = null,
+        ?string $search = null,
+        ?\SellApp\Resource\BlacklistType $type = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
 
 | Argument | Native type | Required |
 | --- | --- | --- |
+| limit | `?int` | No |
+| page | `?int` | No |
+| search | `?string` | No |
+| type | `?\SellApp\Resource\BlacklistType` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

@@ -18,7 +18,7 @@ readonly class GetDisputeResponseValue200ApplicationJsonPropertyData implements 
         public string $provider,
         public int $amount,
         public string $currency,
-        public GetDisputeResponseValue200ApplicationJsonPropertyDataStatus|string $status,
+        public DisputesStatus|string $status,
         public ?string $providerDisputeId = null,
         public ?string $reason = null,
         /** @var array<string, mixed> */
@@ -36,7 +36,7 @@ readonly class GetDisputeResponseValue200ApplicationJsonPropertyData implements 
             provider: $data['provider'],
             amount: $data['amount'],
             currency: $data['currency'],
-            status: GetDisputeResponseValue200ApplicationJsonPropertyDataStatus::tryFrom($data['status']) ?? $data['status'],
+            status: DisputesStatus::tryFrom($data['status']) ?? $data['status'],
             providerDisputeId: $data['provider_dispute_id'] ?? null,
             reason: $data['reason'] ?? null,
             additionalProperties: SchemaValidator::unknownFields($data, ['id', 'source', 'provider', 'amount', 'currency', 'status', 'provider_dispute_id', 'reason']),

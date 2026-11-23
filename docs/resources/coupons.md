@@ -754,6 +754,7 @@ public function v2CreateCoupon(
         float|string|null $minimumAmount = null,
         ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
         ?int $subscriptionPayments = null,
+        float|string|null $maximumDiscountAmount = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkV2CreateCouponResponseValue201ApplicationJson
 ```
@@ -771,6 +772,7 @@ public function v2CreateCoupon(
 | minimumAmount | `float\|string\|null` | No |
 | appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
 | subscriptionPayments | `?int` | No |
+| maximumDiscountAmount | `float\|string\|null` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkV2CreateCouponResponseValue201ApplicationJson`.
@@ -832,6 +834,8 @@ public function v2SearchCoupons(
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchCouponsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
@@ -844,6 +848,8 @@ public function v2SearchCoupons(
 | sort | `?array` | No |
 | search | `?\SellApp\Resource\V2SearchCouponsRequestApplicationJsonPropertySearch` | No |
 | includes | `?array` | No |
+| limit | `?int` | No |
+| page | `?int` | No |
 | withTrashed | `?bool` | No |
 | onlyTrashed | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
@@ -973,6 +979,7 @@ public function v2ReplaceCoupon(
         float|string|null $minimumAmount = null,
         ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
         ?int $subscriptionPayments = null,
+        float|string|null $maximumDiscountAmount = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
@@ -993,6 +1000,7 @@ public function v2ReplaceCoupon(
 | minimumAmount | `float\|string\|null` | No |
 | appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
 | subscriptionPayments | `?int` | No |
+| maximumDiscountAmount | `float\|string\|null` | No |
 | withTrashed | `?bool` | No |
 | onlyTrashed | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
@@ -1062,6 +1070,7 @@ public function v2UpdateCoupon(
         float|string|null $minimumAmount = null,
         ?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo $appliesTo = null,
         ?int $subscriptionPayments = null,
+        float|string|null $maximumDiscountAmount = null,
         ?bool $withTrashed = null,
         ?bool $onlyTrashed = null,
         ?\SellApp\RequestOptions $options = null,
@@ -1082,6 +1091,7 @@ public function v2UpdateCoupon(
 | minimumAmount | `float\|string\|null` | No |
 | appliesTo | `?\SellApp\Resource\SdkCreateCouponRequestApplicationJsonAppliesTo` | No |
 | subscriptionPayments | `?int` | No |
+| maximumDiscountAmount | `float\|string\|null` | No |
 | withTrashed | `?bool` | No |
 | onlyTrashed | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
@@ -1387,6 +1397,64 @@ Supported credential alternatives (each object is one alternative):
 ```
 
 Documented HTTP responses: 200, 400, 401, 403, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## v2GetCouponUsage
+
+Retrieve coupon usage
+
+[API reference](https://sell.app/docs/api/coupons/retrieve-coupon-usage) · Effect: **read**
+
+```php
+public function v2GetCouponUsage(
+        int $coupon,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkV2GetCouponUsageResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| coupon | `int` | Yes |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkV2GetCouponUsageResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->coupons()->v2GetCouponUsage(coupon: 1);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
 
 [Response access, transport controls, pagination, and typed errors](../usage.md)
 

@@ -10,7 +10,7 @@ readonly class SearchProductsRequestApplicationJsonPropertyIncludesItem implemen
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SearchProductsRequestApplicationJsonPropertyIncludesItem', 'required' => ['relation'], 'properties' => ['relation' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SearchProductsRequestApplicationJsonPropertyIncludesItem', 'required' => ['relation'], 'properties' => ['relation' => ['kind' => 'literal', 'value' => 'variants']], 'additionalProperties' => true];
 
     public function __construct(
         public string $relation,
@@ -24,7 +24,7 @@ readonly class SearchProductsRequestApplicationJsonPropertyIncludesItem implemen
     {
         self::validate($data, 'response');
         return new self(
-            relation: $data['relation'],
+            relation: $data['relation'] ?? 'variants',
             additionalProperties: SchemaValidator::unknownFields($data, ['relation']),
             presentFields: array_keys($data),
         );

@@ -17,7 +17,7 @@ Composer installs Guzzle and checks the required PHP extensions.
 From your application's directory, install [sellapp/sellapp from Packagist](https://packagist.org/packages/sellapp/sellapp):
 
 ```sh
-composer require 'sellapp/sellapp:^0.2.1'
+composer require 'sellapp/sellapp:^0.3.0'
 ```
 
 ## Your first request

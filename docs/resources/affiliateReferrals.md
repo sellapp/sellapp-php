@@ -10,6 +10,7 @@ List affiliate referrals
 
 ```php
 public function list(
+        ?string $search = null,
         ?int $affiliateId = null,
         ?int $orderId = null,
         ?\SellApp\Resource\AffiliateReferralsStatus $status = null,
@@ -21,6 +22,7 @@ public function list(
 
 | Argument | Native type | Required |
 | --- | --- | --- |
+| search | `?string` | No |
 | affiliateId | `?int` | No |
 | orderId | `?int` | No |
 | status | `?\SellApp\Resource\AffiliateReferralsStatus` | No |

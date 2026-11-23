@@ -452,6 +452,8 @@ class Sections
      * @param array<\SellApp\Resource\V2SearchSectionsRequestApplicationJsonPropertySortItem>|null $sort
      * @param \SellApp\Resource\V2SearchSectionsRequestApplicationJsonPropertySearch|null $search
      * @param array<\SellApp\Resource\V2SearchSectionsRequestApplicationJsonPropertyIncludesItem>|null $includes
+     * @param int|null $limit Number of items to return per page. Defaults to 15.
+     * @param int|null $page Page number to return. Defaults to 1.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\V2SearchSectionsResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
@@ -460,12 +462,19 @@ class Sections
         ?array $sort = null,
         ?\SellApp\Resource\V2SearchSectionsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $limit = null,
+        ?int $page = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'v2SearchSections', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'limit' => $limit,
+            'page' => $page,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'POST',
             path: 'v2/sections/search',
+            query: $query,
             modelClass: V2SearchSectionsResponseValue200ApplicationJsonPropertyDataItem::class,
             options: $options,
         );

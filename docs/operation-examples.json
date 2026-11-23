@@ -42,6 +42,14 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "getChargeSummary",
+    "mountTarget": "Charges",
+    "methodName": "get_summary",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->charges()->getSummary();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "listGroups",
     "mountTarget": "Groups",
     "methodName": "list",
@@ -221,7 +229,7 @@
     "operationId": "createInvoiceRefund",
     "mountTarget": "Invoices",
     "methodName": "create_refund",
-    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->invoices()->createRefund(\n    invoice: 1,\n    amount: '12.50',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->invoices()->createRefund(\n    invoice: 1,\n    amount: '12.50',\n    expectedRefundedTotalCents: 0,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -373,7 +381,7 @@
     "operationId": "searchProducts",
     "mountTarget": "Products",
     "methodName": "search",
-    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->search(\n    filters: [['field' => 'id', 'operator' => '=', 'value' => 1]],\n    sort: [['field' => 'created_at', 'direction' => 'desc']],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->search(\n    search: ['value' => 'launch'],\n    maxPrice: 2500,\n    stock: 'in_stock',\n    visibility: ['PUBLIC'],\n    hasSales: true,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -398,6 +406,62 @@
     "mountTarget": "Products",
     "methodName": "batch_delete",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->batchDelete(resources: [1, 2]);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "publishProduct",
+    "mountTarget": "Products",
+    "methodName": "publish",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->publish(\n    product: 1,\n    variantIds: [2],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "duplicateProduct",
+    "mountTarget": "Products",
+    "methodName": "duplicate",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->duplicate(product: 1);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "moveProduct",
+    "mountTarget": "Products",
+    "methodName": "move",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->products()->move(\n    product: 1,\n    position: 1,\n    expectedPosition: 3,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getProductFeaturedVariant",
+    "mountTarget": "ProductsFeaturedVariant",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productsFeaturedVariant()->get(product: 1);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceProductFeaturedVariant",
+    "mountTarget": "ProductsFeaturedVariant",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productsFeaturedVariant()->replace(\n    product: 1,\n    variantId: 2,\n    highlightLabel: 'best_value',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "listProductSimilarProducts",
+    "mountTarget": "ProductsSimilarProducts",
+    "methodName": "list",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productsSimilarProducts()->list(product: 30);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceProductSimilarProducts",
+    "mountTarget": "ProductsSimilarProducts",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productsSimilarProducts()->replace(\n    product: 30,\n    variantIds: [31, 41],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -518,6 +582,54 @@
     "mountTarget": "ProductVariants",
     "methodName": "batch_delete",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productVariants()->batchDelete(\n    product: 1,\n    resources: [1, 2],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "publishProductVariant",
+    "mountTarget": "ProductVariants",
+    "methodName": "publish",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productVariants()->publish(\n    product: 11,\n    variant: 12,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "duplicateProductVariant",
+    "mountTarget": "ProductVariants",
+    "methodName": "duplicate",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productVariants()->duplicate(\n    product: 1,\n    variant: 2,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "reorderProductVariants",
+    "mountTarget": "ProductVariants",
+    "methodName": "reorder",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productVariants()->reorder(\n    product: 1,\n    variantIds: [2, 1],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getVariantSubscriptionSettings",
+    "mountTarget": "ProductVariantsSubscriptionSettings",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productVariantsSubscriptionSettings()->get(\n    product: 1,\n    variant: 4,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateVariantSubscriptionSettings",
+    "mountTarget": "ProductVariantsSubscriptionSettings",
+    "methodName": "update",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productVariantsSubscriptionSettings()->update(\n    product: 1,\n    variant: 4,\n    pausePolicy: ['max_pause_days' => 30],\n    renewalPolicy: ['redeliver_on_renewal' => false],\n    expectedState: '3f9a1c0e7b2d4a6f8e1c5b9d0a7f3e2c4b6d8a0f1e3c5a7b9d2f4e6a8c0b1d3e',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceVariantCommunityAccess",
+    "mountTarget": "ProductVariantsCommunityAccess",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->productVariantsCommunityAccess()->replace(\n    product: 1,\n    variant: 2,\n    community: [\n        'platform' => 'discord',\n        'server_id' => '1187040134912155648',\n        'role_ids' => ['1187040299781210112'],\n        'required' => true,\n        'remove_on_expire' => true,\n    ],\n    expectedUpdatedAt: '2024-01-10T18:47:22.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -746,6 +858,14 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "createBookingProduct",
+    "mountTarget": "Bookings",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->bookings()->create(\n    title: 'Strategy consultation',\n    description: '<p>A private strategy session for your next launch.</p>',\n    variantTitle: '60 minute session',\n    priceCents: 2500,\n    currency: 'USD',\n    paymentMethods: ['STRIPE'],\n    timezone: 'Europe/London',\n    durationMinutes: 60,\n    availability: [\n        ['day' => 1, 'enabled' => true, 'start' => '09:00', 'end' => '12:00'],\n        ['day' => 3, 'enabled' => true, 'start' => '13:00', 'end' => '17:00'],\n    ],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "getBundleItem",
     "mountTarget": "BundleItems",
     "methodName": "get",
@@ -774,6 +894,38 @@
     "mountTarget": "BundleItems",
     "methodName": "detach",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->bundleItems()->detach(\n    bundle: 1,\n    resources: [1],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "previewVariantBuyerNotification",
+    "mountTarget": "VariantDeliverables",
+    "methodName": "preview",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->variantDeliverables()->preview(\n    product: 1,\n    variant: 2,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "notifyVariantBuyers",
+    "mountTarget": "VariantDeliverables",
+    "methodName": "notify",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->variantDeliverables()->notify(\n    product: 1,\n    variant: 2,\n    options: new \\SellApp\\RequestOptions(idempotencyKey: \"example-mutation-001\"),\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getVariantDeliverableConfiguration",
+    "mountTarget": "VariantDeliverables",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->variantDeliverables()->get(\n    product: 'string_example',\n    variant: 1,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceVariantDeliverableConfiguration",
+    "mountTarget": "VariantDeliverables",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->variantDeliverables()->replace(\n    product: 'string_example',\n    variant: 1,\n    types: ['MANUAL'],\n    data: ['comment' => 'Delivery is arranged by Launch Lab.'],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -854,6 +1006,14 @@
     "mountTarget": "PromotionsPhases",
     "methodName": "replace",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->promotionsPhases()->replace(\n    promotion: 1,\n    phases: [\n        [\n            'discount_type' => 'percentage',\n            'discount_value' => '20',\n            'ends_at' => '2026-08-04T00:00:00Z',\n            'max_redemptions' => 200,\n            'minimum_amount' => '10',\n        ],\n        [\n            'discount_type' => 'fixed',\n            'discount_value' => '5',\n            'ends_at' => null,\n            'max_redemptions' => null,\n            'minimum_amount' => '25',\n        ],\n    ],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getPromotionUsage",
+    "mountTarget": "Promotions",
+    "methodName": "get_usage",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->promotions()->getUsage(promotion: 30);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -1138,6 +1298,222 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "listSupportReplyTemplates",
+    "mountTarget": "SupportReplyTemplates",
+    "methodName": "list",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReplyTemplates()->list();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createSupportReplyTemplate",
+    "mountTarget": "SupportReplyTemplates",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReplyTemplates()->create(\n    label: 'Refund credited',\n    body: 'Hi {customer_email}, we credited {refund_amount} to your {store_name} wallet for {product_title}. Your wallet balance is now {wallet_balance}.',\n    supportsAutoRespond: true,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getSupportReplyTemplate",
+    "mountTarget": "SupportReplyTemplates",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReplyTemplates()->get(supportReplyTemplate: 32);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceSupportReplyTemplate",
+    "mountTarget": "SupportReplyTemplates",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReplyTemplates()->replace(\n    supportReplyTemplate: 31,\n    isActive: false,\n    expectedUpdatedAt: '2026-07-03T09:12:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateSupportReplyTemplate",
+    "mountTarget": "SupportReplyTemplates",
+    "methodName": "update",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReplyTemplates()->update(\n    supportReplyTemplate: 31,\n    isActive: false,\n    expectedUpdatedAt: '2026-07-03T09:12:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "deleteSupportReplyTemplate",
+    "mountTarget": "SupportReplyTemplates",
+    "methodName": "delete",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReplyTemplates()->delete(supportReplyTemplate: 33);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "renderSupportReplyTemplate",
+    "mountTarget": "SupportReplyTemplates",
+    "methodName": "render",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReplyTemplates()->render(\n    supportReplyTemplate: 1,\n    ticketId: 4821,\n    invoiceId: 7001,\n    refundAmountCents: 999,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "reorderSupportReplyTemplates",
+    "mountTarget": "SupportReplyTemplates",
+    "methodName": "reorder",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReplyTemplates()->reorder(orderedTemplateIds: [32, 31]);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getSupportReplyTemplateOptions",
+    "mountTarget": "SupportReplyTemplates",
+    "methodName": "get_options",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReplyTemplates()->getOptions();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "listSupportReasons",
+    "mountTarget": "SupportReasons",
+    "methodName": "list",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReasons()->list();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createSupportReason",
+    "mountTarget": "SupportReasons",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReasons()->create(\n    label: 'Download link expired',\n    description: 'The download link in the order email no longer works.',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getSupportReason",
+    "mountTarget": "SupportReasons",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReasons()->get(supportReason: 14);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceSupportReason",
+    "mountTarget": "SupportReasons",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReasons()->replace(\n    supportReason: 14,\n    description: 'The download link in the order email no longer opens.',\n    expectedUpdatedAt: '2026-07-03T09:10:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateSupportReason",
+    "mountTarget": "SupportReasons",
+    "methodName": "update",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReasons()->update(\n    supportReason: 14,\n    description: 'The download link in the order email no longer opens.',\n    expectedUpdatedAt: '2026-07-03T09:10:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "deleteSupportReason",
+    "mountTarget": "SupportReasons",
+    "methodName": "delete",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReasons()->delete(supportReason: 15);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getSupportReasonOptions",
+    "mountTarget": "SupportReasons",
+    "methodName": "get_options",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportReasons()->getOptions();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "listSupportAutomationRules",
+    "mountTarget": "SupportAutomationRules",
+    "methodName": "list",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationRules()->list();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createSupportAutomationRule",
+    "mountTarget": "SupportAutomationRules",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationRules()->create(\n    name: 'Expired download links',\n    matchReasonSource: 'store',\n    matchReasonCode: 'download-link-expired',\n    matchProductIds: [120],\n    matchMaxOrderTotalCents: 5000,\n    maxPriorSupportRefundCount: 0,\n    responseTemplateId: 32,\n    actionRefundKind: 'partial',\n    actionRefundPercentBasis: 5000,\n    actionRefundCapCents: 1000,\n    actionCloseOutcome: 'refunded_partial',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getSupportAutomationRule",
+    "mountTarget": "SupportAutomationRules",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationRules()->get(supportAutomationRule: 7);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceSupportAutomationRule",
+    "mountTarget": "SupportAutomationRules",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationRules()->replace(\n    supportAutomationRule: 7,\n    name: 'Expired download links, first refund only',\n    clear: ['match_max_order_total_cents'],\n    expectedUpdatedAt: '2026-07-03T09:20:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateSupportAutomationRule",
+    "mountTarget": "SupportAutomationRules",
+    "methodName": "update",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationRules()->update(\n    supportAutomationRule: 7,\n    name: 'Expired download links, first refund only',\n    clear: ['match_max_order_total_cents'],\n    expectedUpdatedAt: '2026-07-03T09:20:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateSupportAutomationRuleState",
+    "mountTarget": "SupportAutomationRules",
+    "methodName": "update_state",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationRules()->updateState(\n    supportAutomationRule: 1,\n    state: 'active',\n    expectedUpdatedAt: '2026-07-03T09:20:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "reorderSupportAutomationRules",
+    "mountTarget": "SupportAutomationRules",
+    "methodName": "reorder",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationRules()->reorder(orderedRuleIds: [7]);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "dryRunSupportAutomationRules",
+    "mountTarget": "SupportAutomationRules",
+    "methodName": "dry_run",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationRules()->dryRun(ticketId: 4821);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getSupportAutomationSettings",
+    "mountTarget": "SupportAutomationSettings",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationSettings()->get();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceSupportAutomationSettings",
+    "mountTarget": "SupportAutomationSettings",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationSettings()->replace(\n    automationEnabled: true,\n    dailyRefundCapCents: 5000,\n    expectedAutomationEnabled: false,\n    expectedDailyRefundCapCents: null,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateSupportAutomationSettings",
+    "mountTarget": "SupportAutomationSettings",
+    "methodName": "update",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->supportAutomationSettings()->update(\n    automationEnabled: true,\n    dailyRefundCapCents: 5000,\n    expectedAutomationEnabled: false,\n    expectedDailyRefundCapCents: null,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "listCustomers",
     "mountTarget": "Customers",
     "methodName": "list",
@@ -1221,7 +1597,7 @@
     "operationId": "searchOrders",
     "mountTarget": "Orders",
     "methodName": "search",
-    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->orders()->search(\n    filters: [\n        [\n            'field' => 'transaction_id',\n            'operator' => 'contains',\n            'value' => 'pi_3Example',\n        ],\n        ['field' => 'status', 'operator' => 'in', 'value' => ['COMPLETED']],\n    ],\n    sort: [['field' => 'created_at', 'direction' => 'desc']],\n    pagination: ['page' => 1, 'limit' => 25],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->orders()->search(\n    filters: [\n        [\n            'field' => 'created_at',\n            'operator' => 'gte',\n            'value' => '2026-07-01T00:00:00Z',\n        ],\n        [\n            'field' => 'created_at',\n            'operator' => 'lte',\n            'value' => '2026-07-31T23:59:59Z',\n        ],\n        ['field' => 'total', 'operator' => 'gte', 'value' => 1000],\n        ['field' => 'currency', 'operator' => 'eq', 'value' => 'USD'],\n        ['field' => 'status', 'operator' => 'in', 'value' => ['COMPLETED']],\n    ],\n    sort: [['field' => 'created_at', 'direction' => 'desc']],\n    pagination: ['page' => 1, 'limit' => 25],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -1261,7 +1637,7 @@
     "operationId": "createOrderRefund",
     "mountTarget": "Orders",
     "methodName": "create_refund",
-    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->orders()->createRefund(\n    order: 9001,\n    amount: '5.00',\n    options: new \\SellApp\\RequestOptions(idempotencyKey: \"example-mutation-001\"),\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->orders()->createRefund(\n    order: 9001,\n    amount: '5.00',\n    expectedRefundedTotalCents: 0,\n    options: new \\SellApp\\RequestOptions(idempotencyKey: \"example-mutation-001\"),\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -1286,6 +1662,14 @@
     "mountTarget": "Orders",
     "methodName": "send_fulfillment_notifications",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->orders()->sendFulfillmentNotifications(\n    order: 9001,\n    email: 'maya@example.com',\n    productVariantIds: [4321],\n    options: new \\SellApp\\RequestOptions(idempotencyKey: \"example-mutation-001\"),\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "regenerateOrderTelegramInvite",
+    "mountTarget": "Orders",
+    "methodName": "regenerate_telegram_invite",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->orders()->regenerateTelegramInvite(\n    order: 9001,\n    variantId: 4321,\n    options: new \\SellApp\\RequestOptions(idempotencyKey: \"example-mutation-001\"),\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -1358,22 +1742,6 @@
     "mountTarget": "OrdersLineItems",
     "methodName": "get",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->ordersLineItems()->get(\n    order: 4001,\n    lineItem: 9001,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
-  },
-  {
-    "language": "php",
-    "fileExtension": "php",
-    "operationId": "getVariantDeliverableConfiguration",
-    "mountTarget": "VariantDeliverables",
-    "methodName": "get",
-    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->variantDeliverables()->get(\n    product: 'string_example',\n    variant: 1,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
-  },
-  {
-    "language": "php",
-    "fileExtension": "php",
-    "operationId": "replaceVariantDeliverableConfiguration",
-    "mountTarget": "VariantDeliverables",
-    "methodName": "replace",
-    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->variantDeliverables()->replace(\n    product: 'string_example',\n    variant: 1,\n    types: ['MANUAL'],\n    data: ['comment' => 'Delivery is arranged by Launch Lab.'],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -1542,6 +1910,14 @@
     "mountTarget": "AffiliateProgram",
     "methodName": "invite",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->affiliateProgram()->invite(email: 'alex.morgan@example.com');\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "resendAffiliateInvitation",
+    "mountTarget": "AffiliateProgram",
+    "methodName": "resend",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->affiliateProgram()->resend(invitation: 77);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -1730,6 +2106,14 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "getUpsellOfferPerformance",
+    "mountTarget": "UpsellOffers",
+    "methodName": "get_performance",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->upsellOffers()->getPerformance(upsellOffer: 71);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "listCommunityConnections",
     "mountTarget": "CommunityConnections",
     "methodName": "list",
@@ -1778,6 +2162,62 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "listCommunityFailedGrantReasons",
+    "mountTarget": "CommunityConnections",
+    "methodName": "list_failed_grant_reasons",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->communityConnections()->listFailedGrantReasons();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getCommunityServer",
+    "mountTarget": "CommunityConnectionsServers",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->communityConnectionsServers()->get(\n    platform: 'discord',\n    server: 'server_ship_room',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "removeCommunityServer",
+    "mountTarget": "CommunityConnectionsServers",
+    "methodName": "remove",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->communityConnectionsServers()->remove(\n    platform: 'discord',\n    server: 'server_ship_room',\n    affectedVariantIds: [902],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "syncDiscordRoles",
+    "mountTarget": "CommunityConnections",
+    "methodName": "sync_discord_roles",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->communityConnections()->syncDiscordRoles();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "listSlackAvailableChannels",
+    "mountTarget": "CommunityConnectionsSlack",
+    "methodName": "list_channels",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->communityConnectionsSlack()->listChannels();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "addSlackChannel",
+    "mountTarget": "CommunityConnectionsSlack",
+    "methodName": "add_channel",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->communityConnectionsSlack()->addChannel(channelId: 'C07LAUNCHVIP');\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceSlackWorkspaceInviteLink",
+    "mountTarget": "CommunityConnectionsSlack",
+    "methodName": "replace_invite_link",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->communityConnectionsSlack()->replaceInviteLink(inviteLink: 'https://join.slack.com/t/launch-lab/shared_invite/zt-2abc123');\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "getWalletSettings",
     "mountTarget": "WalletSettings",
     "methodName": "get",
@@ -1813,7 +2253,7 @@
     "operationId": "adjustCustomerWallet",
     "mountTarget": "Wallet",
     "methodName": "adjust",
-    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->wallet()->adjust(\n    customer: 1,\n    amountCents: 2500,\n    idempotencyKey: 'wallet-adjustment-01992a65',\n    note: 'Launch-day account credit',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->wallet()->adjust(\n    customer: 1,\n    amountCents: 2500,\n    idempotencyKey: 'wallet-adjustment-01992a65',\n    note: 'Launch-day account credit',\n    expectedBalanceCents: 0,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -1822,6 +2262,30 @@
     "mountTarget": "Wallet",
     "methodName": "update_status",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->wallet()->updateStatus(\n    customer: 1,\n    status: 'frozen',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "reverseWalletTransaction",
+    "mountTarget": "WalletTransactions",
+    "methodName": "reverse",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->walletTransactions()->reverse(\n    customer: 42,\n    transaction: 501,\n    note: 'Credit went to the wrong customer',\n    expectedBalanceCents: 2500,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "listStoreWalletTransactions",
+    "mountTarget": "WalletLedger",
+    "methodName": "list",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->walletLedger()->list();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getWalletOverview",
+    "mountTarget": "WalletOverview",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->walletOverview()->get();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -1890,6 +2354,14 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "quoteCashbackRule",
+    "mountTarget": "CashbackRules",
+    "methodName": "quote",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->cashbackRules()->quote();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "listWalletBonusTiers",
     "mountTarget": "WalletBonusTiers",
     "methodName": "list",
@@ -1938,10 +2410,26 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "quoteWalletBonusTier",
+    "mountTarget": "WalletBonusTiers",
+    "methodName": "quote",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->walletBonusTiers()->quote(topUpCents: 20000);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "listCourses",
     "mountTarget": "Courses",
     "methodName": "list",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->courses()->list();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createCourse",
+    "mountTarget": "Courses",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->courses()->create(\n    category: 'design',\n    level: 'beginner',\n    language: 'English',\n    whatYouLearn: ['Sketch a logo concept.', 'Choose a color palette.'],\n    certificateEnabled: true,\n    deliveryText: 'Open your course from the link in your receipt.',\n    title: 'Brand identity basics',\n    description: '<p>Design a logo, color palette, and type system for your next project.</p>',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -1974,6 +2462,14 @@
     "mountTarget": "Courses",
     "methodName": "update",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->courses()->update(\n    course: 'string_example',\n    level: 'beginner',\n    visibility: 'HIDDEN',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getCourseStudentSummary",
+    "mountTarget": "Courses",
+    "methodName": "get_student_summary",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->courses()->getStudentSummary(\n    startDate: '2026-08-01',\n    endDate: '2026-08-31',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -2058,6 +2554,62 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "listCheckoutFieldTemplates",
+    "mountTarget": "CheckoutFieldTemplates",
+    "methodName": "list",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->checkoutFieldTemplates()->list();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "createCheckoutFieldTemplate",
+    "mountTarget": "CheckoutFieldTemplates",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->checkoutFieldTemplates()->create(\n    name: 'Discord access',\n    fields: [\n        [\n            'type' => 'text',\n            'label' => 'Discord username',\n            'key' => 'discord_username',\n            'required' => true,\n            'placeholder' => 'name#0001',\n            'description' => 'We add this account to the community after purchase.',\n        ],\n        [\n            'type' => 'radio',\n            'label' => 'Experience level',\n            'key' => 'experience_level',\n            'required' => false,\n            'options' => ['Beginner', 'Intermediate', 'Advanced'],\n            'variant' => 'cards',\n            'variant_options' => ['vertical' => true, 'indicator' => true],\n        ],\n    ],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getCheckoutFieldTemplate",
+    "mountTarget": "CheckoutFieldTemplates",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->checkoutFieldTemplates()->get(checkoutFieldTemplate: 14);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceCheckoutFieldTemplate",
+    "mountTarget": "CheckoutFieldTemplates",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->checkoutFieldTemplates()->replace(\n    checkoutFieldTemplate: 14,\n    name: 'Discord onboarding',\n    expectedUpdatedAt: '2026-09-04T09:00:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateCheckoutFieldTemplate",
+    "mountTarget": "CheckoutFieldTemplates",
+    "methodName": "update",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->checkoutFieldTemplates()->update(\n    checkoutFieldTemplate: 14,\n    name: 'Discord onboarding',\n    expectedUpdatedAt: '2026-09-04T09:00:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "deleteCheckoutFieldTemplate",
+    "mountTarget": "CheckoutFieldTemplates",
+    "methodName": "delete",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->checkoutFieldTemplates()->delete(\n    checkoutFieldTemplate: 14,\n    expectedUpdatedAt: '2026-09-04T09:00:00.000000Z',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "duplicateCheckoutFieldTemplate",
+    "mountTarget": "CheckoutFieldTemplates",
+    "methodName": "duplicate",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->checkoutFieldTemplates()->duplicate(\n    checkoutFieldTemplate: 14,\n    name: 'Discord access for courses',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "listPaymentMethods",
     "mountTarget": "PaymentMethods",
     "methodName": "list",
@@ -2094,6 +2646,22 @@
     "mountTarget": "PaymentMethods",
     "methodName": "validate",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->paymentMethods()->validate(\n    paymentMethod: 'NMI',\n    body: [\n        'merchant_secure_key' => 'replace-with-nmi-secure-key',\n        'merchant_tokenization_key' => 'replace-with-nmi-tokenization-key',\n        'signing_key' => 'replace-with-nmi-signing-key',\n        'currencies' => ['USD'],\n    ],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getPaymentMethodModifier",
+    "mountTarget": "PaymentMethodsModifier",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->paymentMethodsModifier()->get(paymentMethod: 'STRIPE');\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replacePaymentMethodModifier",
+    "mountTarget": "PaymentMethodsModifier",
+    "methodName": "replace",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->paymentMethodsModifier()->replace(\n    paymentMethod: 'STRIPE',\n    kind: 'fee',\n    percentage: '3.00',\n    fixedAmount: '0.30',\n    condition: 'below',\n    threshold: '20.00',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -2202,6 +2770,190 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "getCheckoutSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "get_checkout",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->getCheckout();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceCheckoutSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "replace_checkout",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->replaceCheckout(\n    shoppingCartEnabled: true,\n    customerEmailRequired: true,\n    allowVpnPurchases: true,\n    blacklistOnDispute: true,\n    minimumSpend: '5.00',\n    billingDescriptor: 'LAUNCH LAB',\n    attemptsPerCustomer: 5,\n    attemptsPerIp: 20,\n    attemptsPerEmail: null,\n    attemptsPerFingerprint: null,\n    rateLimitWindowSeconds: 3600,\n    crypto: ['underpaid_percentage' => 2, 'minimum_confirmations' => 2],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateCheckoutSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "update_checkout",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->updateCheckout(\n    minimumSpend: '10.00',\n    attemptsPerEmail: 10,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getTaxSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "get_taxes",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->getTaxes();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceTaxSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "replace_taxes",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->replaceTaxes(\n    vatEnabled: true,\n    vatInclusivePricing: true,\n    collectBillingDetails: false,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateTaxSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "update_taxes",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->updateTaxes(vatInclusivePricing: true);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getCustomerEmailSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "get_customer_emails",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->getCustomerEmails();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceCustomerEmailSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "replace_customer_emails",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->replaceCustomerEmails(\n    sendDeliveryEmail: true,\n    sendPaymentFailureEmail: false,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateCustomerEmailSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "update_customer_emails",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->updateCustomerEmails(sendPaymentFailureEmail: false);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getStoreAlertSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "get_store_alerts",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->getStoreAlerts();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceStoreAlertSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "replace_store_alerts",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->replaceStoreAlerts(saleEmailsEnabled: false);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateStoreAlertSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "update_store_alerts",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->updateStoreAlerts(saleEmailsEnabled: false);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getPersonalizationSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "get_personalization",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->getPersonalization();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replacePersonalizationSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "replace_personalization",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->replacePersonalization(\n    supportEmail: 'support@launch-lab.example.com',\n    trustpilotEmail: null,\n    senderName: 'Launch Lab',\n    senderEmail: 'orders@launch-lab.example.com',\n    storeAddress: '651 N Broad St, Suite 206',\n    storeCity: 'Middletown',\n    storeState: 'Delaware',\n    storeZip: '19709',\n    storeCountry: 'United States',\n    storeTax: 'EIN 98-7654321',\n    backLinkLabel: 'Back to Launch Lab',\n    backLinkUrl: 'https://launch-lab.example.com',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updatePersonalizationSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "update_personalization",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->updatePersonalization(\n    backLinkLabel: 'Return to the shop',\n    backLinkUrl: 'https://launch-lab.example.com/shop',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "replaceCryptoCheckoutSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "replace_crypto_checkout",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->replaceCryptoCheckout(\n    underpaidPercentage: 1,\n    minimumConfirmations: 3,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateCryptoCheckoutSettings",
+    "mountTarget": "StoreSettings",
+    "methodName": "update_crypto_checkout",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSettings()->updateCryptoCheckout(minimumConfirmations: 3);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getSenderEmail",
+    "mountTarget": "StoreSenderEmail",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSenderEmail()->get();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "setSenderEmail",
+    "mountTarget": "StoreSenderEmail",
+    "methodName": "set",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSenderEmail()->set(email: 'orders@launch-lab.example.com');\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "deleteSenderEmail",
+    "mountTarget": "StoreSenderEmail",
+    "methodName": "delete",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSenderEmail()->delete();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "sendSenderEmailVerification",
+    "mountTarget": "StoreSenderEmail",
+    "methodName": "send_verification",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeSenderEmail()->sendVerification(email: 'orders@launch-lab.example.com');\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getStoreIntegrations",
+    "mountTarget": "StoreIntegrations",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeIntegrations()->get();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "disconnectGoogleCalendar",
+    "mountTarget": "StoreIntegrations",
+    "methodName": "disconnect_google_calendar",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeIntegrations()->disconnectGoogleCalendar(connectionId: 7);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "listNotificationChannels",
     "mountTarget": "StoreNotificationChannels",
     "methodName": "list",
@@ -2286,6 +3038,22 @@
     "mountTarget": "StoreCustomDomains",
     "methodName": "refresh",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->storeCustomDomains()->refresh(customDomain: 1);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "listNotifications",
+    "mountTarget": "Notifications",
+    "methodName": "list",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->notifications()->list();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "markNotificationsSeen",
+    "mountTarget": "Notifications",
+    "methodName": "mark",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->notifications()->mark(notificationIds: [9182]);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -2402,6 +3170,46 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "getAffiliateProducts",
+    "mountTarget": "AffiliatesProducts",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->affiliatesProducts()->get(affiliate: 88);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "updateAffiliateProducts",
+    "mountTarget": "AffiliatesProducts",
+    "methodName": "update",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->affiliatesProducts()->update(\n    affiliate: 88,\n    enableSpecificProducts: true,\n    products: [\n        [\n            'id' => 42,\n            'enabled' => true,\n            'commission' => ['type' => 'percentage', 'percentage' => '25'],\n        ],\n        [\n            'id' => 43,\n            'enabled' => true,\n            'commission' => ['type' => 'fixed', 'amount_usd_cents' => 550],\n        ],\n    ],\n    replaceProducts: true,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getAffiliateCoupon",
+    "mountTarget": "AffiliatesCoupon",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->affiliatesCoupon()->get(affiliate: 88);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "saveAffiliateCoupon",
+    "mountTarget": "AffiliatesCoupon",
+    "methodName": "save",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->affiliatesCoupon()->save(\n    affiliate: 88,\n    code: 'ALEX15',\n    type: 'PERCENTAGE',\n    discount: '15',\n    storeWide: true,\n    maximumDiscountAmount: '20',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "disableAffiliateCoupon",
+    "mountTarget": "AffiliatesCoupon",
+    "methodName": "disable",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->affiliatesCoupon()->disable(affiliate: 88);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "listAffiliateReferrals",
     "mountTarget": "AffiliateReferrals",
     "methodName": "list",
@@ -2470,6 +3278,14 @@
     "mountTarget": "AffiliatePayouts",
     "methodName": "update",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->affiliatePayouts()->update(\n    payout: 1,\n    status: 'paid',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "markAffiliatePayoutsPaid",
+    "mountTarget": "AffiliatePayouts",
+    "methodName": "mark_paid",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->affiliatePayouts()->markPaid(\n    payoutIds: [91, 92],\n    expectedTotalUsdCents: 4250,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -3250,6 +4066,14 @@
   {
     "language": "php",
     "fileExtension": "php",
+    "operationId": "v2GetCouponUsage",
+    "mountTarget": "Coupons",
+    "methodName": "v2_get_coupon_usage",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->coupons()->v2GetCouponUsage(coupon: 1);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
     "operationId": "v2ListFeedback",
     "mountTarget": "Feedback",
     "methodName": "v2_list_feedback",
@@ -3421,7 +4245,7 @@
     "operationId": "updateTicket",
     "mountTarget": "Tickets",
     "methodName": "update",
-    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->tickets()->update(\n    ticket: 42,\n    status: 'CLOSED',\n    archived: true,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->tickets()->update(\n    ticket: 42,\n    status: 'CLOSED',\n    archived: true,\n    outcome: 'delivered',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",
@@ -3454,6 +4278,62 @@
     "mountTarget": "TicketsMessages",
     "methodName": "v2_get_ticket_message",
     "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->ticketsMessages()->v2GetTicketMessage(\n    ticket: 1,\n    message: 2,\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "batchUpdateTickets",
+    "mountTarget": "Tickets",
+    "methodName": "batch_update",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->tickets()->batchUpdate(\n    action: 'close',\n    outcome: 'delivered',\n    resources: [311, 313],\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "v2GetTicketContext",
+    "mountTarget": "Tickets",
+    "methodName": "get_context",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->tickets()->getContext(ticket: 312);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "v2ListTicketWalletRefundOptions",
+    "mountTarget": "TicketsWalletRefunds",
+    "methodName": "list_options",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->ticketsWalletRefunds()->listOptions(ticket: 312);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "v2ListTicketWalletRefunds",
+    "mountTarget": "TicketsWalletRefunds",
+    "methodName": "list",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->ticketsWalletRefunds()->list(ticket: 312);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "v2RefundTicketToWallet",
+    "mountTarget": "TicketsWalletRefunds",
+    "methodName": "create",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->ticketsWalletRefunds()->create(\n    ticket: 312,\n    invoiceId: 5120,\n    amountCents: 500,\n    expectedRefundableCents: 1999,\n    customerNote: 'We added $5.00 to your store wallet for the trouble with your download link.',\n    options: new \\SellApp\\RequestOptions(idempotencyKey: \"example-mutation-001\"),\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "v2ReverseTicketWalletRefund",
+    "mountTarget": "TicketsWalletRefunds",
+    "methodName": "reverse",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->ticketsWalletRefunds()->reverse(\n    ticket: 312,\n    walletRefund: 7001,\n    reason: 'Issued on the wrong ticket.',\n);\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
+  },
+  {
+    "language": "php",
+    "fileExtension": "php",
+    "operationId": "getSupportAnalytics",
+    "mountTarget": "TicketsAnalytics",
+    "methodName": "get",
+    "content": "<?php\nrequire __DIR__ . '/vendor/autoload.php';\n\nuse SellApp\\Client;\n\n$client = new Client(\n    apiKey: getenv('SELLAPP_API_KEY'),\n    baseUrl: getenv('SELLAPP_API_BASE_URL'),\n    store: getenv('SELLAPP_STORE'),\n);\n\n$result = $client->ticketsAnalytics()->get();\necho json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;\n"
   },
   {
     "language": "php",

@@ -7,6 +7,8 @@ declare(strict_types=1);
 namespace SellApp\Service;
 
 use SellApp\Resource\SdkGetVariantDeliverableConfigurationResponseValue200ApplicationJson;
+use SellApp\Resource\SdkNotifyVariantBuyersResponseValue202ApplicationJson;
+use SellApp\Resource\SdkPreviewVariantBuyerNotificationResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceVariantDeliverableConfigurationResponseValue200ApplicationJson;
 
 class VariantDeliverables
@@ -19,6 +21,52 @@ class VariantDeliverables
     public function withResponse(): \SellApp\RawResourceProxy
     {
         return $this->client->withResponse($this);
+    }
+
+    /**
+     * Preview variant buyer notification
+     *
+     * See who would be emailed if you told this variant's buyers about new downloadable files, without sending anything. Use it before `POST` on the same path to check the numbers. Works for any variant, drafts included. Requires the `listing` API-key ability and the `listing` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $product The product path parameter.
+     * @param int $variant The variant path parameter.
+     * @return \SellApp\Resource\SdkPreviewVariantBuyerNotificationResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function preview(
+        int $product,
+        int $variant,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkPreviewVariantBuyerNotificationResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'previewVariantBuyerNotification', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/products/' . rawurlencode((string) $product) . '/variants/' . rawurlencode((string) $variant) . '/deliverable/buyer-notification',
+            options: $options,
+        );
+        return SdkPreviewVariantBuyerNotificationResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Notify variant buyers
+     *
+     * Email your customers that this variant has new content: every completed order that delivered its downloadable files gets one email. The emails are queued, so `202` means they were queued, not delivered. It sends only for a published variant with at least one file, at least one such order, and no upload in progress. The buyers of one variant can be emailed this way at most once an hour, whichever API key or team member sends it, and each team member can send at most 3 times a minute per variant. Requires the `listing` API-key ability and the `listing` permission in your team role. Send an `Idempotency-Key` header; requests without one return `400`. A retry with the same key and an empty body returns the first response with `Idempotent-Replayed: true` and sends nothing new. Use a new key for every send you intend, including a new attempt after a `422`. The same key while the first request is still running returns `409`. Every refusal is `422` on `variant`: a draft variant, a variant without files, a variant nobody has bought, an upload still in progress, the hourly limit (the message says how many minutes are left), the per-minute limit, or another send for the same variant at the same moment. Check `GET` on the same path first to see the numbers. A variant of another product returns `404`. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int $product The product path parameter.
+     * @param int $variant The variant path parameter.
+     * @return \SellApp\Resource\SdkNotifyVariantBuyersResponseValue202ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function notify(
+        int $product,
+        int $variant,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkNotifyVariantBuyersResponseValue202ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(true, 'notifyVariantBuyers', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/products/' . rawurlencode((string) $product) . '/variants/' . rawurlencode((string) $variant) . '/deliverable/buyer-notification',
+            options: $options,
+        );
+        return SdkNotifyVariantBuyersResponseValue202ApplicationJson::fromArray($response);
     }
 
     /**

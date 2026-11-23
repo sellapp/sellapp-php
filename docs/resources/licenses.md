@@ -135,6 +135,11 @@ List all license keys
 public function list(
         ?int $limit = null,
         ?int $page = null,
+        ?string $key = null,
+        ?string $customerEmail = null,
+        ?int $productId = null,
+        ?int $orderId = null,
+        ?\SellApp\Resource\LicensesValidity $validity = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -143,6 +148,11 @@ public function list(
 | --- | --- | --- |
 | limit | `?int` | No |
 | page | `?int` | No |
+| key | `?string` | No |
+| customerEmail | `?string` | No |
+| productId | `?int` | No |
+| orderId | `?int` | No |
+| validity | `?\SellApp\Resource\LicensesValidity` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.

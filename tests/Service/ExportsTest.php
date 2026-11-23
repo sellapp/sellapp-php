@@ -17,11 +17,13 @@ class ExportsTest extends TestCase
     {
         $fixture = $this->loadFixture('list_list_exports_response_value_200_application_json_property_data_item');
         $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
-        $result = $client->exports()->listExports();
+        $result = $client->exports()->listExports(page: 1);
         $this->assertInstanceOf(\SellApp\PaginatedResponse::class, $result);
         $request = $this->getLastRequest();
         $this->assertSame('GET', $request->getMethod());
         $this->assertStringEndsWith('v2/exports', $request->getUri()->getPath());
+        parse_str($request->getUri()->getQuery(), $query);
+        $this->assertArrayHasKey('page', $query);
     }
 
     public function testCreateExport(): void

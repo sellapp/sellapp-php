@@ -10,10 +10,10 @@ readonly class SdkIssueReplacementForCompletedInvoiceRequestApplicationJson impl
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkIssueReplacementForCompletedInvoiceRequestApplicationJson', 'required' => ['product_variants'], 'properties' => ['product_variants' => ['kind' => 'model', 'class' => 'IssueReplacementForCompletedInvoiceRequestApplicationJsonPropertyProductVariants']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkIssueReplacementForCompletedInvoiceRequestApplicationJson', 'required' => ['product_variants'], 'properties' => ['product_variants' => ['kind' => 'union', 'variants' => [['kind' => 'primitive', 'type' => 'integer'], ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'integer']]], 'composition' => 'anyOf']], 'additionalProperties' => true];
 
     public function __construct(
-        public IssueReplacementForCompletedInvoiceRequestApplicationJsonPropertyProductVariants $productVariants,
+        public int|array $productVariants,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -24,7 +24,7 @@ readonly class SdkIssueReplacementForCompletedInvoiceRequestApplicationJson impl
     {
         self::validate($data, 'response');
         return new self(
-            productVariants: IssueReplacementForCompletedInvoiceRequestApplicationJsonPropertyProductVariants::fromArray($data['product_variants']),
+            productVariants: $data['product_variants'],
             additionalProperties: SchemaValidator::unknownFields($data, ['product_variants']),
             presentFields: array_keys($data),
         );
@@ -38,7 +38,7 @@ readonly class SdkIssueReplacementForCompletedInvoiceRequestApplicationJson impl
     public function toArray(): array
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
-            'product_variants' => $this->productVariants->toArray(),
+            'product_variants' => SchemaValidator::wireValue($this->productVariants),
         ], ['product_variants'], $this->presentFields));
     }
 }

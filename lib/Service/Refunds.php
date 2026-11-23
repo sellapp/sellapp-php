@@ -24,17 +24,41 @@ class Refunds
     /**
      * List refunds
      *
-     * List refunds for orders and standalone charges in the selected store, one page at a time. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List refunds for orders and standalone charges in the selected store, newest first, 15 per page by default. Filter by `status`, `provider`, `source`, or the order or charge refunded; filters combine. To see every refund of one order, send `refundable_type=order` and `refundable_id` set to the order ID. A value outside a parameter's accepted values, a `limit` above 100, or a query parameter the endpoint does not take returns `422` on that parameter. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param int|null $page Page number, starting at 1. Defaults to 1.
+     * @param int|null $limit Refunds per page, from 1 to 100. Defaults to 15.
+     * @param \SellApp\Resource\RefundsStatus|null $status Keep refunds in this state: `pending`, `effective`, `failed`, or `cancelled`.
+     * @param \SellApp\Resource\RefundsProvider|null $provider Keep refunds made through this payment provider: `manual`, `mercado_pago`, `nmi`, `mollie`, `paypal`, `razorpay`, `square`, or `stripe`.
+     * @param \SellApp\Resource\RefundsSource|null $source Keep refunds by how they were recorded: `manual`, `provider_webhook`, `provider_api`, or `system`. For example, `provider_api` is a refund SellApp requested from the provider and `provider_webhook` one the provider reported.
+     * @param \SellApp\Resource\RefundsRefundableType|null $refundableType Keep refunds of orders (`order`) or of standalone charges (`charge`).
+     * @param int|null $refundableId Keep refunds of the order or charge with this ID. Send `refundable_type` with it, because an order and a charge can share an ID.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\ListRefundsResponseValue200ApplicationJsonPropertyDataItem>
      * @throws \SellApp\Exception\SDKException
      */
     public function listRefunds(
+        ?int $page = null,
+        ?int $limit = null,
+        ?\SellApp\Resource\RefundsStatus $status = null,
+        ?\SellApp\Resource\RefundsProvider $provider = null,
+        ?\SellApp\Resource\RefundsSource $source = null,
+        ?\SellApp\Resource\RefundsRefundableType $refundableType = null,
+        ?int $refundableId = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'listRefunds', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'page' => $page,
+            'limit' => $limit,
+            'status' => $status?->value,
+            'provider' => $provider?->value,
+            'source' => $source?->value,
+            'refundable_type' => $refundableType?->value,
+            'refundable_id' => $refundableId,
+        ], fn ($v) => $v !== null);
         return $this->client->requestPage(
             method: 'GET',
             path: 'v2/refunds',
+            query: $query,
             modelClass: ListRefundsResponseValue200ApplicationJsonPropertyDataItem::class,
             options: $options,
         );

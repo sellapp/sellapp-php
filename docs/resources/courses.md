@@ -64,6 +64,105 @@ Documented HTTP responses: 200, 400, 401, 403, 422, 429, 500. See the API refere
 
 [Response access, transport controls, pagination, and typed errors](../usage.md)
 
+## create
+
+Create a course
+
+[API reference](https://sell.app/docs/api/courses/create-a-course) · Effect: **write**
+
+```php
+public function create(
+        string $title,
+        ?\SellApp\Resource\Category $category = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel $level = null,
+        ?string $language = null,
+        ?string $subtitle = null,
+        ?string $author = null,
+        ?string $subcategory = null,
+        ?array $whatYouLearn = null,
+        ?array $requirements = null,
+        ?bool $certificateEnabled = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType $accessType = null,
+        ?int $accessDurationDays = null,
+        ?int $enrollmentLimit = null,
+        ?string $deliveryText = null,
+        ?string $slug = null,
+        ?string $description = null,
+        ?\SellApp\Resource\CatalogVisibility $visibility = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkCreateCourseResponseValue201ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| title | `string` | Yes |
+| category | `?\SellApp\Resource\Category` | No |
+| level | `?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel` | No |
+| language | `?string` | No |
+| subtitle | `?string` | No |
+| author | `?string` | No |
+| subcategory | `?string` | No |
+| whatYouLearn | `?array` | No |
+| requirements | `?array` | No |
+| certificateEnabled | `?bool` | No |
+| accessType | `?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType` | No |
+| accessDurationDays | `?int` | No |
+| enrollmentLimit | `?int` | No |
+| deliveryText | `?string` | No |
+| slug | `?string` | No |
+| description | `?string` | No |
+| visibility | `?\SellApp\Resource\CatalogVisibility` | No |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkCreateCourseResponseValue201ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->courses()->create(
+    category: 'design',
+    level: 'beginner',
+    language: 'English',
+    whatYouLearn: ['Sketch a logo concept.', 'Choose a color palette.'],
+    certificateEnabled: true,
+    deliveryText: 'Open your course from the link in your receipt.',
+    title: 'Brand identity basics',
+    description: '<p>Design a logo, color palette, and type system for your next project.</p>',
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 201, 400, 401, 403, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
 ## search
 
 Search courses
@@ -205,7 +304,7 @@ Update a course
 public function replace(
         string $course,
         ?\SellApp\Resource\Category $category = null,
-        ?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonLevel $level = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel $level = null,
         ?string $language = null,
         ?string $subtitle = null,
         ?string $author = null,
@@ -213,12 +312,15 @@ public function replace(
         ?array $whatYouLearn = null,
         ?array $requirements = null,
         ?bool $certificateEnabled = null,
-        ?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonAccessType $accessType = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType $accessType = null,
         ?int $accessDurationDays = null,
         ?int $enrollmentLimit = null,
         ?string $deliveryText = null,
         ?\SellApp\Resource\CatalogVisibility $visibility = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
+        ?string $title = null,
+        ?string $slug = null,
+        ?string $description = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkReplaceCourseResponseValue200ApplicationJson
 ```
@@ -227,7 +329,7 @@ public function replace(
 | --- | --- | --- |
 | course | `string` | Yes |
 | category | `?\SellApp\Resource\Category` | No |
-| level | `?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonLevel` | No |
+| level | `?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel` | No |
 | language | `?string` | No |
 | subtitle | `?string` | No |
 | author | `?string` | No |
@@ -235,12 +337,15 @@ public function replace(
 | whatYouLearn | `?array` | No |
 | requirements | `?array` | No |
 | certificateEnabled | `?bool` | No |
-| accessType | `?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonAccessType` | No |
+| accessType | `?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType` | No |
 | accessDurationDays | `?int` | No |
 | enrollmentLimit | `?int` | No |
 | deliveryText | `?string` | No |
 | visibility | `?\SellApp\Resource\CatalogVisibility` | No |
 | expectedUpdatedAt | `?\DateTimeImmutable` | No |
+| title | `?string` | No |
+| slug | `?string` | No |
+| description | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkReplaceCourseResponseValue200ApplicationJson`.
@@ -297,7 +402,7 @@ Update a course
 public function update(
         string $course,
         ?\SellApp\Resource\Category $category = null,
-        ?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonLevel $level = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel $level = null,
         ?string $language = null,
         ?string $subtitle = null,
         ?string $author = null,
@@ -305,12 +410,15 @@ public function update(
         ?array $whatYouLearn = null,
         ?array $requirements = null,
         ?bool $certificateEnabled = null,
-        ?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonAccessType $accessType = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType $accessType = null,
         ?int $accessDurationDays = null,
         ?int $enrollmentLimit = null,
         ?string $deliveryText = null,
         ?\SellApp\Resource\CatalogVisibility $visibility = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
+        ?string $title = null,
+        ?string $slug = null,
+        ?string $description = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateCourseResponseValue200ApplicationJson
 ```
@@ -319,7 +427,7 @@ public function update(
 | --- | --- | --- |
 | course | `string` | Yes |
 | category | `?\SellApp\Resource\Category` | No |
-| level | `?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonLevel` | No |
+| level | `?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel` | No |
 | language | `?string` | No |
 | subtitle | `?string` | No |
 | author | `?string` | No |
@@ -327,12 +435,15 @@ public function update(
 | whatYouLearn | `?array` | No |
 | requirements | `?array` | No |
 | certificateEnabled | `?bool` | No |
-| accessType | `?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonAccessType` | No |
+| accessType | `?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType` | No |
 | accessDurationDays | `?int` | No |
 | enrollmentLimit | `?int` | No |
 | deliveryText | `?string` | No |
 | visibility | `?\SellApp\Resource\CatalogVisibility` | No |
 | expectedUpdatedAt | `?\DateTimeImmutable` | No |
+| title | `?string` | No |
+| slug | `?string` | No |
+| description | `?string` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkUpdateCourseResponseValue200ApplicationJson`.
@@ -376,6 +487,73 @@ Supported credential alternatives (each object is one alternative):
 ```
 
 Documented HTTP responses: 200, 400, 401, 403, 404, 422, 429, 500. See the API reference for field-level validation and consequences.
+
+[Response access, transport controls, pagination, and typed errors](../usage.md)
+
+## getStudentSummary
+
+Retrieve a course student summary
+
+[API reference](https://sell.app/docs/api/courses/retrieve-course-student-summary) · Effect: **read**
+
+```php
+public function getStudentSummary(
+        string $startDate,
+        string $endDate,
+        ?int $courseId = null,
+        ?int $limit = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetCourseStudentSummaryResponseValue200ApplicationJson
+```
+
+| Argument | Native type | Required |
+| --- | --- | --- |
+| startDate | `string` | Yes |
+| endDate | `string` | Yes |
+| courseId | `?int` | No |
+| limit | `?int` | No |
+| options | `?\SellApp\RequestOptions` | No |
+
+Returns: `\SellApp\Resource\SdkGetCourseStudentSummaryResponseValue200ApplicationJson`.
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use SellApp\Client;
+
+$client = new Client(
+    apiKey: getenv('SELLAPP_API_KEY'),
+    baseUrl: getenv('SELLAPP_API_BASE_URL'),
+    store: getenv('SELLAPP_STORE'),
+);
+
+$result = $client->courses()->getStudentSummary(
+    startDate: '2026-08-01',
+    endDate: '2026-08-31',
+);
+echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+```
+
+### Authentication and errors
+
+Supported credential alternatives (each object is one alternative):
+
+```json
+[
+  {
+    "bearerAuth": []
+  },
+  {
+    "oauthAccessToken": [
+      "admin"
+    ],
+    "storeAuth": []
+  }
+]
+```
+
+Documented HTTP responses: 200, 400, 401, 403, 422, 429, 500. See the API reference for field-level validation and consequences.
 
 [Response access, transport controls, pagination, and typed errors](../usage.md)
 

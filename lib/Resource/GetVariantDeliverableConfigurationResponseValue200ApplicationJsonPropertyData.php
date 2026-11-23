@@ -10,12 +10,12 @@ readonly class GetVariantDeliverableConfigurationResponseValue200ApplicationJson
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'GetVariantDeliverableConfigurationResponseValue200ApplicationJsonPropertyData', 'required' => ['types', 'data', 'webhook_configured', 'updated_at'], 'properties' => ['types' => ['kind' => 'array', 'items' => ['kind' => 'enum', 'values' => ['DOWNLOADABLE', 'TEXT', 'DYNAMIC', 'MANUAL', 'LICENSE_KEY', 'BUNDLE', 'BOOKING', 'CREDITS']]], 'data' => ['kind' => 'model', 'class' => 'GetVariantDeliverableConfigurationResponseValue200ApplicationJsonPropertyDataPropertyData'], 'webhook_configured' => ['kind' => 'primitive', 'type' => 'boolean'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'additionalProperties' => false];
+    private const SCHEMA = ['name' => 'GetVariantDeliverableConfigurationResponseValue200ApplicationJsonPropertyData', 'required' => ['types', 'data', 'webhook_configured', 'updated_at'], 'properties' => ['types' => ['kind' => 'array', 'items' => ['kind' => 'enum', 'values' => ['DOWNLOADABLE', 'TEXT', 'DYNAMIC', 'MANUAL', 'LICENSE_KEY', 'BUNDLE', 'BOOKING', 'CREDITS']]], 'data' => ['kind' => 'union', 'variants' => [['kind' => 'model', 'class' => 'GetVariantDeliverableConfigurationResponseValue200ApplicationJsonPropertyDataPropertyDataAnyOfValue1'], ['kind' => 'array', 'items' => ['kind' => 'primitive', 'type' => 'unknown'], 'maxItems' => 0]], 'composition' => 'anyOf'], 'webhook_configured' => ['kind' => 'primitive', 'type' => 'boolean'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'additionalProperties' => false];
 
     public function __construct(
         /** @var array<\SellApp\Resource\CreateProductVariantRequestApplicationJsonPropertyDeliverableTypes> */
         public array $types,
-        public GetVariantDeliverableConfigurationResponseValue200ApplicationJsonPropertyDataPropertyData $data,
+        public GetVariantDeliverableConfigurationResponseValue200ApplicationJsonPropertyDataPropertyDataAnyOfValue1|array $data,
         /** Whether a dynamic delivery endpoint is configured. The endpoint itself is never returned. */
         public bool $webhookConfigured,
         /** The current variant snapshot token. Pass this value as expected_updated_at when replacing the configuration to reject stale updates. */
@@ -31,7 +31,7 @@ readonly class GetVariantDeliverableConfigurationResponseValue200ApplicationJson
         self::validate($data, 'response');
         return new self(
             types: array_map(fn ($item) => CreateProductVariantRequestApplicationJsonPropertyDeliverableTypes::tryFrom($item) ?? $item, $data['types']),
-            data: GetVariantDeliverableConfigurationResponseValue200ApplicationJsonPropertyDataPropertyData::fromArray($data['data']),
+            data: (is_array($data['data']) && array_is_list($data['data']) ? $data['data'] : SchemaValidator::deserializeUnion($data['data'], [GetVariantDeliverableConfigurationResponseValue200ApplicationJsonPropertyDataPropertyDataAnyOfValue1::class])),
             webhookConfigured: $data['webhook_configured'],
             updatedAt: new \DateTimeImmutable($data['updated_at']),
             additionalProperties: SchemaValidator::unknownFields($data, ['types', 'data', 'webhook_configured', 'updated_at']),
@@ -48,7 +48,7 @@ readonly class GetVariantDeliverableConfigurationResponseValue200ApplicationJson
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'types' => array_map(fn ($item) => $item instanceof \BackedEnum ? $item->value : $item, $this->types),
-            'data' => $this->data->toArray(),
+            'data' => SchemaValidator::wireValue($this->data),
             'webhook_configured' => $this->webhookConfigured,
             'updated_at' => $this->updatedAt->format(\DateTimeInterface::RFC3339_EXTENDED),
         ], ['types', 'data', 'webhook_configured', 'updated_at'], $this->presentFields));

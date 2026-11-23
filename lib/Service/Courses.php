@@ -6,7 +6,9 @@ declare(strict_types=1);
 
 namespace SellApp\Service;
 
+use SellApp\Resource\SdkCreateCourseResponseValue201ApplicationJson;
 use SellApp\Resource\SdkGetCourseResponseValue200ApplicationJson;
+use SellApp\Resource\SdkGetCourseStudentSummaryResponseValue200ApplicationJson;
 use SellApp\Resource\SdkListCoursesResponseValue200ApplicationJson;
 use SellApp\Resource\SdkReplaceCourseResponseValue200ApplicationJson;
 use SellApp\Resource\SdkSearchCoursesResponseValue200ApplicationJson;
@@ -53,6 +55,80 @@ class Courses
             modelClass: SdkListCoursesResponseValue200ApplicationJson::class,
             options: $options,
         );
+    }
+
+    /**
+     * Create a course
+     *
+     * Create a course as a draft that customers cannot buy yet, whatever `visibility` you send: `visibility`, `HIDDEN` by default, applies once the course is published. It starts with no sections and one draft option named `Default`, priced at 0 USD: set the price with the product variant endpoints, add sections and lessons, then publish it with `POST /v2/products/{product}/publish`, where `{product}` is the course `id`. Each successful call creates another course, so do not retry blindly after a lost response: search courses for the title first. Requires the `listing` API-key ability and the `listing` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param \SellApp\Resource\Category|null $category
+     * @param \SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel|null $level
+     * @param string|null $language
+     * @param string|null $subtitle
+     * @param string|null $author
+     * @param string|null $subcategory
+     * @param array<string>|null $whatYouLearn
+     * @param array<string>|null $requirements
+     * @param bool|null $certificateEnabled
+     * @param \SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType|null $accessType
+     * @param int|null $accessDurationDays Required when access_type is limited; cleared otherwise.
+     * @param int|null $enrollmentLimit
+     * @param string|null $deliveryText
+     * @param string $title The course name customers see.
+     * @param string|null $slug The last part of the course's storefront URL: lowercase letters and numbers in words joined by single hyphens, such as `design-foundations`. It must be unused by every other product in the store, or the request returns `422` on `slug`. When you leave it out, SellApp makes one from the title.
+     * @param string|null $description The course description as HTML, at least 5 characters long and at most 2000 characters of visible text. Leave it out, or send null, to start without one; a course needs a description before it is published.
+     * @param \SellApp\Resource\CatalogVisibility|null $visibility
+     * @return \SellApp\Resource\SdkCreateCourseResponseValue201ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function create(
+        string $title,
+        ?\SellApp\Resource\Category $category = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel $level = null,
+        ?string $language = null,
+        ?string $subtitle = null,
+        ?string $author = null,
+        ?string $subcategory = null,
+        ?array $whatYouLearn = null,
+        ?array $requirements = null,
+        ?bool $certificateEnabled = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType $accessType = null,
+        ?int $accessDurationDays = null,
+        ?int $enrollmentLimit = null,
+        ?string $deliveryText = null,
+        ?string $slug = null,
+        ?string $description = null,
+        ?\SellApp\Resource\CatalogVisibility $visibility = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkCreateCourseResponseValue201ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'createCourse', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $body = array_filter([
+            'category' => $category?->value,
+            'level' => $level?->value,
+            'language' => $language,
+            'subtitle' => $subtitle,
+            'author' => $author,
+            'subcategory' => $subcategory,
+            'what_you_learn' => $whatYouLearn,
+            'requirements' => $requirements,
+            'certificate_enabled' => $certificateEnabled,
+            'access_type' => $accessType?->value,
+            'access_duration_days' => $accessDurationDays,
+            'enrollment_limit' => $enrollmentLimit,
+            'delivery_text' => $deliveryText,
+            'title' => $title,
+            'slug' => $slug,
+            'description' => $description,
+            'visibility' => $visibility?->value,
+        ], fn ($v) => $v !== null);
+        \SellApp\Resource\SdkCreateCourseRequestApplicationJson::validate($body, 'request');
+        $response = $this->client->request(
+            method: 'POST',
+            path: 'v2/courses',
+            body: $body,
+            options: $options,
+        );
+        return SdkCreateCourseResponseValue201ApplicationJson::fromArray($response);
     }
 
     /**
@@ -118,10 +194,10 @@ class Courses
     /**
      * Update a course
      *
-     * Update course metadata, access configuration, delivery copy, or publication visibility. Public visibility requires a ready promotional video and at least one published lesson. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update a course's title, URL slug, description, details, access rules, delivery message, or visibility. Only the fields you send change, and PUT behaves exactly like PATCH. Sending the course's current `visibility` changes nothing; a different `visibility` also publishes a draft course. `PUBLIC` first checks that the course has a ready promotional video and at least one published lesson, and otherwise returns `422` on `promo_video` or `curriculum` without changing anything. Every successful update moves `updated_at` forward, even one that changes nothing, so retrying with the same `expected_updated_at` after a success returns `422`: retrieve the course again first. Requires the `listing` API-key ability and the `listing` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param string $course The course path parameter.
      * @param \SellApp\Resource\Category|null $category
-     * @param \SellApp\Resource\SdkUpdateCourseRequestApplicationJsonLevel|null $level
+     * @param \SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel|null $level
      * @param string|null $language
      * @param string|null $subtitle
      * @param string|null $author
@@ -129,19 +205,22 @@ class Courses
      * @param array<string>|null $whatYouLearn
      * @param array<string>|null $requirements
      * @param bool|null $certificateEnabled
-     * @param \SellApp\Resource\SdkUpdateCourseRequestApplicationJsonAccessType|null $accessType
+     * @param \SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType|null $accessType
      * @param int|null $accessDurationDays Required when access_type is limited; cleared otherwise.
      * @param int|null $enrollmentLimit
      * @param string|null $deliveryText
      * @param \SellApp\Resource\CatalogVisibility|null $visibility
-     * @param \DateTimeImmutable|null $expectedUpdatedAt
+     * @param \DateTimeImmutable|null $expectedUpdatedAt The `updated_at` you last read. If the course changed since, the request returns `422` on `expected_updated_at` and changes nothing. It is checked even when the request changes nothing else.
+     * @param string|null $title The course name customers see.
+     * @param string|null $slug The last part of the course's storefront URL: lowercase letters and numbers in words joined by single hyphens, such as `design-foundations`. It must be unused by every other product in the store, or the request returns `422` on `slug`.
+     * @param string|null $description The course description as HTML, at least 5 characters long and at most 2000 characters of visible text. `null` keeps the current description. To clear the description of a draft course, send an empty element such as `<p></p>`; a published course must keep one, so clearing it returns `422` on `description`.
      * @return \SellApp\Resource\SdkReplaceCourseResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function replace(
         string $course,
         ?\SellApp\Resource\Category $category = null,
-        ?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonLevel $level = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel $level = null,
         ?string $language = null,
         ?string $subtitle = null,
         ?string $author = null,
@@ -149,12 +228,15 @@ class Courses
         ?array $whatYouLearn = null,
         ?array $requirements = null,
         ?bool $certificateEnabled = null,
-        ?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonAccessType $accessType = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType $accessType = null,
         ?int $accessDurationDays = null,
         ?int $enrollmentLimit = null,
         ?string $deliveryText = null,
         ?\SellApp\Resource\CatalogVisibility $visibility = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
+        ?string $title = null,
+        ?string $slug = null,
+        ?string $description = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkReplaceCourseResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'replaceCourse', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
@@ -174,6 +256,9 @@ class Courses
             'delivery_text' => $deliveryText,
             'visibility' => $visibility?->value,
             'expected_updated_at' => $expectedUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'title' => $title,
+            'slug' => $slug,
+            'description' => $description,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkReplaceCourseRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -188,10 +273,10 @@ class Courses
     /**
      * Update a course
      *
-     * Update course metadata, access configuration, delivery copy, or publication visibility. Public visibility requires a ready promotional video and at least one published lesson. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Update a course's title, URL slug, description, details, access rules, delivery message, or visibility. Only the fields you send change, and PUT behaves exactly like PATCH. Sending the course's current `visibility` changes nothing; a different `visibility` also publishes a draft course. `PUBLIC` first checks that the course has a ready promotional video and at least one published lesson, and otherwise returns `422` on `promo_video` or `curriculum` without changing anything. Every successful update moves `updated_at` forward, even one that changes nothing, so retrying with the same `expected_updated_at` after a success returns `422`: retrieve the course again first. Requires the `listing` API-key ability and the `listing` permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param string $course The course path parameter.
      * @param \SellApp\Resource\Category|null $category
-     * @param \SellApp\Resource\SdkUpdateCourseRequestApplicationJsonLevel|null $level
+     * @param \SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel|null $level
      * @param string|null $language
      * @param string|null $subtitle
      * @param string|null $author
@@ -199,19 +284,22 @@ class Courses
      * @param array<string>|null $whatYouLearn
      * @param array<string>|null $requirements
      * @param bool|null $certificateEnabled
-     * @param \SellApp\Resource\SdkUpdateCourseRequestApplicationJsonAccessType|null $accessType
+     * @param \SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType|null $accessType
      * @param int|null $accessDurationDays Required when access_type is limited; cleared otherwise.
      * @param int|null $enrollmentLimit
      * @param string|null $deliveryText
      * @param \SellApp\Resource\CatalogVisibility|null $visibility
-     * @param \DateTimeImmutable|null $expectedUpdatedAt
+     * @param \DateTimeImmutable|null $expectedUpdatedAt The `updated_at` you last read. If the course changed since, the request returns `422` on `expected_updated_at` and changes nothing. It is checked even when the request changes nothing else.
+     * @param string|null $title The course name customers see.
+     * @param string|null $slug The last part of the course's storefront URL: lowercase letters and numbers in words joined by single hyphens, such as `design-foundations`. It must be unused by every other product in the store, or the request returns `422` on `slug`.
+     * @param string|null $description The course description as HTML, at least 5 characters long and at most 2000 characters of visible text. `null` keeps the current description. To clear the description of a draft course, send an empty element such as `<p></p>`; a published course must keep one, so clearing it returns `422` on `description`.
      * @return \SellApp\Resource\SdkUpdateCourseResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
      */
     public function update(
         string $course,
         ?\SellApp\Resource\Category $category = null,
-        ?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonLevel $level = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonLevel $level = null,
         ?string $language = null,
         ?string $subtitle = null,
         ?string $author = null,
@@ -219,12 +307,15 @@ class Courses
         ?array $whatYouLearn = null,
         ?array $requirements = null,
         ?bool $certificateEnabled = null,
-        ?\SellApp\Resource\SdkUpdateCourseRequestApplicationJsonAccessType $accessType = null,
+        ?\SellApp\Resource\SdkCreateCourseRequestApplicationJsonAccessType $accessType = null,
         ?int $accessDurationDays = null,
         ?int $enrollmentLimit = null,
         ?string $deliveryText = null,
         ?\SellApp\Resource\CatalogVisibility $visibility = null,
         ?\DateTimeImmutable $expectedUpdatedAt = null,
+        ?string $title = null,
+        ?string $slug = null,
+        ?string $description = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateCourseResponseValue200ApplicationJson {
         $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'updateCourse', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
@@ -244,6 +335,9 @@ class Courses
             'delivery_text' => $deliveryText,
             'visibility' => $visibility?->value,
             'expected_updated_at' => $expectedUpdatedAt?->format(\DateTimeInterface::RFC3339_EXTENDED),
+            'title' => $title,
+            'slug' => $slug,
+            'description' => $description,
         ], fn ($v) => $v !== null);
         \SellApp\Resource\SdkUpdateCourseRequestApplicationJson::validate($body, 'request');
         $response = $this->client->request(
@@ -253,5 +347,39 @@ class Courses
             options: $options,
         );
         return SdkUpdateCourseResponseValue200ApplicationJson::fromArray($response);
+    }
+
+    /**
+     * Retrieve a course student summary
+     *
+     * Summarize who bought your courses in a date range: totals for students, purchases, units, and orders, plus the top students and the top courses. A purchase counts when it is paid or completed and was made within the range; refunded and pending purchases do not count. A student is a customer, or the order email when a purchase has no customer record. The response contains customer email addresses, so handle it as personal data. Requires the `invoice` API-key ability and the invoice permission in your team role. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * @param string $startDate The first day to include, as `YYYY-MM-DD` in the store's timezone.
+     * @param string $endDate The last day to include, as `YYYY-MM-DD` in the store's timezone. It must not be before `start_date`, and the range can cover at most 366 days; otherwise the request returns `422` on `end_date`.
+     * @param int|null $courseId Count one course only: the course `id` from `/v2/courses`. Another product, a deleted course, or another store's course returns `422` on `course_id`.
+     * @param int|null $limit How many rows `students` and `courses` each return: 10 by default, at most 20. A larger value returns `422` on `limit`. The `summary` totals always cover everything. Defaults to 10.
+     * @return \SellApp\Resource\SdkGetCourseStudentSummaryResponseValue200ApplicationJson
+     * @throws \SellApp\Exception\SDKException
+     */
+    public function getStudentSummary(
+        string $startDate,
+        string $endDate,
+        ?int $courseId = null,
+        ?int $limit = null,
+        ?\SellApp\RequestOptions $options = null,
+    ): \SellApp\Resource\SdkGetCourseStudentSummaryResponseValue200ApplicationJson {
+        $options = ($options ?? new \SellApp\RequestOptions())->forOperation(false, 'getCourseStudentSummary', null, json_decode('{"auth":{"alternatives":[[{"schemeName":"bearerAuth","scopes":[]}],[{"schemeName":"oauthAccessToken","scopes":["admin"]},{"schemeName":"storeAuth","scopes":[]}]],"anonymous":false,"apiKey":true,"accessToken":true,"customerSession":false,"browserSession":false,"clientBasic":false,"apiKeyRequiresStore":false,"apiKeyUsesStore":true,"accessTokenRequiresStore":true},"noRetry":false,"textResponse":false}', true, 512, JSON_THROW_ON_ERROR));
+        $query = array_filter([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'course_id' => $courseId,
+            'limit' => $limit,
+        ], fn ($v) => $v !== null);
+        $response = $this->client->request(
+            method: 'GET',
+            path: 'v2/course-students',
+            query: $query,
+            options: $options,
+        );
+        return SdkGetCourseStudentSummaryResponseValue200ApplicationJson::fromArray($response);
     }
 }

@@ -84,6 +84,14 @@ public function listSubscriptions(
         ?int $page = null,
         ?bool $pagination = null,
         ?array $status = null,
+        ?int $orderId = null,
+        ?int $productId = null,
+        ?string $renewsAfter = null,
+        ?string $renewsBefore = null,
+        ?string $cancelledAfter = null,
+        ?string $cancelledBefore = null,
+        ?bool $scheduledToCancel = null,
+        ?bool $paused = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\PaginatedResponse
 ```
@@ -94,6 +102,14 @@ public function listSubscriptions(
 | page | `?int` | No |
 | pagination | `?bool` | No |
 | status | `?array` | No |
+| orderId | `?int` | No |
+| productId | `?int` | No |
+| renewsAfter | `?string` | No |
+| renewsBefore | `?string` | No |
+| cancelledAfter | `?string` | No |
+| cancelledBefore | `?string` | No |
+| scheduledToCancel | `?bool` | No |
+| paused | `?bool` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\PaginatedResponse`.
@@ -148,6 +164,14 @@ public function searchSubscriptions(
         ?array $sort = null,
         ?\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertySearch $search = null,
         ?array $includes = null,
+        ?int $orderId = null,
+        ?int $productId = null,
+        ?string $renewsAfter = null,
+        ?string $renewsBefore = null,
+        ?string $cancelledAfter = null,
+        ?string $cancelledBefore = null,
+        ?bool $scheduledToCancel = null,
+        ?bool $paused = null,
         ?int $limit = null,
         ?int $page = null,
         ?bool $pagination = null,
@@ -161,6 +185,14 @@ public function searchSubscriptions(
 | sort | `?array` | No |
 | search | `?\SellApp\Resource\SearchSubscriptionsRequestApplicationJsonPropertySearch` | No |
 | includes | `?array` | No |
+| orderId | `?int` | No |
+| productId | `?int` | No |
+| renewsAfter | `?string` | No |
+| renewsBefore | `?string` | No |
+| cancelledAfter | `?string` | No |
+| cancelledBefore | `?string` | No |
+| scheduledToCancel | `?bool` | No |
+| paused | `?bool` | No |
 | limit | `?int` | No |
 | page | `?int` | No |
 | pagination | `?bool` | No |

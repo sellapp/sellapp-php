@@ -28,6 +28,29 @@ final class SchemaValidator
         self::validateConstraints($value, $schema, '$', $direction);
     }
 
+    public static function wireValue(mixed $value): mixed
+    {
+        if ($value instanceof \BackedEnum) return $value->value;
+        if ($value instanceof \DateTimeInterface) return $value->format(\DateTimeInterface::RFC3339_EXTENDED);
+        if ($value instanceof \JsonSerializable) return self::wireValue($value->jsonSerialize());
+        if (is_array($value)) return array_map(self::wireValue(...), $value);
+        return $value;
+    }
+
+    public static function deserializeUnion(mixed $value, array $classes): mixed
+    {
+        if (!is_array($value)) return $value;
+        foreach ($classes as $class) {
+            try {
+                $class::validate($value, 'response');
+                return $class::fromArray($value);
+            } catch (SerializationException) {
+                // Another declared variant may match this value.
+            }
+        }
+        return $value;
+    }
+
     public static function unknownFields(array $value, array $known): array
     {
         return array_diff_key($value, array_fill_keys($known, true));

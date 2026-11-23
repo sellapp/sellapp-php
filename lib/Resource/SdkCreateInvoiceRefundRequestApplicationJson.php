@@ -10,11 +10,13 @@ readonly class SdkCreateInvoiceRefundRequestApplicationJson implements \JsonSeri
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkCreateInvoiceRefundRequestApplicationJson', 'required' => [], 'properties' => ['amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 32, 'pattern' => '^\\d+(\\.\\d+)?$']]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkCreateInvoiceRefundRequestApplicationJson', 'required' => [], 'properties' => ['amount' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 32, 'pattern' => '^\\d+(\\.\\d+)?$']], 'expected_refunded_total_cents' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer', 'minimum' => 0]]], 'additionalProperties' => true];
 
     public function __construct(
-        /** Optional partial refund amount in major currency units. Omit for the full remaining refundable amount. */
+        /** Optional partial refund amount in major units of the invoice's `payment.refund_currency`. Omit for the full remaining refundable amount. */
         public ?string $amount = null,
+        /** The refunded total you expect, in integer minor units of the invoice's `payment.refund_currency`, which can differ from the invoice currency: `500` means $5.00 in USD. Read it from `payment.refunded_total_cents` on the invoice and send it unchanged; it is `0` before the first refund. After a refund, `data.invoice.payment.refunded_total_cents` in the response is the value to send with the next one. With this field, the refund goes out only while the refunded total still equals it and no other refund on the order is pending. Omit it or send null to refund without the check. */
+        public ?int $expectedRefundedTotalCents = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -26,7 +28,8 @@ readonly class SdkCreateInvoiceRefundRequestApplicationJson implements \JsonSeri
         self::validate($data, 'response');
         return new self(
             amount: $data['amount'] ?? null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['amount']),
+            expectedRefundedTotalCents: $data['expected_refunded_total_cents'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['amount', 'expected_refunded_total_cents']),
             presentFields: array_keys($data),
         );
     }
@@ -40,6 +43,7 @@ readonly class SdkCreateInvoiceRefundRequestApplicationJson implements \JsonSeri
     {
         return array_replace($this->additionalProperties, SchemaValidator::presentFields([
             'amount' => $this->amount,
+            'expected_refunded_total_cents' => $this->expectedRefundedTotalCents,
         ], [], $this->presentFields));
     }
 }

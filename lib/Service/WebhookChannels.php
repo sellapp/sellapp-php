@@ -30,7 +30,7 @@ class WebhookChannels
     /**
      * List webhook channels
      *
-     * Retrieve the authenticated store's outbound developer webhook destinations. Signing secrets and delivery headers are never included. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * List your store's outbound webhook destinations, 15 per page by default. Each result includes `health`, which says whether deliveries to the destination are working, and `last_delivery`, the most recent delivery recorded for it; retrieving one channel does not include them. Signing secrets and delivery headers are never included. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param int|null $page Page number. Defaults to 1.
      * @param int|null $limit Number of webhook channels to return per page. Defaults to 15.
      * @return \SellApp\PaginatedResponse<\SellApp\Resource\ListWebhookChannelsResponseValue200ApplicationJsonPropertyDataItem>
@@ -90,7 +90,7 @@ class WebhookChannels
     /**
      * Search webhook channels
      *
-     * Search destinations by name or URL and optionally filter by a subscribed event. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
+     * Search destinations by name or URL and optionally filter by a subscribed event. Each result includes the same `health` and `last_delivery` as the list. OAuth callers use the admin grant and select a store with X-STORE. Current membership and role permissions apply to every request.
      * @param \SellApp\Resource\SearchWebhookChannelsRequestApplicationJsonPropertySearch|null $search
      * @param \SellApp\Resource\Event|null $event Public event name delivered in webhook payloads. SellApp maps it to the corresponding allowed_notifications filter.
      * @param int|null $page

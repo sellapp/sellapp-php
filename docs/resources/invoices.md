@@ -568,7 +568,7 @@ Issue replacement for completed invoice
 ```php
 public function issueReplacement(
         int $invoice,
-        \SellApp\Resource\IssueReplacementForCompletedInvoiceRequestApplicationJsonPropertyProductVariants $productVariants,
+        int|array $productVariants,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkIssueReplacementForCompletedInvoiceResponseValue200ApplicationJson
 ```
@@ -576,7 +576,7 @@ public function issueReplacement(
 | Argument | Native type | Required |
 | --- | --- | --- |
 | invoice | `int` | Yes |
-| productVariants | `\SellApp\Resource\IssueReplacementForCompletedInvoiceRequestApplicationJsonPropertyProductVariants` | Yes |
+| productVariants | `int\|array` | Yes |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkIssueReplacementForCompletedInvoiceResponseValue200ApplicationJson`.
@@ -698,6 +698,7 @@ Create invoice refund
 public function createRefund(
         int $invoice,
         ?string $amount = null,
+        ?int $expectedRefundedTotalCents = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkCreateInvoiceRefundResponseValue200ApplicationJson
 ```
@@ -706,6 +707,7 @@ public function createRefund(
 | --- | --- | --- |
 | invoice | `int` | Yes |
 | amount | `?string` | No |
+| expectedRefundedTotalCents | `?int` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
 Returns: `\SellApp\Resource\SdkCreateInvoiceRefundResponseValue200ApplicationJson`.
@@ -725,6 +727,7 @@ $client = new Client(
 $result = $client->invoices()->createRefund(
     invoice: 1,
     amount: '12.50',
+    expectedRefundedTotalCents: 0,
 );
 echo json_encode($result, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
 ```

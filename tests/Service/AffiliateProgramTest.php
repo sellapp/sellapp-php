@@ -67,6 +67,18 @@ class AffiliateProgramTest extends TestCase
         $this->assertSame('test_value', $body['email']);
     }
 
+    public function testResend(): void
+    {
+        $fixture = $this->loadFixture('sdk_resend_affiliate_invitation_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->affiliateProgram()->resend(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkResendAffiliateInvitationResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/affiliate-invitations/1/resend', $request->getUri()->getPath());
+    }
+
     public function testPaginationBoundary(): void
     {
         $fixture = $this->loadFixture('list_list_pending_affiliate_invitations_response_value_200_application_json_property_data_item');

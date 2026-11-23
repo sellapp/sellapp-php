@@ -11,4 +11,6 @@ enum SearchOrdersRequestApplicationJsonPropertyFiltersItemOperator: string
     case Eq = 'eq';
     case Contains = 'contains';
     case In = 'in';
+    case Gte = 'gte';
+    case Lte = 'lte';
 }

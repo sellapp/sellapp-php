@@ -296,11 +296,11 @@ public function replace(
         ?int $bufferAfterMinutes = null,
         ?array $availability = null,
         ?array $providerConnectionIds = null,
-        ?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonVideoProvider $videoProvider = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider $videoProvider = null,
         ?int $videoProviderConnectionId = null,
         ?bool $remindersEnabled = null,
         ?int $reminderOffsetValue = null,
-        ?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonReminderOffsetUnit $reminderOffsetUnit = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit $reminderOffsetUnit = null,
         ?\SellApp\Resource\ReplaceBookingConfigurationRequestApplicationJsonPropertyMeta $meta = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkReplaceBookingConfigurationResponseValue200ApplicationJson
@@ -321,11 +321,11 @@ public function replace(
 | bufferAfterMinutes | `?int` | No |
 | availability | `?array` | No |
 | providerConnectionIds | `?array` | No |
-| videoProvider | `?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonVideoProvider` | No |
+| videoProvider | `?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider` | No |
 | videoProviderConnectionId | `?int` | No |
 | remindersEnabled | `?bool` | No |
 | reminderOffsetValue | `?int` | No |
-| reminderOffsetUnit | `?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonReminderOffsetUnit` | No |
+| reminderOffsetUnit | `?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit` | No |
 | meta | `?\SellApp\Resource\ReplaceBookingConfigurationRequestApplicationJsonPropertyMeta` | No |
 | options | `?\SellApp\RequestOptions` | No |
 
@@ -398,11 +398,11 @@ public function update(
         ?int $bufferAfterMinutes = null,
         ?array $availability = null,
         ?array $providerConnectionIds = null,
-        ?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonVideoProvider $videoProvider = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider $videoProvider = null,
         ?int $videoProviderConnectionId = null,
         ?bool $remindersEnabled = null,
         ?int $reminderOffsetValue = null,
-        ?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonReminderOffsetUnit $reminderOffsetUnit = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit $reminderOffsetUnit = null,
         ?\SellApp\Resource\UpdateBookingConfigurationRequestApplicationJsonPropertyMeta $meta = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateBookingConfigurationResponseValue200ApplicationJson
@@ -423,11 +423,11 @@ public function update(
 | bufferAfterMinutes | `?int` | No |
 | availability | `?array` | No |
 | providerConnectionIds | `?array` | No |
-| videoProvider | `?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonVideoProvider` | No |
+| videoProvider | `?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider` | No |
 | videoProviderConnectionId | `?int` | No |
 | remindersEnabled | `?bool` | No |
 | reminderOffsetValue | `?int` | No |
-| reminderOffsetUnit | `?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonReminderOffsetUnit` | No |
+| reminderOffsetUnit | `?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit` | No |
 | meta | `?\SellApp\Resource\UpdateBookingConfigurationRequestApplicationJsonPropertyMeta` | No |
 | options | `?\SellApp\RequestOptions` | No |
 

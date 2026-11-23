@@ -83,6 +83,21 @@ class BookingsTest extends TestCase
         $this->assertArrayHasKey('status', $body);
     }
 
+    public function testCreate(): void
+    {
+        $fixture = $this->loadFixture('sdk_create_booking_product_response_value_201_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->bookings()->create(title: 'test_value', priceCents: 1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkCreateBookingProductResponseValue201ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('POST', $request->getMethod());
+        $this->assertStringEndsWith('v2/booking-products', $request->getUri()->getPath());
+        $body = json_decode((string) $request->getBody(), true);
+        $this->assertSame('test_value', $body['title']);
+        $this->assertSame(1, $body['price_cents']);
+    }
+
     public function testPaginationBoundary(): void
     {
         $fixture = $this->loadFixture('list_sdk_list_appointments_response_value_200_application_json');

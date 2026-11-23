@@ -167,11 +167,11 @@ class ProductVariantsBooking
      * @param int|null $bufferAfterMinutes
      * @param array<\SellApp\Resource\ReplaceBookingConfigurationRequestApplicationJsonPropertyAvailabilityItem>|null $availability
      * @param array<int>|null $providerConnectionIds
-     * @param \SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonVideoProvider|null $videoProvider
+     * @param \SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider|null $videoProvider
      * @param int|null $videoProviderConnectionId
      * @param bool|null $remindersEnabled
      * @param int|null $reminderOffsetValue
-     * @param \SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonReminderOffsetUnit|null $reminderOffsetUnit
+     * @param \SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit|null $reminderOffsetUnit
      * @param \SellApp\Resource\ReplaceBookingConfigurationRequestApplicationJsonPropertyMeta|null $meta
      * @return \SellApp\Resource\SdkReplaceBookingConfigurationResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -190,11 +190,11 @@ class ProductVariantsBooking
         ?int $bufferAfterMinutes = null,
         ?array $availability = null,
         ?array $providerConnectionIds = null,
-        ?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonVideoProvider $videoProvider = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider $videoProvider = null,
         ?int $videoProviderConnectionId = null,
         ?bool $remindersEnabled = null,
         ?int $reminderOffsetValue = null,
-        ?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonReminderOffsetUnit $reminderOffsetUnit = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit $reminderOffsetUnit = null,
         ?\SellApp\Resource\ReplaceBookingConfigurationRequestApplicationJsonPropertyMeta $meta = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkReplaceBookingConfigurationResponseValue200ApplicationJson {
@@ -245,11 +245,11 @@ class ProductVariantsBooking
      * @param int|null $bufferAfterMinutes
      * @param array<\SellApp\Resource\UpdateBookingConfigurationRequestApplicationJsonPropertyAvailabilityItem>|null $availability
      * @param array<int>|null $providerConnectionIds
-     * @param \SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonVideoProvider|null $videoProvider
+     * @param \SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider|null $videoProvider
      * @param int|null $videoProviderConnectionId
      * @param bool|null $remindersEnabled
      * @param int|null $reminderOffsetValue
-     * @param \SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonReminderOffsetUnit|null $reminderOffsetUnit
+     * @param \SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit|null $reminderOffsetUnit
      * @param \SellApp\Resource\UpdateBookingConfigurationRequestApplicationJsonPropertyMeta|null $meta
      * @return \SellApp\Resource\SdkUpdateBookingConfigurationResponseValue200ApplicationJson
      * @throws \SellApp\Exception\SDKException
@@ -268,11 +268,11 @@ class ProductVariantsBooking
         ?int $bufferAfterMinutes = null,
         ?array $availability = null,
         ?array $providerConnectionIds = null,
-        ?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonVideoProvider $videoProvider = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonVideoProvider $videoProvider = null,
         ?int $videoProviderConnectionId = null,
         ?bool $remindersEnabled = null,
         ?int $reminderOffsetValue = null,
-        ?\SellApp\Resource\SdkUpdateBookingConfigurationRequestApplicationJsonReminderOffsetUnit $reminderOffsetUnit = null,
+        ?\SellApp\Resource\SdkCreateBookingProductRequestApplicationJsonReminderOffsetUnit $reminderOffsetUnit = null,
         ?\SellApp\Resource\UpdateBookingConfigurationRequestApplicationJsonPropertyMeta $meta = null,
         ?\SellApp\RequestOptions $options = null,
     ): \SellApp\Resource\SdkUpdateBookingConfigurationResponseValue200ApplicationJson {

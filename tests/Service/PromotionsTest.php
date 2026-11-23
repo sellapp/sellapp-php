@@ -120,6 +120,18 @@ class PromotionsTest extends TestCase
         $this->assertTrue($body['is_stackable']);
     }
 
+    public function testGetUsage(): void
+    {
+        $fixture = $this->loadFixture('sdk_get_promotion_usage_response_value_200_application_json');
+        $client = $this->createMockClient([['status' => 200, 'body' => $fixture]]);
+        $result = $client->promotions()->getUsage(1);
+        $this->assertInstanceOf(\SellApp\Resource\SdkGetPromotionUsageResponseValue200ApplicationJson::class, $result);
+        $this->assertIsArray($result->toArray());
+        $request = $this->getLastRequest();
+        $this->assertSame('GET', $request->getMethod());
+        $this->assertStringEndsWith('v2/promotions/1/usage', $request->getUri()->getPath());
+    }
+
     public function testPaginationBoundary(): void
     {
         $fixture = $this->loadFixture('list_sdk_list_promotions_response_value_200_application_json');

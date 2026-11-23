@@ -10,7 +10,7 @@ readonly class SdkV2SearchTicketsRequestApplicationJson implements \JsonSerializ
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SdkV2SearchTicketsRequestApplicationJson', 'required' => [], 'properties' => ['filters' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchTicketsRequestApplicationJsonPropertyFiltersItem']], 'sort' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchTicketsRequestApplicationJsonPropertySortItem']], 'search' => ['kind' => 'model', 'class' => 'V2SearchTicketsRequestApplicationJsonPropertySearch'], 'includes' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchTicketsRequestApplicationJsonPropertyIncludesItem']]], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SdkV2SearchTicketsRequestApplicationJson', 'required' => [], 'properties' => ['filters' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchTicketsRequestApplicationJsonPropertyFiltersItem']], 'sort' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchTicketsRequestApplicationJsonPropertySortItem']], 'search' => ['kind' => 'model', 'class' => 'V2SearchTicketsRequestApplicationJsonPropertySearch'], 'includes' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'V2SearchTicketsRequestApplicationJsonPropertyIncludesItem']], 'waiting_on' => ['kind' => 'nullable', 'inner' => ['kind' => 'enum', 'values' => ['store', 'customer', 'null']]], 'reason' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 150]], 'customer_email' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'maxLength' => 255]]], 'additionalProperties' => true];
 
     public function __construct(
         /** @var array<\SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertyFiltersItem>|null */
@@ -20,6 +20,12 @@ readonly class SdkV2SearchTicketsRequestApplicationJson implements \JsonSerializ
         public ?V2SearchTicketsRequestApplicationJsonPropertySearch $search = null,
         /** @var array<\SellApp\Resource\V2SearchTicketsRequestApplicationJsonPropertyIncludesItem>|null */
         public ?array $includes = null,
+        /** `store`: the latest message is from the customer, so the ticket waits on you. `customer`: the latest message is yours. A ticket without messages matches neither. */
+        public WaitingOn|string|null $waitingOn = null,
+        /** A ticket reason by its label (as tickets show it in `reason`), its key such as `platform:refund_request`, or its code; case does not matter. A reason the store does not have returns `422` on `reason`, listing the store's reasons. */
+        public ?string $reason = null,
+        /** Part of the customer's email, case-insensitive. `%` and `_` match those characters literally. */
+        public ?string $customerEmail = null,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -34,7 +40,10 @@ readonly class SdkV2SearchTicketsRequestApplicationJson implements \JsonSerializ
             sort: isset($data['sort']) ? array_map(fn ($item) => V2SearchTicketsRequestApplicationJsonPropertySortItem::fromArray($item), $data['sort']) : null,
             search: isset($data['search']) ? V2SearchTicketsRequestApplicationJsonPropertySearch::fromArray($data['search']) : null,
             includes: isset($data['includes']) ? array_map(fn ($item) => V2SearchTicketsRequestApplicationJsonPropertyIncludesItem::fromArray($item), $data['includes']) : null,
-            additionalProperties: SchemaValidator::unknownFields($data, ['filters', 'sort', 'search', 'includes']),
+            waitingOn: isset($data['waiting_on']) ? WaitingOn::tryFrom($data['waiting_on']) ?? $data['waiting_on'] : null,
+            reason: $data['reason'] ?? null,
+            customerEmail: $data['customer_email'] ?? null,
+            additionalProperties: SchemaValidator::unknownFields($data, ['filters', 'sort', 'search', 'includes', 'waiting_on', 'reason', 'customer_email']),
             presentFields: array_keys($data),
         );
     }
@@ -51,6 +60,9 @@ readonly class SdkV2SearchTicketsRequestApplicationJson implements \JsonSerializ
             'sort' => $this->sort !== null ? array_map(fn ($item) => $item->toArray(), $this->sort) : null,
             'search' => $this->search?->toArray(),
             'includes' => $this->includes !== null ? array_map(fn ($item) => $item->toArray(), $this->includes) : null,
+            'waiting_on' => $this->waitingOn instanceof \BackedEnum ? $this->waitingOn->value : $this->waitingOn,
+            'reason' => $this->reason,
+            'customer_email' => $this->customerEmail,
         ], [], $this->presentFields));
     }
 }
