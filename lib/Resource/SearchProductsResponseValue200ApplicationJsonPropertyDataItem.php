@@ -10,7 +10,7 @@ readonly class SearchProductsResponseValue200ApplicationJsonPropertyDataItem imp
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url', 'price_range', 'stock', 'sales', 'sold_out'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'title' => ['kind' => 'primitive', 'type' => 'string'], 'slug' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'images' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyImagesItem']], 'order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'visibility' => ['kind' => 'primitive', 'type' => 'string'], 'delivery_text' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'additional_information' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyAdditionalInformationItem']], 'other_settings' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyOtherSettings'], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'store_id' => ['kind' => 'primitive', 'type' => 'integer'], 'section_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'section_order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'is_discoverable' => ['kind' => 'primitive', 'type' => 'boolean'], 'variants' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyVariantsItem']], 'url' => ['kind' => 'primitive', 'type' => 'string'], 'price_range' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'stock' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'sales' => ['kind' => 'primitive', 'type' => 'integer'], 'sold_out' => ['kind' => 'primitive', 'type' => 'boolean']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItem', 'required' => ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url', 'type', 'price_range', 'stock', 'sales', 'sold_out'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'title' => ['kind' => 'primitive', 'type' => 'string'], 'slug' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'images' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyImagesItem']], 'order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'visibility' => ['kind' => 'primitive', 'type' => 'string'], 'delivery_text' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'additional_information' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyAdditionalInformationItem']], 'other_settings' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyOtherSettings'], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'store_id' => ['kind' => 'primitive', 'type' => 'integer'], 'section_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'section_order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'is_discoverable' => ['kind' => 'primitive', 'type' => 'boolean'], 'variants' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyVariantsItem']], 'url' => ['kind' => 'primitive', 'type' => 'string'], 'type' => ['kind' => 'primitive', 'type' => 'string'], 'price_range' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'stock' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'sales' => ['kind' => 'primitive', 'type' => 'integer'], 'sold_out' => ['kind' => 'primitive', 'type' => 'boolean']], 'additionalProperties' => true];
 
     public function __construct(
         public int $id,
@@ -35,6 +35,8 @@ readonly class SearchProductsResponseValue200ApplicationJsonPropertyDataItem imp
         /** @var array<\SellApp\Resource\SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyVariantsItem> */
         public array $variants,
         public string $url,
+        /** What kind of product this is: `product`, `bundle`, `addon`, `credits`, `course`, or `booking`. */
+        public string $type,
         /** The lowest and highest price among the product's published variants, formatted for display with the currency symbol: `$19.99`, or `$9.99 - $19.99` when the prices differ. Null when no published variant has a price. */
         public ?string $priceRange,
         /** Units left across the product's published variants, or null when any of them has unlimited stock. */
@@ -72,11 +74,12 @@ readonly class SearchProductsResponseValue200ApplicationJsonPropertyDataItem imp
             isDiscoverable: $data['is_discoverable'],
             variants: array_map(fn ($item) => SearchProductsResponseValue200ApplicationJsonPropertyDataItemPropertyVariantsItem::fromArray($item), $data['variants']),
             url: $data['url'],
+            type: $data['type'],
             priceRange: $data['price_range'] ?? null,
             stock: $data['stock'] ?? null,
             sales: $data['sales'],
             soldOut: $data['sold_out'],
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url', 'price_range', 'stock', 'sales', 'sold_out']),
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url', 'type', 'price_range', 'stock', 'sales', 'sold_out']),
             presentFields: array_keys($data),
         );
     }
@@ -108,10 +111,11 @@ readonly class SearchProductsResponseValue200ApplicationJsonPropertyDataItem imp
             'is_discoverable' => $this->isDiscoverable,
             'variants' => array_map(fn ($item) => $item->toArray(), $this->variants),
             'url' => $this->url,
+            'type' => $this->type,
             'price_range' => $this->priceRange,
             'stock' => $this->stock,
             'sales' => $this->sales,
             'sold_out' => $this->soldOut,
-        ], ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url', 'price_range', 'stock', 'sales', 'sold_out'], $this->presentFields));
+        ], ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url', 'type', 'price_range', 'stock', 'sales', 'sold_out'], $this->presentFields));
     }
 }

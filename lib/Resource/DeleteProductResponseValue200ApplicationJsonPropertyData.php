@@ -10,7 +10,7 @@ readonly class DeleteProductResponseValue200ApplicationJsonPropertyData implemen
 {
     use JsonSerializableTrait;
 
-    private const SCHEMA = ['name' => 'DeleteProductResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'title' => ['kind' => 'primitive', 'type' => 'string'], 'slug' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'images' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyImagesItem']], 'order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'visibility' => ['kind' => 'primitive', 'type' => 'string'], 'delivery_text' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'additional_information' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyAdditionalInformationItem']], 'other_settings' => ['kind' => 'model', 'class' => 'DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyOtherSettings'], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'store_id' => ['kind' => 'primitive', 'type' => 'integer'], 'section_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'section_order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'is_discoverable' => ['kind' => 'primitive', 'type' => 'boolean'], 'variants' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyVariantsItem']], 'url' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
+    private const SCHEMA = ['name' => 'DeleteProductResponseValue200ApplicationJsonPropertyData', 'required' => ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url', 'type'], 'properties' => ['id' => ['kind' => 'primitive', 'type' => 'integer'], 'title' => ['kind' => 'primitive', 'type' => 'string'], 'slug' => ['kind' => 'primitive', 'type' => 'string'], 'description' => ['kind' => 'primitive', 'type' => 'string'], 'images' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyImagesItem']], 'order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'visibility' => ['kind' => 'primitive', 'type' => 'string'], 'delivery_text' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string']], 'additional_information' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyAdditionalInformationItem']], 'other_settings' => ['kind' => 'model', 'class' => 'DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyOtherSettings'], 'deleted_at' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time']], 'created_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'updated_at' => ['kind' => 'primitive', 'type' => 'string', 'format' => 'date-time'], 'store_id' => ['kind' => 'primitive', 'type' => 'integer'], 'section_id' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'section_order' => ['kind' => 'nullable', 'inner' => ['kind' => 'primitive', 'type' => 'integer']], 'is_discoverable' => ['kind' => 'primitive', 'type' => 'boolean'], 'variants' => ['kind' => 'array', 'items' => ['kind' => 'model', 'class' => 'DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyVariantsItem']], 'url' => ['kind' => 'primitive', 'type' => 'string'], 'type' => ['kind' => 'primitive', 'type' => 'string']], 'additionalProperties' => true];
 
     public function __construct(
         public int $id,
@@ -35,6 +35,8 @@ readonly class DeleteProductResponseValue200ApplicationJsonPropertyData implemen
         /** @var array<\SellApp\Resource\DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyVariantsItem> */
         public array $variants,
         public string $url,
+        /** What kind of product this is: `product`, `bundle`, `addon`, `credits`, `course`, or `booking`. */
+        public string $type,
         /** @var array<string, mixed> */
         public array $additionalProperties = [],
         private array $presentFields = [],
@@ -64,7 +66,8 @@ readonly class DeleteProductResponseValue200ApplicationJsonPropertyData implemen
             isDiscoverable: $data['is_discoverable'],
             variants: array_map(fn ($item) => DeleteProductResponseValue200ApplicationJsonPropertyDataPropertyVariantsItem::fromArray($item), $data['variants']),
             url: $data['url'],
-            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url']),
+            type: $data['type'],
+            additionalProperties: SchemaValidator::unknownFields($data, ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url', 'type']),
             presentFields: array_keys($data),
         );
     }
@@ -96,6 +99,7 @@ readonly class DeleteProductResponseValue200ApplicationJsonPropertyData implemen
             'is_discoverable' => $this->isDiscoverable,
             'variants' => array_map(fn ($item) => $item->toArray(), $this->variants),
             'url' => $this->url,
-        ], ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url'], $this->presentFields));
+            'type' => $this->type,
+        ], ['id', 'title', 'slug', 'description', 'images', 'order', 'visibility', 'delivery_text', 'additional_information', 'other_settings', 'deleted_at', 'created_at', 'updated_at', 'store_id', 'section_id', 'section_order', 'is_discoverable', 'variants', 'url', 'type'], $this->presentFields));
     }
 }
